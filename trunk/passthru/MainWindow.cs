@@ -42,7 +42,10 @@ namespace PassThru
 				}
 			}
 
-			private void MainWindow_Load(object sender, EventArgs e) {
+			private void MainWindow_Load(object sender, EventArgs e) 
+            {
+                System.Reflection.Assembly target = System.Reflection.Assembly.GetExecutingAssembly();
+                this.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.stop.ico"));
 				LogCenter.Instance.PushLogEvent += new LogCenter.NewLogEvent(Instance_PushLogEvent);
 				//RuleEditor re = new RuleEditor();
 				//re.Dock = DockStyle.Fill;

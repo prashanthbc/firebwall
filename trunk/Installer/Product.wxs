@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- The base directory for the entire SPDR project (constant) -->
+<?define BASE_DIR = ".."?>
+
+<!-- The location for SPDR source files to package (constant) -->
+<?define SourceAppDir = "$(var.BASE_DIR)\Release"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="157bc7c9-7d8a-4553-b5bc-d3c921761ce8" Name="fireBwall" Language="1033" Version="0.3.0.0" Manufacturer="Installer" UpgradeCode="33279ee1-989f-4841-a222-fdf4fcc80b88">
+		<Package InstallerVersion="200" Compressed="yes" />
+
+		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="fireBwall">
+          <Directory Id="MODULELOCATOIN" Name="Modules">
+          </Directory>
+          <!-- Auto-start via Registry -->
+          <Component Id="firebwallAutostart">
+            <RegistryKey Root="HKCU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" >
+              <RegistryValue Type="string" Name="firebwall" Value="[INSTALLLOCATION]firebwall.exe" Action="write" />
+            </RegistryKey>
+            <Condition>ASSISTANCE_START_VIA_REGISTRY</Condition>
+          </Component>
+          <Component Id="cfBwallExe" Guid="C7021A24-C661-4C9C-9C8F-B047E8096298">
+            <File Source="..\passthru\bin\Release\fireBwall.exe" KeyPath="yes" Id="fireBwall.exe">
+            </File>
+          </Component>
+          <Component Id="cDrivers">
+            <File Source="..\winpkflt_rtl.exe" KeyPath="yes" Id="winpkflt_rtl.exe"></File>
+          </Component>
+          <Component Id="cGeo">
+            <File Source="..\passthru\bin\Release\GeoLiteCity.dat" KeyPath="yes" Id="maxmind"></File>
+          </Component>
+          <Component Id="cndisapi">
+            <File Source="..\passthru\bin\Release\ndisapi.dll" KeyPath="yes" Id="apidll"></File>
+          </Component>
+          <Component Id="cIcon">
+            <File Source="..\passthru\bin\Release\stop.ico" KeyPath="yes" Id="stop.ico"></File>
+          </Component>
+        </Directory>
+      </Directory>
+
+      <!-- Start menu structure -->
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="fireBwall">
+          <Component Id="cStartMenufbwallExe" Guid="1691B12D-6C5D-47EA-A07A-67FDA9519156">
+            <Shortcut Id="shortcutStartMenufbwallExe" Name="fireBwall"
+                      Target="[APPLICATIONFOLDER]firebwall.exe" WorkingDirectory="APPLICATIONFOLDER"/>
+            <RemoveFolder Id="removeApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall"/>
+            <RegistryValue Root="HKCU" Key="Software\bwall\firebwall" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+          </Component>
+        </Directory>
+      </Directory>
+		</Directory>
+
+    <Property Id="ASSISTANCE_START_VIA_REGISTRY">1</Property>
+
+       
+    
+		<Feature Id="ProductFeature" Title="fireBwall" Level="1">
+      <ComponentRef Id="firebwallAutostart" />
+      <ComponentRef Id="cStartMenufbwallExe" />
+			<ComponentRef Id="cfBwallExe" />
+      <ComponentRef Id="cDrivers" />
+      <ComponentRef Id="cGeo"/>
+      <ComponentRef Id="cndisapi"/>
+      <ComponentRef Id="cIcon"/>
+			<ComponentGroupRef Id="Product.Generated" />
+		</Feature>
+
+    <Property Id="WixShellExecTarget" Value="[#winpkflt_rtl.exe]" />
+    <CustomAction Id="InstallDrivers" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+    <UI>
+      <UIRef Id="WixUI_Minimal"/>
+
+
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="UserExit" />
+    </UI>
+
+    <InstallExecuteSequence>
+      <Custom Action="InstallDrivers" OnExit="success" />
+    </InstallExecuteSequence>
+    
+	</Product>
+</Wix>

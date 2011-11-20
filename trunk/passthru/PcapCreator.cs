@@ -17,7 +17,7 @@ namespace PassThru
 						System.Threading.Thread.Sleep(1);
 				}
 				last = DateTime.Now;
-				return last.Month.ToString() + "-" + last.Day.ToString() + "-" + last.Year.ToString() + "_" + last.Hour.ToString() + "-" + last.Minute.ToString() + "-" + last.Second.ToString() + "-" + last.Millisecond.ToString();
+				return last.Ticks.ToString();
 			}
 
 			public static PcapCreator Instance {

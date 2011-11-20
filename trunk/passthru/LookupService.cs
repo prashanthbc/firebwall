@@ -25,25 +25,39 @@ using System.Net;
 using System.Runtime.CompilerServices;
 
 public class LookupService: System.Object {
-	public LookupService(String databaseFile):this(databaseFile, GEOIP_STANDARD) {
-	}
+    //public LookupService(String databaseFile):this(databaseFile, GEOIP_STANDARD) {
+    //}
 
-	public LookupService(String databaseFile, int options) {
-			 try {
-		this.file = new FileStream(databaseFile, FileMode.Open, FileAccess.Read);
-		dboptions = options;
-					init();
-			 } catch(System.SystemException) {
-					Console.Write("cannot open file " + databaseFile + "\n");
-			 }
-	}
+    //public LookupService(String databaseFile, int options) {
+    //         try {
+    //    this.file = new FileStream(databaseFile, FileMode.Open, FileAccess.Read);
+    //    dboptions = options;
+    //                init();
+    //         } catch(System.SystemException) {
+    //                Console.Write("cannot open file " + databaseFile + "\n");
+    //         }
+    //}
+    public LookupService(int options)
+    {
+        try
+        {
+            System.Reflection.Assembly target = System.Reflection.Assembly.GetExecutingAssembly();
+            this.file = (UnmanagedMemoryStream)target.GetManifestResourceStream("PassThru.Resources.GeoLiteCity.dat");
+            dboptions = options;
+            init();
+        }
+        catch (System.SystemException)
+        {
+            Console.Write("cannot open resource\n");
+        }
+    }
 	private DatabaseInfo databaseInfo = null;
 	int[] databaseSegments;
 	byte databaseType = Convert.ToByte(DatabaseInfo.COUNTRY_EDITION);
 	byte[] dbbuffer;
 	int dboptions;
 	int dnsService = 0;
-	private FileStream file = null;
+    private UnmanagedMemoryStream file = null;
 	String licenseKey;
 	int recordLength;
 	public static int GEOIP_CABLEDSL_SPEED = 2;

@@ -27,6 +27,12 @@ namespace PassThru
 			returnType = PacketMainReturnType.Error | PacketMainReturnType.Log;
 			logMessage = "An error has occurred in " + moduleName + " with no other details.";
 		}
+        public PacketMainReturn(string moduleName, Exception e)
+        {
+            Module = moduleName;
+            returnType = PacketMainReturnType.Error | PacketMainReturnType.Log;
+            logMessage = "An error has occurred in " + moduleName + ". " + e.Message + "\r\n" + e.StackTrace;
+        }
 		public string Module = null;
 		public byte[] SendPacket = null;
 		public string logMessage = null;
@@ -83,9 +89,9 @@ namespace PassThru
 				PacketMainReturn pmr = interiorMain(in_packet);
 				return pmr;
 			}
-			catch
+			catch (Exception e)
 			{
-				return new PacketMainReturn(moduleName);
+				return new PacketMainReturn(moduleName, e);
 			}
 		}
 
@@ -381,14 +387,18 @@ namespace PassThru
 		public override ModuleError ModuleStart() 
         {
 			RuleUpdater.Instance.GetRuleUpdates +=new RuleUpdater.GR(InstanceGetRuleUpdates);
-			string f = "blocked-" + PcapCreator.Instance.GetNewDate() + ".pcap";
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            folder = folder + Path.DirectorySeparatorChar + "firebwall";
+            if(!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);            
+			string f = folder + Path.DirectorySeparatorChar + "blocked-" + this.adapter.InterfaceInformation.Name + "-" + PcapCreator.Instance.GetNewDate() + ".pcap";
 			file = new PcapFileWriter(f);
 
 			lock (padlock)
 			{
-				if (File.Exists("BasicFirewallRules.conf"))
+				if (File.Exists(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf"))
 				{
-					string[] lines = File.ReadAllLines("BasicFirewallRules.conf");
+					string[] lines = File.ReadAllLines(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf");
 					foreach (string line in lines)
 					{
 						rules.Add(new Rule(line));
@@ -408,10 +418,14 @@ namespace PassThru
 			file.Close();
 			lock (padlock)
 			{
-				File.Create("BasicFirewallRules.conf").Close();
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                folder = folder + Path.DirectorySeparatorChar + "firebwall";
+                if(!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder); 
+                File.Create(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf").Close();
 				foreach (Rule r in rules)
 				{
-					File.AppendAllText("BasicFirewallRules.conf", r.ToFileString() + "\r\n");
+                    File.AppendAllText(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf", r.ToFileString() + "\r\n");
 				}
 			}
 			ModuleError me = new ModuleError();

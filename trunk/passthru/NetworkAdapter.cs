@@ -208,56 +208,65 @@ namespace PassThru
 
 			static void UpdateAdapterList() 
             {
-				if (!isNdisFilterDriverOpen)
-				{
-						OpenNDISDriver();
-				}
-				TCP_AdapterList adList = new TCP_AdapterList();
-				Ndisapi.GetTcpipBoundAdaptersInfo(hNdisapi, ref adList);
-				List<NetworkAdapter> tempList = new List<NetworkAdapter>();
+                bool succeeded = false;
+                while (!succeeded)
+                {
+                    try
+                    {
+                        if (!isNdisFilterDriverOpen)
+                        {
+                            OpenNDISDriver();
+                        }
+                        TCP_AdapterList adList = new TCP_AdapterList();
+                        Ndisapi.GetTcpipBoundAdaptersInfo(hNdisapi, ref adList);
+                        List<NetworkAdapter> tempList = new List<NetworkAdapter>();
 
-				//Populate with current adapters
-				List<NetworkAdapter> notFound = new List<NetworkAdapter>();
-				for (int x = 0; x < currentAdapters.Count; x++)
-				{
-						bool found = false;
-						for (int y = 0; y < adList.m_nAdapterCount; y++)
-						{
-								if (adList.m_nAdapterHandle[y] == currentAdapters[x].adapterHandle)
-								{
-										tempList.Add(currentAdapters[x]);
-										found = true;
-								}
-						}
-						if (!found)
-						{
-								notFound.Add(currentAdapters[x]);
-						}
-				}
+                        //Populate with current adapters
+                        List<NetworkAdapter> notFound = new List<NetworkAdapter>();
+                        for (int x = 0; x < currentAdapters.Count; x++)
+                        {
+                            bool found = false;
+                            for (int y = 0; y < adList.m_nAdapterCount; y++)
+                            {
+                                if (adList.m_nAdapterHandle[y] == currentAdapters[x].adapterHandle)
+                                {
+                                    tempList.Add(currentAdapters[x]);
+                                    found = true;
+                                }
+                            }
+                            if (!found)
+                            {
+                                notFound.Add(currentAdapters[x]);
+                            }
+                        }
 
-				//Deal with no longer existant adapters
-				for(int x = 0; x < notFound.Count; x++)
-				{
-						notFound[x].SetNoLongerAvailable();
-				}
+                        //Deal with no longer existant adapters
+                        for (int x = 0; x < notFound.Count; x++)
+                        {
+                            notFound[x].SetNoLongerAvailable();
+                        }
 
-				//Adding any new adapters
-				for (int x = 0; x < adList.m_nAdapterCount; x++)
-				{
-						bool found = false;
-						for (int y = 0; y < currentAdapters.Count; y++)
-						{
-								if (adList.m_nAdapterHandle[x] == currentAdapters[y].adapterHandle)
-										found = true;
-						}
-						if (!found)
-						{
-								NetworkAdapter newAdapter = new NetworkAdapter(adList.m_nAdapterHandle[x], Encoding.ASCII.GetString(adList.m_szAdapterNameList, x * 256, 256));
-								tempList.Add(newAdapter);
-						}
-				}
+                        //Adding any new adapters
+                        for (int x = 0; x < adList.m_nAdapterCount; x++)
+                        {
+                            bool found = false;
+                            for (int y = 0; y < currentAdapters.Count; y++)
+                            {
+                                if (adList.m_nAdapterHandle[x] == currentAdapters[y].adapterHandle)
+                                    found = true;
+                            }
+                            if (!found && !Encoding.ASCII.GetString(adList.m_szAdapterNameList, x * 256, 256).Contains("NDIS"))
+                            {
+                                NetworkAdapter newAdapter = new NetworkAdapter(adList.m_nAdapterHandle[x], Encoding.ASCII.GetString(adList.m_szAdapterNameList, x * 256, 256));
+                                tempList.Add(newAdapter);
+                            }
+                        }
 
-				currentAdapters = new List<NetworkAdapter>(tempList);
+                        currentAdapters = new List<NetworkAdapter>(tempList);
+                        succeeded = true;
+                    }
+                    catch { }
+                }
 			}
 
 			public NetworkInterface InterfaceInformation {

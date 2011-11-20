@@ -25,7 +25,7 @@ using Win32APISPace;
 namespace PassThru
 {
 		class Program: System.Object {
-			public static LookupService ls = new LookupService("GeoLiteCity.dat", LookupService.GEOIP_STANDARD);
+			public static LookupService ls = new LookupService(LookupService.GEOIP_STANDARD);
 			public static MainWindow mainWindow;
 			public static TrayIcon tray;
 			static bool Running = true;
@@ -37,16 +37,17 @@ namespace PassThru
 				tray.Dispose();
 			}
 
-			static void Main(string[] args) {
-				tray = new TrayIcon();
-				mainWindow = new MainWindow();
-				foreach (NetworkAdapter ni in NetworkAdapter.GetAllAdapters())
-				{
-						ni.StartProcessing();
-				}
-				Application.Run(mainWindow);
-				while(Running)
-						Thread.Sleep(100);
+			static void Main(string[] args) 
+            {
+                tray = new TrayIcon();
+                mainWindow = new MainWindow();
+                foreach (NetworkAdapter ni in NetworkAdapter.GetAllAdapters())
+                {
+                    ni.StartProcessing();
+                }
+                Application.Run(mainWindow);
+                while (Running)
+                    Thread.Sleep(100);
 			}
 		}
 }

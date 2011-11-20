@@ -4,8 +4,10 @@ using System.Text;
 
 namespace PassThru
 {
-		public class LogEvent: System.Object {
-			public LogEvent(string mo, string me) {
+		public class LogEvent
+        {
+			public LogEvent(string mo, string me) 
+            {
 				Module = mo;
 				Message = me;
 				time = DateTime.Now;
@@ -15,26 +17,30 @@ namespace PassThru
 			public DateTime time;
 		}
 
-		public class LogCenter: System.Object {
+		public class LogCenter
+        {
 			LogCenter() {
 			}
 
 			public delegate void NewLogEvent(LogEvent e);
 			static readonly object padlock = new object();
 
-			public void Push(string Module, string Message) {
+			public void Push(string Module, string Message) 
+            {
 				LogEvent le = new LogEvent(Module, Message);
 				SendLogEvent(le);
 			}
 
-			void SendLogEvent(LogEvent le) {
+			void SendLogEvent(LogEvent le) 
+            {
 				if (PushLogEvent != null)
 				{
 						PushLogEvent(le);
 				}
 			}
 
-			public static LogCenter Instance {
+			public static LogCenter Instance 
+            {
 				get {
 					lock (padlock)
 					{
