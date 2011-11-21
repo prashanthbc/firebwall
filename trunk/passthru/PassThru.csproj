@@ -59,7 +59,7 @@
     <StartupObject>PassThru.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\Icon1.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\HoneyPorts.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -74,6 +74,12 @@
     </Compile>
     <Compile Include="AdapterControl.Designer.cs">
       <DependentUpon>AdapterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AdapterDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AdapterDisplay.Designer.cs">
+      <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
@@ -134,6 +140,9 @@
     <EmbeddedResource Include="AdapterControl.resx">
       <DependentUpon>AdapterControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AdapterDisplay.resx">
+      <DependentUpon>AdapterDisplay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -146,13 +155,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Icon1.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\stop.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\GeoLiteCity.dat" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\HoneyPorts.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

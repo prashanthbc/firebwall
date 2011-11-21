@@ -59,12 +59,5 @@ namespace PassThru.Properties {
                 resourceCulture = value;
             }
         }
-        
-        public static System.Drawing.Icon firebwallIcon {
-            get {
-                object obj = ResourceManager.GetObject("firebwallIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
     }
 }

@@ -34,28 +34,33 @@ namespace PassThru
 				AddLogEvent(e);
 			}
 
-			private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) {
+			private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) 
+            {
 				if (e.CloseReason == CloseReason.UserClosing)
 				{
-						this.Visible = false;
-						e.Cancel = true;
+					this.Visible = false;
+					e.Cancel = true;
+                    ac.Kill();
 				}
 			}
+
+            //RuleEditor re;
+            AdapterControl ac;
 
 			private void MainWindow_Load(object sender, EventArgs e) 
             {
                 System.Reflection.Assembly target = System.Reflection.Assembly.GetExecutingAssembly();
-                this.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.stop.ico"));
+                this.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.HoneyPorts.ico"));
 				LogCenter.Instance.PushLogEvent += new LogCenter.NewLogEvent(Instance_PushLogEvent);
 				//RuleEditor re = new RuleEditor();
 				//re.Dock = DockStyle.Fill;
 				//tabPage2.Controls.Add(re);
 
-                RuleEditor re = new RuleEditor(null);
-                re.Dock = DockStyle.Fill;
-                tabPage2.Controls.Add(re);
+                //re = new RuleEditor(null);
+                //re.Dock = DockStyle.Fill;
+                //tabPage2.Controls.Add(re);
 
-				AdapterControl ac = new AdapterControl();
+				ac = new AdapterControl();
 				ac.Dock = DockStyle.Fill;
 				tabPage3.Controls.Add(ac);
 			}

@@ -10,14 +10,16 @@ namespace PassThru
 {
 		public partial class RuleEditor: UserControl 
         {
-			public RuleEditor(string pointer) 
+            public RuleEditor(BasicFirewall basicFirewall)
             {
-				this.pointer = pointer;
-				InitializeComponent();
-			}
+                this.basicFirewall = basicFirewall;
+                rules = new List<BasicFirewall.Rule>(basicFirewall.rules);
+                InitializeComponent();
+            }
 			string pointer = "";
 
             List<BasicFirewall.Rule> rules = new List<BasicFirewall.Rule>();
+            private BasicFirewall basicFirewall;
 
 			private void RuleEditor_Load(object sender, EventArgs e) 
             {
@@ -31,7 +33,7 @@ namespace PassThru
 				udpDoNotNotifyIn.Items.Clear();
 				udpDoNotNotifyOut.Items.Clear();
 
-				rules = RuleUpdater.Instance.GetRules(pointer);
+                rules = new List<BasicFirewall.Rule>(basicFirewall.rules);
 				foreach (BasicFirewall.Rule rule in rules)
 				{
 						if (rule.transport == Protocol.TCP)
@@ -73,11 +75,13 @@ namespace PassThru
 				}
 			}
 
-			private void buttonApply_Click(object sender, EventArgs e) {
-				RuleUpdater.Instance.UpdateRules(pointer, rules);
+			private void buttonApply_Click(object sender, EventArgs e) 
+            {
+                this.basicFirewall.InstanceGetRuleUpdates(rules);
 			}
 
-			private void tcpDoNotNotifyInputIn_KeyUp(object sender, KeyEventArgs e) {
+			private void tcpDoNotNotifyInputIn_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = tcpDoNotNotifyInputIn.Text;

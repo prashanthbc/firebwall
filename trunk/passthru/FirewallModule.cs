@@ -6,7 +6,7 @@ using System.IO;
 namespace PassThru
 {
 	[Flags]
-	enum PacketMainReturnType
+	public enum PacketMainReturnType
 	{
 		Error,          //Reports an error in the packet processing
 		Drop,           //Drops the packet
@@ -15,7 +15,7 @@ namespace PassThru
 		Log	            //Logs the packet
 	}
 
-	class PacketMainReturn
+	public class PacketMainReturn
     {
 		/// <summary>
 		/// Creates a PacketMainReturn with the basic unknown error message
@@ -39,13 +39,13 @@ namespace PassThru
 		public PacketMainReturnType returnType;
 	}
 
-	enum ModuleErrorType
+	public enum ModuleErrorType
 	{
 		Success,        //No error
 		UnknownError    //I'm not sure what type of errors it'll run into yet
 	}
 
-	class ModuleError
+	public class ModuleError
     {
 		public byte[] errorBinary = null;
 		public string errorMessage = null;
@@ -56,15 +56,20 @@ namespace PassThru
 	/// <summary>
 	/// An abstract class for the firewall modules, making input and output uniform
 	/// </summary>
-	abstract class FirewallModule
+	public abstract class FirewallModule
     {
 		public FirewallModule(NetworkAdapter adapter) 
         {
 			this.adapter = adapter;
 		}
 		public NetworkAdapter adapter = null;
-		public System.Windows.Forms.Control uiControl = null;
-		string moduleName = null;
+		public System.Windows.Forms.UserControl uiControl = null;
+		public string moduleName = null;
+
+        public virtual System.Windows.Forms.UserControl GetControl()
+        {
+            return null;
+        }
 
 		/// <summary>
 		/// Ran after the module is loaded, to prime it for processing if required
@@ -104,7 +109,7 @@ namespace PassThru
 		public abstract PacketMainReturn interiorMain(Packet in_packet);
 	}
 
-	class Quad
+	public class Quad
     {
 		public IPAddress dstIP = null;
 		public int dstPort = -1;
@@ -123,10 +128,11 @@ namespace PassThru
 		}
 	}
 
-	class BasicFirewall: FirewallModule 
+	public class BasicFirewall: FirewallModule 
     {
 		public BasicFirewall(NetworkAdapter adapter):base(adapter) 
         {
+            moduleName = "Basic Firewall";
 		}
 
 		public enum PacketStatus
@@ -382,11 +388,11 @@ namespace PassThru
 		}
 		PcapFileWriter file;
 		readonly object padlock = new object();
-        List<Rule> rules = new List<Rule>();
+        public List<Rule> rules = new List<Rule>();
 
 		public override ModuleError ModuleStart() 
         {
-			RuleUpdater.Instance.GetRuleUpdates +=new RuleUpdater.GR(InstanceGetRuleUpdates);
+			//RuleUpdater.Instance.GetRuleUpdates +=new RuleUpdater.GR(InstanceGetRuleUpdates);
             string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             folder = folder + Path.DirectorySeparatorChar + "firebwall";
             if(!Directory.Exists(folder))
@@ -396,22 +402,29 @@ namespace PassThru
 
 			lock (padlock)
 			{
-				if (File.Exists(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf"))
-				{
-					string[] lines = File.ReadAllLines(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf");
-					foreach (string line in lines)
-					{
-						rules.Add(new Rule(line));
-					}
-				}
+                if (File.Exists(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf"))
+                {
+                    string[] lines = File.ReadAllLines(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf");
+                    foreach (string line in lines)
+                    {
+                        rules.Add(new Rule(line));
+                    }
+                }
+                else
+                {
+                    rules.Add(new Rule("1:TCP:-1;-1;-1;-1;:-1:True:True:No Incoming TCP Connections:::BLOCKED"));
+                }
 			}
-
-			RuleUpdater.Instance.SetRules(adapter.Pointer, rules);
 
 			ModuleError me = new ModuleError();
 			me.errorType = ModuleErrorType.Success;
 			return me;
 		}
+
+        public override System.Windows.Forms.UserControl GetControl()
+        {
+            return new RuleEditor(this){Dock = System.Windows.Forms.DockStyle.Fill};
+        }
 
 		public override ModuleError ModuleStop() 
         {
@@ -421,11 +434,11 @@ namespace PassThru
                 string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 folder = folder + Path.DirectorySeparatorChar + "firebwall";
                 if(!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder); 
-                File.Create(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf").Close();
+                    Directory.CreateDirectory(folder);
+                File.Create(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf").Close();
 				foreach (Rule r in rules)
 				{
-                    File.AppendAllText(folder + Path.DirectorySeparatorChar + "BasicFirewallRules.conf", r.ToFileString() + "\r\n");
+                    File.AppendAllText(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf", r.ToFileString() + "\r\n");
 				}
 			}
 			ModuleError me = new ModuleError();
@@ -499,9 +512,8 @@ namespace PassThru
 			return pa;
 		}
 
-		void InstanceGetRuleUpdates(string pointer, List<Rule> r) 
+		public void InstanceGetRuleUpdates(List<Rule> r) 
         {
-			//if (adapter.Pointer != pointer) return;
 			lock (padlock)
 			{
 				rules = new List<Rule>(r);
@@ -526,7 +538,7 @@ namespace PassThru
 		}
 	}
 
-	class EthEncryption: FirewallModule 
+	public class EthEncryption: FirewallModule 
     {
 		public EthEncryption(NetworkAdapter adapter): base(adapter) 
         {
@@ -548,7 +560,7 @@ namespace PassThru
 		}
 	}
 
-	class SimpleAntiARPPoisoning: FirewallModule 
+	public class SimpleAntiARPPoisoning: FirewallModule 
     {
 		public SimpleAntiARPPoisoning(NetworkAdapter adapter): base(adapter) 
         {
@@ -602,7 +614,7 @@ namespace PassThru
 		}
 	}
 
-	class DumpToPcapModule: FirewallModule 
+	public class DumpToPcapModule: FirewallModule 
     {
 		public DumpToPcapModule(NetworkAdapter adapter): base(adapter) {
 		}

@@ -17,7 +17,7 @@ namespace PassThru
 				tray = new NotifyIcon();
 				tray.ContextMenu = cm;
                 Assembly target = Assembly.GetExecutingAssembly();
-                tray.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.Icon1.ico"));
+                tray.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.HoneyPorts.ico"));
 				tray.Visible = true;
 				tray.BalloonTipClosed += new EventHandler(tray_BalloonTipClosed);
 				tray.DoubleClick += new EventHandler(tray_DoubleClick);
