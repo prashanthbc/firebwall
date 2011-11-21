@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace PassThru
 {
@@ -19,8 +20,34 @@ namespace PassThru
 
 		public class LogCenter
         {
-			LogCenter() {
+            static Thread pusher = new Thread(new ThreadStart(PushLoop));
+            public static TrayIcon ti = new TrayIcon();
+
+			LogCenter() 
+            {
+                pusher.Start();
 			}
+
+            public static void Kill()
+            {
+                pusher.Abort();
+            }
+
+            static void PushLoop()
+            {
+                while (true)
+                {
+                    Thread.Sleep(100);
+                    lock (lpadlock)
+                    {
+                        if (logQueue.Count != 0)
+                            SendLogEvent(logQueue.Dequeue());
+                    }
+                }
+            }
+
+            static Queue<LogEvent> logQueue = new Queue<LogEvent>();
+            static object lpadlock = new object();
 
 			public delegate void NewLogEvent(LogEvent e);
 			static readonly object padlock = new object();
@@ -28,14 +55,19 @@ namespace PassThru
 			public void Push(string Module, string Message) 
             {
 				LogEvent le = new LogEvent(Module, Message);
-				SendLogEvent(le);
+                lock (lpadlock)
+                {
+                    logQueue.Enqueue(le);
+                }
+				//SendLogEvent(le);
 			}
 
-			void SendLogEvent(LogEvent le) 
+			static void SendLogEvent(LogEvent le) 
             {
 				if (PushLogEvent != null)
 				{
-						PushLogEvent(le);
+                    ti.AddLine(le.Message);
+					PushLogEvent(le);
 				}
 			}
 
@@ -54,6 +86,6 @@ namespace PassThru
 			}
 			static LogCenter instance = null;
 
-			public event NewLogEvent PushLogEvent;
+			public static event NewLogEvent PushLogEvent;
 		}
 }

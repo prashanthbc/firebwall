@@ -24,22 +24,25 @@ using Win32APISPace;
 
 namespace PassThru
 {
-		class Program: System.Object {
+		class Program: System.Object 
+        {
 			public static LookupService ls = new LookupService(LookupService.GEOIP_STANDARD);
 			public static MainWindow mainWindow;
-			public static TrayIcon tray;
 			static bool Running = true;
 
-			public static void Close(object o, EventArgs ea) {
+			public static void Close(object o, EventArgs ea) 
+            {
 				NetworkAdapter.ShutdownAll();
+                mainWindow.Close();
 				mainWindow.Exit();
 				Running = false;
-				tray.Dispose();
+				LogCenter.ti.Dispose();
+                LogCenter.Kill();
 			}
 
 			static void Main(string[] args) 
-            {
-                tray = new TrayIcon();
+            {                
+                //tray = new TrayIcon();
                 mainWindow = new MainWindow();
                 foreach (NetworkAdapter ni in NetworkAdapter.GetAllAdapters())
                 {

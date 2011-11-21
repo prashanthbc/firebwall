@@ -314,23 +314,79 @@ namespace PassThru
 			isNdisFilterDriverOpen = true;
 		}
 
-		unsafe void ProcessLoop() {
-			// Allocate and initialize packet structures
-			ETH_REQUEST Request = new ETH_REQUEST();
-			INTERMEDIATE_BUFFER PacketBuffer = new INTERMEDIATE_BUFFER();
 
-			IntPtr PacketBufferIntPtr = Marshal.AllocHGlobal(Marshal.SizeOf(PacketBuffer));
+        unsafe void ProcessPacket()
+        {
+            ETH_REQUEST Request = new ETH_REQUEST();
+            INTERMEDIATE_BUFFER PacketBuffer = new INTERMEDIATE_BUFFER();
+
+            IntPtr PacketBufferIntPtr = Marshal.AllocHGlobal(Marshal.SizeOf(PacketBuffer));
+            try
+            {
+                win32api.ZeroMemory(PacketBufferIntPtr, Marshal.SizeOf(PacketBuffer));
+
+                Request.hAdapterHandle = adapterHandle;
+                Request.EthPacket.Buffer = PacketBufferIntPtr;
+
+                if (Ndisapi.ReadPacket(hNdisapi, ref Request))
+                {
+                    PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
+
+                    Packet pkt = new EthPacket(PacketBuffer).MakeNextLayerPacket();
+
+                    if (pkt.Outbound())
+                    {
+                        OutBandwidth.AddBytes(pkt.Length());
+                    }
+                    else
+                    {
+                        InBandwidth.AddBytes(pkt.Length());
+                    }
+
+                    bool drop = false;
+
+                    for (int x = 0; x < modules.Count; x++)
+                    {
+                        FirewallModule fm = modules.GetModule(x);
+                        PacketMainReturn pmr = fm.PacketMain(pkt);
+                        if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
+                        {
+                            LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
+                        }
+                        if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
+                        {
+                            drop = true;
+                            break;
+                        }
+                    }
+
+                    if (!drop)
+                    {
+                        if (PacketBuffer.m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND)
+                            Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
+                        else
+                            Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
+                    }
+                }
+
+            }
+            catch { }
+            Marshal.FreeHGlobal(PacketBufferIntPtr);
+        }
+
+		unsafe void ProcessLoop() 
+        {
+			// Allocate and initialize packet structures
+            ETH_REQUEST Request = new ETH_REQUEST();
+            INTERMEDIATE_BUFFER PacketBuffer = new INTERMEDIATE_BUFFER();
+
+            IntPtr PacketBufferIntPtr = Marshal.AllocHGlobal(Marshal.SizeOf(PacketBuffer));
 			try
 			{
-					win32api.ZeroMemory(PacketBufferIntPtr, Marshal.SizeOf(PacketBuffer));
+                win32api.ZeroMemory(PacketBufferIntPtr, Marshal.SizeOf(PacketBuffer));
 
-					Request.hAdapterHandle = adapterHandle;
-					Request.EthPacket.Buffer = PacketBufferIntPtr;
-
-					ETHER_HEADER* pEthHeader = null;
-					IPHeader* pIpHeader = null;
-					TcpHeader* pTcpHeader = null;
-					UdpHeader* pUdpHeader = null;
+                Request.hAdapterHandle = adapterHandle;
+                Request.EthPacket.Buffer = PacketBufferIntPtr;
 
 					//Static and test modules
 					BasicFirewall tfm = new BasicFirewall(this);
@@ -349,55 +405,55 @@ namespace PassThru
 					while (true)
 					{
 							hEvent.WaitOne();
+                            //new Thread(new ThreadStart(ProcessPacket)).Start();
+                            while (Ndisapi.ReadPacket(hNdisapi, ref Request))
+                            {
 
-							while (Ndisapi.ReadPacket(hNdisapi, ref Request))
-							{
+                                PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
 
-									PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
+                                Packet pkt = new EthPacket(PacketBuffer).MakeNextLayerPacket();
 
-									Packet pkt = new EthPacket(PacketBuffer).MakeNextLayerPacket();
+                                if (pkt.Outbound())
+                                {
+                                    OutBandwidth.AddBytes(pkt.Length());
+                                }
+                                else
+                                {
+                                    InBandwidth.AddBytes(pkt.Length());
+                                }
 
-                                    if (pkt.Outbound())
+                                bool drop = false;
+
+                                for (int x = 0; x < modules.Count; x++)
+                                {
+                                    FirewallModule fm = modules.GetModule(x);
+                                    PacketMainReturn pmr = fm.PacketMain(pkt);
+                                    if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
                                     {
-                                        OutBandwidth.AddBytes(pkt.Length());
+                                        LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
                                     }
+                                    if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
+                                    {
+                                        drop = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!drop)
+                                {
+                                    if (PacketBuffer.m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND)
+                                        Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
                                     else
-                                    {
-                                        InBandwidth.AddBytes(pkt.Length());
-                                    }
-
-									bool drop = false;
-
-									for (int x = 0; x < modules.Count; x++)
-									{
-											FirewallModule fm = modules.GetModule(x);
-											PacketMainReturn pmr = fm.PacketMain(pkt);
-											if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
-											{
-													LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
-											}
-											if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
-											{
-													drop = true;
-													break;
-											}
-									}
-
-									if (!drop)
-									{
-											if (PacketBuffer.m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND)
-													Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
-											else
-													Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
-									}
-							}
+                                        Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
+                                }
+                            }
 
 							hEvent.Reset();
 					}
 			}
 			catch (ThreadAbortException tae)
 			{
-					Marshal.FreeHGlobal(PacketBufferIntPtr);
+                Marshal.FreeHGlobal(PacketBufferIntPtr);
 			}
 		}
 

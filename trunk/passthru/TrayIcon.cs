@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace PassThru
 {
-		class TrayIcon
+		public class TrayIcon
         {
 			public TrayIcon() 
             {                

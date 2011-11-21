@@ -481,18 +481,18 @@ namespace PassThru
 							if (l != null)
 								pmr.logMessage += "\r\nThis IP originates from " + l.city + ", " + l.regionName + ", " + l.countryName;
 						}
-						if (r.Notify && r.Message != null)
-						{
-							string m = r.Message;
-							Location l = null;
-							if (in_packet.Outbound())
-								l = Program.ls.getLocation(((IPPacket)in_packet).DestIP);
-							else
-								l = Program.ls.getLocation(((IPPacket)in_packet).SourceIP);
-							if (l != null)
-								m += "\r\nThis IP originates from " + l.city + ", " + l.regionName + ", " + l.countryName;
-							Program.tray.AddLine(m);
-						}
+                        //if (r.Notify && r.Message != null)
+                        //{
+                        //    string m = r.Message;
+                        //    Location l = null;
+                        //    if (in_packet.Outbound())
+                        //        l = Program.ls.getLocation(((IPPacket)in_packet).DestIP);
+                        //    else
+                        //        l = Program.ls.getLocation(((IPPacket)in_packet).SourceIP);
+                        //    if (l != null)
+                        //        m += "\r\nThis IP originates from " + l.city + ", " + l.regionName + ", " + l.countryName;
+                        //    Program.tray.AddLine(m);
+                        //}
 						return pmr;
 					}
 					else if (status == PacketStatus.ALLOWED)

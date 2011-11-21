@@ -14,11 +14,13 @@ namespace PassThru
         {
             Thread t;
 
+            bool timing = true;
+
             void Timing()
             {
                 try
                 {
-                    while (true)
+                    while (timing)
                     {
                         Thread.Sleep(5000);
                         UpdateAdapterList();
@@ -29,6 +31,7 @@ namespace PassThru
 
             public void Kill()
             {
+                timing = false;
                 t.Abort();
             }
 

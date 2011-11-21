@@ -51,7 +51,7 @@ namespace PassThru
             {
                 System.Reflection.Assembly target = System.Reflection.Assembly.GetExecutingAssembly();
                 this.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.HoneyPorts.ico"));
-				LogCenter.Instance.PushLogEvent += new LogCenter.NewLogEvent(Instance_PushLogEvent);
+				LogCenter.PushLogEvent += new LogCenter.NewLogEvent(Instance_PushLogEvent);
 				//RuleEditor re = new RuleEditor();
 				//re.Dock = DockStyle.Fill;
 				//tabPage2.Controls.Add(re);
