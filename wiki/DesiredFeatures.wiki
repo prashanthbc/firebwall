@@ -1,0 +1,15 @@
+#summary The features desired to be completed for each version
+
+= Introduction =
+
+Here is a list of features and changes we'd like to make before each version
+
+
+= 0.4 =
+
+  * Fix small issues with the installer
+  * Improve ARP Poisoning Protection
+  * Improve Documentation
+  * Implement iptables like rules, that priority can be changed
+    * Rule sets, and import/export rules
+  * ICMP filtering(I don't know why I did't do this before)
