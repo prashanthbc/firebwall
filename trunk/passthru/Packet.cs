@@ -8,32 +8,39 @@ using System.Net;
 
 namespace PassThru
 {
-		public enum Protocol
-		{
-				EEth,
-				Ethernet,
-				IP,
-				ARP,
-				TCP,
-				UDP,
-				ICMP,
-				DNS,
-				DHCP
-		}
+    /// <summary>
+    /// Different protocols that are supported or that will be
+    /// </summary>
+	public enum Protocol
+	{
+		EEth,
+		Ethernet,
+		IP,
+		ARP,
+		TCP,
+		UDP,
+		ICMP,
+		DNS,
+		DHCP
+	}
 
-		public interface Packet {
-			bool ContainsLayer(Protocol layer);
+    /// <summary>
+    /// Interface for a network Packet
+    /// </summary>
+	public interface Packet 
+    {
+		bool ContainsLayer(Protocol layer);
 
-			byte[] Data();
+		byte[] Data();
 
-			Protocol GetHighestLayer();
+		Protocol GetHighestLayer();
 
-			uint Length();
+		uint Length();
 
-			Packet MakeNextLayerPacket();
+		Packet MakeNextLayerPacket();
 
-			bool Outbound();
-		}
+		bool Outbound();
+	}
 
 		public class EthPacket: System.Object, Packet {
 			public EthPacket(INTERMEDIATE_BUFFER in_packet) {

@@ -10,17 +10,25 @@ namespace PassThru
 {
 		public partial class RuleEditor: UserControl 
         {
+            /// <summary>
+            /// Loads the BasicFirewall module it is controlling
+            /// </summary>
+            /// <param name="basicFirewall"></param>
             public RuleEditor(BasicFirewall basicFirewall)
             {
                 this.basicFirewall = basicFirewall;
                 rules = new List<BasicFirewall.Rule>(basicFirewall.rules);
                 InitializeComponent();
             }
-			string pointer = "";
 
             List<BasicFirewall.Rule> rules = new List<BasicFirewall.Rule>();
             private BasicFirewall basicFirewall;
 
+            /// <summary>
+            /// Loads the current rules into the gui
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
 			private void RuleEditor_Load(object sender, EventArgs e) 
             {
 				tcpWhiteListIn.Items.Clear();
@@ -75,51 +83,67 @@ namespace PassThru
 				}
 			}
 
+            /// <summary>
+            /// Updates the rules in the module
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
 			private void buttonApply_Click(object sender, EventArgs e) 
             {
                 this.basicFirewall.InstanceGetRuleUpdates(rules);
 			}
 
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
 			private void tcpDoNotNotifyInputIn_KeyUp(object sender, KeyEventArgs e) 
             {
 				if (e.KeyCode == Keys.Enter)
 				{
-						string input = tcpDoNotNotifyInputIn.Text;
-						tcpDoNotNotifyInputIn.Text = "";
-						int port = 0;
-						if (int.TryParse(input, out port))
+					string input = tcpDoNotNotifyInputIn.Text;
+					tcpDoNotNotifyInputIn.Text = "";
+					int port = 0;
+					if (int.TryParse(input, out port))
+					{
+						BasicFirewall.Rule found = null;
+						BasicFirewall.Rule lastTCP = null;
+						foreach (BasicFirewall.Rule r in rules)
 						{
-								BasicFirewall.Rule found = null;
-								BasicFirewall.Rule lastTCP = null;
-								foreach (BasicFirewall.Rule r in rules)
+							if (r.transport == Protocol.TCP && (r.Direction & 0x1) == 0x1)
+							{
+								if (r.Port == port)
 								{
-										if (r.transport == Protocol.TCP && (r.Direction & 0x1) == 0x1)
-										{
-												if (r.Port == port)
-												{
-														found = r;
-														r.Notify = false;
-														tcpDoNotNotifyIn.Items.Remove(port);
-												}
-												else if (r.doNotNotifyIncoming.Contains(port))
-												{
-														r.doNotNotifyIncoming.Remove(port);
-														tcpDoNotNotifyIn.Items.Remove(port);
-														found = r;
-												}
-												lastTCP = r;
-										}
+									found = r;
+									r.Notify = false;
+									tcpDoNotNotifyIn.Items.Remove(port);
 								}
-								if (found == null)
+								else if (r.doNotNotifyIncoming.Contains(port))
 								{
-										lastTCP.doNotNotifyIncoming.Add(port);
-										tcpDoNotNotifyIn.Items.Add(port);
+									r.doNotNotifyIncoming.Remove(port);
+									tcpDoNotNotifyIn.Items.Remove(port);
+									found = r;
 								}
+								lastTCP = r;
+							}
 						}
+						if (found == null)
+						{
+							lastTCP.doNotNotifyIncoming.Add(port);
+							tcpDoNotNotifyIn.Items.Add(port);
+						}
+					}
 				}
 			}
 
-			private void tcpDoNotNotifyInputOut_KeyUp(object sender, KeyEventArgs e) {
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+			private void tcpDoNotNotifyInputOut_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = tcpDoNotNotifyInputOut.Text;
@@ -157,7 +181,13 @@ namespace PassThru
 				}
 			}
 
-			private void tcpWhiteListInputIn_KeyUp(object sender, KeyEventArgs e) {
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+			private void tcpWhiteListInputIn_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = tcpWhiteListInputIn.Text;
@@ -191,7 +221,13 @@ namespace PassThru
 				}
 			}
 
-			private void tcpWhiteListInputOut_KeyUp(object sender, KeyEventArgs e) {
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+			private void tcpWhiteListInputOut_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = tcpWhiteListInputOut.Text;
@@ -225,7 +261,13 @@ namespace PassThru
 				}
 			}
 
-			private void udpDoNotNotifyInputIn_KeyUp(object sender, KeyEventArgs e) {
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+			private void udpDoNotNotifyInputIn_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = udpDoNotNotifyInputIn.Text;
@@ -263,7 +305,13 @@ namespace PassThru
 				}
 			}
 
-			private void udpDoNotNotifyInputOut_KeyUp(object sender, KeyEventArgs e) {
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+			private void udpDoNotNotifyInputOut_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = udpDoNotNotifyInputOut.Text;
@@ -301,7 +349,13 @@ namespace PassThru
 				}
 			}
 
-			private void udpWhiteListInputIn_KeyUp(object sender, KeyEventArgs e) {
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+			private void udpWhiteListInputIn_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = udpWhiteListInputIn.Text;
@@ -335,7 +389,13 @@ namespace PassThru
 				}
 			}
 
-			private void udpWhiteListInputOut_KeyUp(object sender, KeyEventArgs e) {
+            /// <summary>
+            /// Adds or removes port from this rule area
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+			private void udpWhiteListInputOut_KeyUp(object sender, KeyEventArgs e) 
+            {
 				if (e.KeyCode == Keys.Enter)
 				{
 						string input = udpWhiteListInputOut.Text;

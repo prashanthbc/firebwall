@@ -30,6 +30,11 @@ namespace PassThru
 			public static MainWindow mainWindow;
 			static bool Running = true;
 
+            /// <summary>
+            /// Makes sure to close everything properly as the whole thing closes
+            /// </summary>
+            /// <param name="o"></param>
+            /// <param name="ea"></param>
 			public static void Close(object o, EventArgs ea) 
             {
 				NetworkAdapter.ShutdownAll();
@@ -40,6 +45,10 @@ namespace PassThru
                 LogCenter.Kill();
 			}
 
+            /// <summary>
+            /// Entry point for the application
+            /// </summary>
+            /// <param name="args"></param>
 			static void Main(string[] args) 
             {                
                 //tray = new TrayIcon();

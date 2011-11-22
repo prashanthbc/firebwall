@@ -115,7 +115,6 @@
     <Compile Include="RuleEditor.Designer.cs">
       <DependentUpon>RuleEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="RuleUpdater.cs" />
     <Compile Include="TrayIcon.cs" />
     <Compile Include="win32api.cs" />
   </ItemGroup>
