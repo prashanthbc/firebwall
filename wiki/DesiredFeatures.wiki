@@ -1,7 +1,5 @@
 #summary The features desired to be completed for each version
 
-= Introduction =
-
 Here is a list of features and changes we'd like to make before each version
 
 
