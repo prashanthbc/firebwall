@@ -81,6 +81,12 @@
     <Compile Include="AdapterDisplay.Designer.cs">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </Compile>
+    <Compile Include="ArpPoisoningProtection.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ArpPoisoningProtection.Designer.cs">
+      <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
     <Compile Include="FirewallModule.cs" />
@@ -141,6 +147,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AdapterDisplay.resx">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ArpPoisoningProtection.resx">
+      <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>

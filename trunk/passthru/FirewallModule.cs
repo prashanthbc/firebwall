@@ -565,6 +565,7 @@ namespace PassThru
     {
 		public SimpleAntiARPPoisoning(NetworkAdapter adapter): base(adapter) 
         {
+            this.moduleName = "Arp Poisoning Protection";
 		}
 
 		public override ModuleError ModuleStart() 
@@ -584,6 +585,30 @@ namespace PassThru
         List<int> requestedIPs = new List<int>();
         Dictionary<int, PhysicalAddress> arpCache = new Dictionary<int, PhysicalAddress>();
 
+        public event System.Threading.ThreadStart UpdatedArpCache;
+        object padlock = new object();
+
+        public Dictionary<int, PhysicalAddress> GetCache()
+        {
+            lock (padlock)
+            {
+                return new Dictionary<int, PhysicalAddress>(arpCache);
+            }
+        }
+
+        public void UpdateCache(Dictionary<int, PhysicalAddress> cache)
+        {
+            lock (padlock)
+            {
+                arpCache = new Dictionary<int, PhysicalAddress>(cache);
+            }
+        }
+
+        public override System.Windows.Forms.UserControl GetControl()
+        {
+            return new ArpPoisoningProtection(this) { Dock = System.Windows.Forms.DockStyle.Fill };
+        }
+
 		public override PacketMainReturn interiorMain(Packet in_packet) 
         {
 			if (in_packet.GetHighestLayer() == Protocol.ARP)
@@ -598,24 +623,30 @@ namespace PassThru
 				{
 					int ip = ((ARPPacket)in_packet).ASenderIP.GetHashCode();
 					if (requestedIPs.Contains(ip))
-					{						
-                        if (arpCache.ContainsKey(ip))
+					{
+                        lock (padlock)
                         {
-                            if (!arpCache[ip].Equals(((ARPPacket)in_packet).ASenderMac))
+                            if (arpCache.ContainsKey(ip))
                             {
-                                PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
-                                pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
-                                pmr.logMessage = "ARP Response from " + ((ARPPacket)in_packet).ASenderMac.ToString() + " for " + ((ARPPacket)in_packet).ASenderIP.ToString() + " does not match the ARP cache.";
-                                return pmr;
+                                if (!arpCache[ip].Equals(((ARPPacket)in_packet).ASenderMac))
+                                {
+                                    PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
+                                    pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
+                                    pmr.logMessage = "ARP Response from " + ((ARPPacket)in_packet).ASenderMac.ToString() + " for " + ((ARPPacket)in_packet).ASenderIP.ToString() + " does not match the ARP cache.";
+                                    return pmr;
+                                }
+                                else
+                                {
+                                    requestedIPs.Remove(ip);
+                                }
                             }
                             else
                             {
+                                arpCache[ip] = ((ARPPacket)in_packet).ASenderMac;
+                                if (UpdatedArpCache != null)
+                                    UpdatedArpCache();
                                 requestedIPs.Remove(ip);
                             }
-                        }
-                        else
-                        {
-                            arpCache[ip] = ((ARPPacket)in_packet).ASenderMac;
                         }
 					}
 					else
