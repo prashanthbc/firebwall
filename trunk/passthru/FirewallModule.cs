@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.IO;
 
 namespace PassThru
@@ -581,6 +582,7 @@ namespace PassThru
 		}
 
         List<int> requestedIPs = new List<int>();
+        Dictionary<int, PhysicalAddress> arpCache = new Dictionary<int, PhysicalAddress>();
 
 		public override PacketMainReturn interiorMain(Packet in_packet) 
         {
@@ -596,8 +598,25 @@ namespace PassThru
 				{
 					int ip = ((ARPPacket)in_packet).ASenderIP.GetHashCode();
 					if (requestedIPs.Contains(ip))
-					{
-						requestedIPs.Remove(ip);
+					{						
+                        if (arpCache.ContainsKey(ip))
+                        {
+                            if (!arpCache[ip].Equals(((ARPPacket)in_packet).ASenderMac))
+                            {
+                                PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
+                                pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
+                                pmr.logMessage = "ARP Response from " + ((ARPPacket)in_packet).ASenderMac.ToString() + " for " + ((ARPPacket)in_packet).ASenderIP.ToString() + " does not match the ARP cache.";
+                                return pmr;
+                            }
+                            else
+                            {
+                                requestedIPs.Remove(ip);
+                            }
+                        }
+                        else
+                        {
+                            arpCache[ip] = ((ARPPacket)in_packet).ASenderMac;
+                        }
 					}
 					else
 					{
