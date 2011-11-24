@@ -583,24 +583,24 @@ namespace PassThru
 		}
 
         List<int> requestedIPs = new List<int>();
-        Dictionary<int, PhysicalAddress> arpCache = new Dictionary<int, PhysicalAddress>();
+        Dictionary<IPAddress, PhysicalAddress> arpCache = new Dictionary<IPAddress, PhysicalAddress>();
 
         public event System.Threading.ThreadStart UpdatedArpCache;
         object padlock = new object();
 
-        public Dictionary<int, PhysicalAddress> GetCache()
+        public Dictionary<IPAddress, PhysicalAddress> GetCache()
         {
             lock (padlock)
             {
-                return new Dictionary<int, PhysicalAddress>(arpCache);
+                return new Dictionary<IPAddress, PhysicalAddress>(arpCache);
             }
         }
 
-        public void UpdateCache(Dictionary<int, PhysicalAddress> cache)
+        public void UpdateCache(Dictionary<IPAddress, PhysicalAddress> cache)
         {
             lock (padlock)
             {
-                arpCache = new Dictionary<int, PhysicalAddress>(cache);
+                arpCache = new Dictionary<IPAddress, PhysicalAddress>(cache);
             }
         }
 
@@ -626,9 +626,9 @@ namespace PassThru
 					{
                         lock (padlock)
                         {
-                            if (arpCache.ContainsKey(ip))
+                            if (arpCache.ContainsKey(((ARPPacket)in_packet).ASenderIP))
                             {
-                                if (!arpCache[ip].Equals(((ARPPacket)in_packet).ASenderMac))
+                                if (!arpCache[((ARPPacket)in_packet).ASenderIP].Equals(((ARPPacket)in_packet).ASenderMac))
                                 {
                                     PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                     pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
@@ -642,7 +642,7 @@ namespace PassThru
                             }
                             else
                             {
-                                arpCache[ip] = ((ARPPacket)in_packet).ASenderMac;
+                                arpCache[((ARPPacket)in_packet).ASenderIP] = ((ARPPacket)in_packet).ASenderMac;
                                 if (UpdatedArpCache != null)
                                     UpdatedArpCache();
                                 requestedIPs.Remove(ip);

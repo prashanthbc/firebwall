@@ -13,7 +13,7 @@ namespace PassThru
     public partial class ArpPoisoningProtection : UserControl
     {
         SimpleAntiARPPoisoning saap;
-        Dictionary<int, PhysicalAddress> cache = new Dictionary<int, PhysicalAddress>();
+        Dictionary<IPAddress, PhysicalAddress> cache = new Dictionary<IPAddress, PhysicalAddress>();
 
         public ArpPoisoningProtection(SimpleAntiARPPoisoning saap)
         {
@@ -35,9 +35,9 @@ namespace PassThru
             else
             {
                 listBox1.Items.Clear();                
-                foreach (KeyValuePair<int, PhysicalAddress> i in cache)
+                foreach (KeyValuePair<IPAddress, PhysicalAddress> i in cache)
                 {
-                    listBox1.Items.Add(i.Value.ToString() + " -> " + new IPAddress(i.Key).ToString());
+                    listBox1.Items.Add(i.Value.ToString() + " -> " + i.Key.ToString());
                 }
             }
         }
@@ -48,7 +48,7 @@ namespace PassThru
             {
                 string i = (string)listBox1.SelectedItem;
                 IPAddress ip = IPAddress.Parse(i.Split(' ')[2]);
-                cache.Remove(ip.GetHashCode());
+                cache.Remove(ip);
                 saap.UpdateCache(cache);
                 cache = saap.GetCache();
                 saap_UpdatedArpCache();
