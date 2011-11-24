@@ -1,2 +1,7 @@
 #summary Plans for refactoring.
 
+= Packet Structure =
+
+  * Make packet layer's store lengths and ends for relative positioning
+  * Allow for packet value editing through properties
+  * Allow for creating packets from scratch
