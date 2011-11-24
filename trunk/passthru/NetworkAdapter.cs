@@ -403,7 +403,7 @@ namespace PassThru
 					modules.AddModule(saap);
 
                     // ICMP filtering module
-                    ICMPFilter icmpFilter = new ICMPFilter(this);
+                    ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
                     icmpFilter.ModuleStart();
                     modules.AddModule(icmpFilter);
 

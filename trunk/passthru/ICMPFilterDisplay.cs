@@ -15,7 +15,7 @@ namespace PassThru
     public partial class ICMPFilterDisplay : UserControl
     {
         // global filter obj
-        private ICMPFilter filter;
+        private ICMPFilterModule filter;
 
         // table of rule mappings
         // key: type
@@ -23,7 +23,7 @@ namespace PassThru
         private Dictionary<string, List<string>> ruletable;
 
         // constructor initializes the local ICMPFilter object and the UI
-        public ICMPFilterDisplay(ICMPFilter filter)
+        public ICMPFilterDisplay(ICMPFilterModule filter)
         {
             this.filter = filter;
             ruletable = new Dictionary<string, List<string>>(filter.getTable());
@@ -46,9 +46,6 @@ namespace PassThru
             // iterate through codes and add them to the table and hashtable
             foreach ( string s in codes )
             {
-                object[] row = { type, s, getDescription(type, s) };
-                tableDisplay.Rows.Add( row );
-
                 // if that type already exists
                 if (ruletable.ContainsKey(type))
                 {
@@ -71,6 +68,10 @@ namespace PassThru
                     temp.Add(s);
                     ruletable.Add(type, temp);
                 }
+
+                // add to table
+                object[] row = { type, s, getDescription(type, s) };
+                tableDisplay.Rows.Add(row);
             }
             
             // consume input

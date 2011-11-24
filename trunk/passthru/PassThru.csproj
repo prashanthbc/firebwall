@@ -87,9 +87,13 @@
     <Compile Include="ArpPoisoningProtection.Designer.cs">
       <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\BasicFirewallModule.cs" />
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
-    <Compile Include="FirewallModule.cs" />
+    <Compile Include="Modules\DumpToPcapModule.cs" />
+    <Compile Include="Modules\FirewallModule.cs" />
+    <Compile Include="Modules\EthEncryptionModule.cs" />
+    <Compile Include="Modules\ICMPFilterModule.cs" />
     <Compile Include="ICMPFilterDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -127,6 +131,7 @@
     <Compile Include="RuleEditor.Designer.cs">
       <DependentUpon>RuleEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\SimpleARPPoisoningModule.cs" />
     <Compile Include="TrayIcon.cs" />
     <Compile Include="win32api.cs" />
   </ItemGroup>
