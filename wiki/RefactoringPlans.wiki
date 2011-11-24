@@ -17,6 +17,7 @@
   * Disable processing on an adapter
   * Save module order and auto-enable preferences
   * Recognize new adapters and ones removed instead of just grabbing all the current adapters
+  * Better transfer rate computation
 
 = General Configuration = 
 
