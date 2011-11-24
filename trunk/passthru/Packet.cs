@@ -26,6 +26,7 @@ namespace PassThru
 
     /// <summary>
     /// Interface for a network Packet
+    /// Packets are upward processing!
     /// </summary>
 	public interface Packet 
     {
@@ -42,7 +43,7 @@ namespace PassThru
 		bool Outbound();
 	}
 
-		public class EthPacket: System.Object, Packet {
+		public class EthPacket: Packet {
 			public EthPacket(INTERMEDIATE_BUFFER in_packet) {
 				data = in_packet;
 			}
@@ -65,26 +66,27 @@ namespace PassThru
 			}
 
 			public virtual Packet MakeNextLayerPacket() {
-				if (isEETH())
-				{
-						return new EETHPacket(data).MakeNextLayerPacket();
-				}
-				else if (isIP())
-				{
-						return new IPPacket(data).MakeNextLayerPacket();
-				}
-				else if (isARP())
-						return new ARPPacket(data);
-				else
-						return this;
+                if (isEETH())
+                {
+                    return new EETHPacket(data).MakeNextLayerPacket();
+                }
+                else if (isIP())
+                {
+                    return new IPPacket(data).MakeNextLayerPacket();
+                }
+                else if (isARP())
+                    return new ARPPacket(data);
+                else
+                    return this;
 			}
 
 			public bool Outbound() {
 				return (data.m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND);
 			}
 
+            // check Type for 0x0806
 			public bool isARP() {
-				return (data.m_IBuffer[0x0c] == 0x08 && data.m_IBuffer[0x0d] == 0x06);
+                return (data.m_IBuffer[0x0c] == 0x08 && data.m_IBuffer[0x0d] == 0x06);
 			}
 
 			public bool isEETH() {
@@ -111,7 +113,10 @@ namespace PassThru
 				}
 			}
 		}
-
+        
+        /*
+            Ethernet frame packet
+         */
 		public class EETHPacket: EthPacket {
 			public EETHPacket(EthPacket eth): base(eth.data) {
 			}
@@ -135,6 +140,64 @@ namespace PassThru
 			}
 		}
 
+        /*
+            ICMPPacket object
+         */
+        public class ICMPPacket : IPPacket
+        {
+            // accepts intermediate buff, checks if ICMP
+            public ICMPPacket(INTERMEDIATE_BUFFER in_packet)
+                : base(in_packet) 
+            {
+				if (!isICMP())
+						throw new Exception("Not an ICMP packet!");
+			}
+
+            // accepts IPPacket, checks if ICMP
+            public ICMPPacket(IPPacket eth)
+                : base(eth.data)
+            {
+                if (!isICMP())
+                    throw new Exception("Not an ICMP packet!");
+            }
+
+            // return if ICMP; else return to base layer to find layer
+            public override bool ContainsLayer(Protocol layer)
+            {
+                if (layer == Protocol.ICMP)
+                    return true;
+                else
+                    return base.ContainsLayer(layer);
+            }
+
+            // return ICMP (highest)
+            public override Protocol GetHighestLayer()
+            {
+                return Protocol.ICMP;
+            }
+
+            // return this (highest)
+            public override Packet MakeNextLayerPacket()
+            {
+                 return this;
+            }
+
+           // return ICMP code
+            public string getCode()
+            {
+                return (data.m_IBuffer[0x23]).ToString();
+            }
+
+            // return ICMP type
+            public string getType()
+            {
+                return (data.m_IBuffer[0x22]).ToString();
+            }
+        }
+
+        /*
+            ARP object
+         */
 		public class ARPPacket: EthPacket {
 			public ARPPacket(EthPacket eth): base(eth.data) {
 				if (!isARP())
@@ -198,6 +261,9 @@ namespace PassThru
 			}
 		}
 
+        /*
+            IP Packet object
+         */
 		public class IPPacket: EthPacket {
 			public IPPacket(EthPacket eth): base(eth.data) {
 				if (!isIP())
@@ -221,14 +287,16 @@ namespace PassThru
 			}
 
 			public override Packet MakeNextLayerPacket() {
-				if (isTCP())
-				{
-						return new TCPPacket(data).MakeNextLayerPacket();
-				}
-				else if (isUDP())
-						return new UDPPacket(data).MakeNextLayerPacket();
-				else
-						return this;
+                if (isTCP())
+                {
+                    return new TCPPacket(data).MakeNextLayerPacket();
+                }
+                else if (isUDP())
+                    return new UDPPacket(data).MakeNextLayerPacket();
+                else if (isICMP())
+                    return new ICMPPacket(data).MakeNextLayerPacket();
+                else
+                    return this;
 			}
 
 			public bool isTCP() {
@@ -238,6 +306,11 @@ namespace PassThru
 			public bool isUDP() {
 				return (data.m_IBuffer[0x17] == 0x11);
 			}
+
+            public bool isICMP()
+            {
+                return (data.m_IBuffer[0x17] == 0x01);
+            }
 
 			public IPAddress DestIP {
 				get {
@@ -272,6 +345,9 @@ namespace PassThru
 			}
 		}
 
+        /*
+            UDP Packet object
+         */
 		public class UDPPacket: IPPacket {
 			public UDPPacket(INTERMEDIATE_BUFFER in_packet): base(in_packet) {
 				if (!isUDP())
@@ -319,6 +395,9 @@ namespace PassThru
 			}
 		}
 
+        /*
+            DNS Packet object
+         */
 		public class DNSPacket: UDPPacket {
 			public DNSPacket(INTERMEDIATE_BUFFER in_packet): base(in_packet) {
 				if (!isDNS())
@@ -346,6 +425,9 @@ namespace PassThru
 			}
 		}
 
+        /*
+            TCP Packet object
+         */
 		public class TCPPacket: IPPacket {
 			public TCPPacket(INTERMEDIATE_BUFFER in_packet): base(in_packet) {
 				if (!isTCP())

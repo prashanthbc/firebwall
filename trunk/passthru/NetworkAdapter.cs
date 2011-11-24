@@ -391,16 +391,21 @@ namespace PassThru
 					//Static and test modules
 					BasicFirewall tfm = new BasicFirewall(this);
 					tfm.ModuleStart();
-
 					modules.AddModule(tfm);
 
 					//DumpToPcapModule dtpm = new DumpToPcapModule(this);
 					//dtpm.ModuleStart();
 					//modules.Add(dtpm);
 
+                    // ARP poisoning module
 					SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
 					saap.ModuleStart();
 					modules.AddModule(saap);
+
+                    // ICMP filtering module
+                    ICMPFilter icmpFilter = new ICMPFilter(this);
+                    icmpFilter.ModuleStart();
+                    modules.AddModule(icmpFilter);
 
 					while (true)
 					{

@@ -90,6 +90,12 @@
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
     <Compile Include="FirewallModule.cs" />
+    <Compile Include="ICMPFilterDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ICMPFilterDisplay.Designer.cs">
+      <DependentUpon>ICMPFilterDisplay.cs</DependentUpon>
+    </Compile>
     <Compile Include="iphlp.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="LogCenter.cs" />
@@ -147,6 +153,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AdapterDisplay.resx">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ICMPFilterDisplay.resx">
+      <DependentUpon>ICMPFilterDisplay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ArpPoisoningProtection.resx">
       <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
