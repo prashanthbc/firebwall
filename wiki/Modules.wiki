@@ -17,3 +17,12 @@
 == Port Scan Detection ==
 
 == Brute Force Protection ==
+
+== DNS Functions ==
+=== Caching ===
+=== Verify DNS from Multiple Servers ===
+=== Set DNS values in cache ===
+
+== Routing ==
+=== Bridged Adapters ===
+=== NAT ===
