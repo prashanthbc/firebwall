@@ -15,4 +15,3 @@ Here is a list of features and changes we'd like to make before each version
   * Improve Documentation
   * Implement iptables like rules, that priority can be changed
     * Rule sets, and import/export rules
-  * ICMP filtering(I don't know why I did't do this before)
