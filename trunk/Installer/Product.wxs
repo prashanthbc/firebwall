@@ -43,7 +43,7 @@
         <Directory Id="ApplicationProgramsFolder" Name="fireBwall">
           <Component Id="cStartMenufbwallExe" Guid="1691B12D-6C5D-47EA-A07A-67FDA9519156">
             <Shortcut Id="shortcutStartMenufbwallExe" Name="fireBwall"
-                      Target="[APPLICATIONFOLDER]firebwall.exe" WorkingDirectory="APPLICATIONFOLDER"/>
+                      Target="[INSTALLLOCATION]firebwall.exe" WorkingDirectory="APPLICATIONFOLDER"/>
             <RemoveFolder Id="removeApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall"/>
             <RegistryValue Root="HKCU" Key="Software\bwall\firebwall" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
           </Component>

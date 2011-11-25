@@ -612,20 +612,71 @@ namespace PassThru
         /*
             DNS Packet object
          */
-		public class DNSPacket: UDPPacket {
+		public class DNSPacket: UDPPacket 
+        {
+            uint start = 0;
+            uint length = 0;
+
             public DNSPacket(ref INTERMEDIATE_BUFFER in_packet)
                 : base(ref in_packet)
             {
 				if (!isDNS())
-						throw new Exception("Not a DNS packet!");
+					throw new Exception("Not a DNS packet!");
+                start = base.LayerStart() + base.LayerLength();
+                length = Length() - start;
 			}
 
             public DNSPacket(ref UDPPacket eth)
                 : base(ref eth.data)
             {
 				if (!isDNS())
-						throw new Exception("Not a DNS packet!");
+					throw new Exception("Not a DNS packet!");
+                start = base.LayerStart() + base.LayerLength();
+                length = Length() - start;
 			}
+
+            public bool Response
+            {
+                get
+                {
+                    return (data.m_IBuffer[start] & 0x80) == 0x80;
+                }
+                set
+                {
+                    if (value)
+                    {
+                        data.m_IBuffer[start] = (byte)(data.m_IBuffer[start] | 0x80);
+                    }
+                    else
+                    {
+                        if ((data.m_IBuffer[start] & 0x80) == 0x80)
+                            data.m_IBuffer[start] -= 0x80;
+                    }
+                }
+            }
+
+            public ushort QuestionCount
+            {
+                get
+                {
+                    return (ushort)((data.m_IBuffer[start + 2] << 8) + data.m_IBuffer[start + 3]);
+                }
+                set
+                {
+                    data.m_IBuffer[start + 2] = (byte)(value >> 8);
+                    data.m_IBuffer[start + 3] = (byte)(value & 0xff);
+                }
+            }
+
+            public override uint LayerStart()
+            {
+                return start;
+            }
+
+            public override uint LayerLength()
+            {
+                return length;
+            }
 
 			public override bool ContainsLayer(Protocol layer) {
 				if (layer == Protocol.DNS)
