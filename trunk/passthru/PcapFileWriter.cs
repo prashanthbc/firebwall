@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading;
 using System.IO;
 
 namespace PassThru
@@ -21,15 +21,50 @@ namespace PassThru
 			file.Write(0xa1b2c3d4);
 			file.Write((ushort)2);
 			file.Write((ushort)4);
-			file.Write((int)-5);
+			file.Write((int)0);
 			file.Write((uint)0);
 			file.Write((uint)65535);
 			file.Write((uint)1);
-			start = DateTime.Now;
+            referenceTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+			start = DateTime.UtcNow;
+            t = new Thread(new ThreadStart(WriteLoop));
+            t.Start();
 		}
+
+        void WriteLoop()
+        {
+            KeyValuePair<DateTime, byte[]> pkt = new KeyValuePair<DateTime,byte[]>();
+            while (true)
+            {
+                bool toWrite = false;
+                lock (padlock)
+                {
+                    if (packetQueue.Count != 0)
+                    {
+                        pkt = packetQueue.Dequeue();
+                        toWrite = true;
+                    }
+                }
+                if (toWrite)
+                {
+                    file.Write((uint)(pkt.Key - referenceTime).TotalSeconds);
+                    file.Write((uint)(pkt.Key.Millisecond));
+                    file.Write((uint)pkt.Value.Length);
+                    file.Write((uint)pkt.Value.Length);
+                    file.Write(pkt.Value);
+                }
+                Thread.Sleep(100);
+            }
+        }
+
+        Thread t;
 		public BinaryWriter file;
 		public string path;
 		public DateTime start;
+        DateTime referenceTime;
+
+        object padlock = new object();
+        Queue<KeyValuePair<DateTime, byte[]>> packetQueue = new Queue<KeyValuePair<DateTime, byte[]>>();
 
         /// <summary>
         /// Adds a packet to the file
@@ -37,12 +72,10 @@ namespace PassThru
         /// <param name="packet"></param>
 		public void AddPacket(byte[] packet) 
         {
-			DateTime now = DateTime.Now;
-			file.Write((uint)(now.ToFileTime() - start.ToFileTime()));
-			file.Write((uint)(now.Millisecond - start.Millisecond));
-			file.Write((uint)packet.Length);
-			file.Write((uint)packet.Length);
-			file.Write(packet);
+            lock (padlock)
+            {
+                packetQueue.Enqueue(new KeyValuePair<DateTime, byte[]>(DateTime.UtcNow, packet));
+            }
 		}
 
         /// <summary>
@@ -50,6 +83,7 @@ namespace PassThru
         /// </summary>
 		public void Close() 
         {
+            t.Abort();
 			file.Close();
 		}
 	}

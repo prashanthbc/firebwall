@@ -269,19 +269,22 @@ namespace PassThru
                 return PacketStatus.UNDETERMINED;
             }
         }
-        PcapFileWriter file;
+
         readonly object padlock = new object();
         public List<Rule> rules = new List<Rule>();
 
         public override ModuleError ModuleStart()
         {
-            //RuleUpdater.Instance.GetRuleUpdates +=new RuleUpdater.GR(InstanceGetRuleUpdates);
             string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             folder = folder + Path.DirectorySeparatorChar + "firebwall";
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
-            string f = folder + Path.DirectorySeparatorChar + "blocked-" + this.adapter.InterfaceInformation.Name + "-" + PcapCreator.Instance.GetNewDate() + ".pcap";
-            file = new PcapFileWriter(f);
+            folder = folder + Path.DirectorySeparatorChar + "modules";
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            folder = folder + Path.DirectorySeparatorChar + "configs";
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
 
             lock (padlock)
             {
@@ -311,11 +314,16 @@ namespace PassThru
 
         public override ModuleError ModuleStop()
         {
-            file.Close();
             lock (padlock)
             {
                 string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 folder = folder + Path.DirectorySeparatorChar + "firebwall";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = folder + Path.DirectorySeparatorChar + "modules";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = folder + Path.DirectorySeparatorChar + "configs";
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
                 File.Create(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf").Close();
@@ -349,7 +357,6 @@ namespace PassThru
                     {
                         byte[] data = new byte[in_packet.Length()];
                         Buffer.BlockCopy(in_packet.Data(), 0, data, 0, data.Length);
-                        file.AddPacket(data);
                         PacketMainReturn pmr = new PacketMainReturn("Basic Firewall");
                         pmr.returnType = PacketMainReturnType.Drop;
                         if (r.Log && r.Message != null)

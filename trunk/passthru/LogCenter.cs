@@ -37,11 +37,20 @@ namespace PassThru
             {
                 while (true)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
+                    LogEvent[] temp = null;
                     lock (lpadlock)
                     {
                         if (logQueue.Count != 0)
-                            SendLogEvent(logQueue.Dequeue());
+                        {
+                            temp = logQueue.ToArray();
+                            logQueue.Clear();
+                        }
+                    }
+                    if (temp != null)
+                    {
+                        foreach (LogEvent le in temp)
+                            SendLogEvent(le);
                     }
                 }
             }
@@ -73,14 +82,15 @@ namespace PassThru
 
 			public static LogCenter Instance 
             {
-				get {
+				get 
+                {
 					lock (padlock)
 					{
-							if (instance==null)
-							{
-									instance = new LogCenter();
-							}
-							return instance;
+						if (instance==null)
+						{
+								instance = new LogCenter();
+						}
+						return instance;
 					}
 				}
 			}

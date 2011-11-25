@@ -31,7 +31,7 @@ namespace PassThru
 					System.Threading.Thread.Sleep(1);
 			}
 			last = DateTime.Now;
-			return last.Ticks.ToString();
+            return last.Month.ToString() + "-" + last.Day.ToString() + "-" + last.Year.ToString() + "_" + last.Hour.ToString() + "_" + last.Minute.ToString() + "_" + last.Second.ToString();
 		}
 
         /// <summary>

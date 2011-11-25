@@ -259,6 +259,7 @@ namespace PassThru
 		object padlock = new object();
 		bool processing = false;
 		Thread processingThread = null;
+        PcapFileWriter pcaplog;
 		static IntPtr hNdisapi = IntPtr.Zero;
 		static bool isNdisFilterDriverOpen = false;
 		static object staticPadlock = new object();
@@ -280,20 +281,23 @@ namespace PassThru
 			return AdapterStartReturn.NoError;
 		}
 
-		public void StopProcessing() {
+		public void StopProcessing() 
+        {
 			if (processingThread != null)
-			{
-					processingThread.Abort();
-					processing = false;
-					hEvent.Close();
-					for (int x = 0; x < modules.Count; x++)
-					{
-							modules.GetModule(x).ModuleStop();
-					}
+			{                
+				processingThread.Abort();
+				processing = false;
+				hEvent.Close();
+				for (int x = 0; x < modules.Count; x++)
+				{
+					modules.GetModule(x).ModuleStop();
+				}
+                pcaplog.Close();
 			}
 		}
 
-		static void CloseAllInterfaces() {
+		static void CloseAllInterfaces() 
+        {
 			foreach (NetworkAdapter na in currentAdapters)
 			{
 					na.StopProcessing();
@@ -329,82 +333,93 @@ namespace PassThru
                 Request.hAdapterHandle = adapterHandle;
                 Request.EthPacket.Buffer = PacketBufferIntPtr;
 
-					//Static and test modules
-					BasicFirewall tfm = new BasicFirewall(this);
-					tfm.ModuleStart();
-					modules.AddModule(tfm);
+				//Static and test modules
+				BasicFirewall tfm = new BasicFirewall(this);
+				tfm.ModuleStart();
+				modules.AddModule(tfm);
 
-					//DumpToPcapModule dtpm = new DumpToPcapModule(this);
-					//dtpm.ModuleStart();
-					//modules.Add(dtpm);
+				//DumpToPcapModule dtpm = new DumpToPcapModule(this);
+				//dtpm.ModuleStart();
+				//modules.Add(dtpm);
 
-                    // ARP poisoning module
-					SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
-					saap.ModuleStart();
-					modules.AddModule(saap);
+                // ARP poisoning module
+				SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
+				saap.ModuleStart();
+				modules.AddModule(saap);
 
-                    // ICMP filtering module
-                    ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
-                    icmpFilter.ModuleStart();
-                    modules.AddModule(icmpFilter);
+                // ICMP filtering module
+                ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
+                icmpFilter.ModuleStart();
+                modules.AddModule(icmpFilter);
 
-					while (true)
-					{
-							hEvent.WaitOne();
-                            //new Thread(new ThreadStart(ProcessPacket)).Start();
-                            while (Ndisapi.ReadPacket(hNdisapi, ref Request))
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                folder = folder + System.IO.Path.DirectorySeparatorChar + "firebwall";
+                if (!System.IO.Directory.Exists(folder))
+                    System.IO.Directory.CreateDirectory(folder);
+                folder = folder + System.IO.Path.DirectorySeparatorChar + "pcapLogs";
+                if (!System.IO.Directory.Exists(folder))
+                    System.IO.Directory.CreateDirectory(folder);
+                string f = folder + System.IO.Path.DirectorySeparatorChar + "blocked-" + this.InterfaceInformation.Name + "-" + PcapCreator.Instance.GetNewDate() + ".pcap";
+                pcaplog = new PcapFileWriter(f);
+
+				while (true)
+				{
+					hEvent.WaitOne();
+                    while (Ndisapi.ReadPacket(hNdisapi, ref Request))
+                    {
+
+                        PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
+
+                        Packet pkt = new EthPacket(ref PacketBuffer).MakeNextLayerPacket();
+
+                        if (pkt.Outbound)
+                        {
+                            OutBandwidth.AddBytes(pkt.Length());
+                        }
+                        else
+                        {
+                            InBandwidth.AddBytes(pkt.Length());
+                        }
+
+                        bool drop = false;
+                        bool edit = false;
+
+                        for (int x = 0; x < modules.Count; x++)
+                        {
+                            FirewallModule fm = modules.GetModule(x);
+                            PacketMainReturn pmr = fm.PacketMain(ref pkt);
+                            if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
                             {
-
-                                PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
-
-                                Packet pkt = new EthPacket(ref PacketBuffer).MakeNextLayerPacket();
-
-                                if (pkt.Outbound)
-                                {
-                                    OutBandwidth.AddBytes(pkt.Length());
-                                }
-                                else
-                                {
-                                    InBandwidth.AddBytes(pkt.Length());
-                                }
-
-                                bool drop = false;
-                                bool edit = false;
-
-                                for (int x = 0; x < modules.Count; x++)
-                                {
-                                    FirewallModule fm = modules.GetModule(x);
-                                    PacketMainReturn pmr = fm.PacketMain(ref pkt);
-                                    if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
-                                    {
-                                        LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
-                                    }
-                                    if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
-                                    {
-                                        drop = true;
-                                        break;
-                                    }
-                                    if ((pmr.returnType & PacketMainReturnType.Edited) == PacketMainReturnType.Edited)
-                                    {
-                                        edit = true;
-                                    }
-                                }
-
-                                if (!drop)
-                                {
-                                    if (edit)
-                                    {
-                                        Marshal.StructureToPtr(PacketBuffer, PacketBufferIntPtr, false);
-                                    }
-                                    if (pkt.Outbound)
-                                        Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
-                                    else
-                                        Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
-                                }
+                                LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
                             }
+                            if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
+                            {
+                                drop = true;
+                                break;
+                            }
+                            if ((pmr.returnType & PacketMainReturnType.Edited) == PacketMainReturnType.Edited)
+                            {
+                                edit = true;
+                            }
+                        }
 
-							hEvent.Reset();
-					}
+                        if (!drop)
+                        {
+                            if (edit)
+                            {
+                                Marshal.StructureToPtr(PacketBuffer, PacketBufferIntPtr, false);
+                            }
+                            if (pkt.Outbound)
+                                Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
+                            else
+                                Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
+                        }
+                        else
+                            pcaplog.AddPacket(pkt.Data());
+                    }
+
+					hEvent.Reset();
+				}
 			}
 			catch (ThreadAbortException tae)
 			{

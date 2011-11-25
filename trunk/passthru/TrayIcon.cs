@@ -40,19 +40,22 @@ namespace PassThru
         /// <param name="line"></param>
 		public void AddLine(string line) 
         {
-			tray.BalloonTipText = "";
-			if (lines.Count == 5)
-			{
-					lines.Dequeue();
-			}
-			lines.Enqueue(line);
+			tray.BalloonTipText = line;
 
-			for (int x = lines.Count - 1; x >= 0; x-- )
-			{
-					tray.BalloonTipText += lines.ToArray()[x] + "\r\n";
-			}
+            tray.ShowBalloonTip(5000);
+            //if (lines.Count == 5)
+            //{
+            //    lines.Dequeue();
+            //}
+            //lines.Enqueue(line);
 
-			tray.ShowBalloonTip(5000);
+            //if (lines.Count > 0)
+            //{
+            //    for (int x = lines.Count - 1; x >= 0; x--)
+            //    {
+            //        tray.BalloonTipText += lines.ToArray()[x] + "\r\n";
+            //    }                
+            //}
 		}
 
         /// <summary>
