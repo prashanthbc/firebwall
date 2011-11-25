@@ -11,6 +11,7 @@ namespace PassThru
     public class ICMPFilterModule : FirewallModule
     {
         private Dictionary<string, List<string>> ruletable = new Dictionary<string, List<string>>();
+        private bool denyAll;
 
         // return local user control
         public override System.Windows.Forms.UserControl GetControl()
@@ -30,6 +31,7 @@ namespace PassThru
         {
             ModuleError moduleError = new ModuleError();
             moduleError.errorType = ModuleErrorType.Success;
+            denyAll = false;
             return moduleError;
         }
 
@@ -49,8 +51,9 @@ namespace PassThru
             // if the packet is ICMP
             if (in_packet.GetHighestLayer() == Protocol.ICMP)
             {
-                // check if the packet is allowed
-                if (isAllowed(((ICMPPacket)in_packet).getType(), ((ICMPPacket)in_packet).getCode()))
+                // check if the packet is allowed and deny all is false
+                if (isAllowed(((ICMPPacket)in_packet).getType(), ((ICMPPacket)in_packet).getCode()) && 
+                    !denyAll)
                 {
                     pmr = new PacketMainReturn("ICMPFilter Module");
                     pmr.returnType = PacketMainReturnType.Allow;
@@ -109,6 +112,12 @@ namespace PassThru
         public Dictionary<string, List<string>> getTable()
         {
             return ruletable;
+        }
+
+        // update the denyAll variable from the GUI
+        public void updateDeny(bool deny)
+        {
+            denyAll = deny;
         }
     }
 }

@@ -151,6 +151,21 @@ namespace PassThru
         {
             this.filter.UpdateRuleTable(ruletable);
         }
+
+        /*
+         * Method handles the All ICMP check box; 
+         * Disables the type/code fields if selected, enables if not.
+         * Updates the denyAll bool in the module.
+         * Disables the add/delete button.
+        */
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            typeField.Enabled = !(allBox.Checked);
+            codeField.Enabled = !(allBox.Checked);
+            addButton.Enabled = !(allBox.Checked);
+            deleteButton.Enabled = !(allBox.Checked);
+            this.filter.updateDeny(allBox.Checked);
+        }
         
         /*
          * Method returns the ICMP description of a given type and code

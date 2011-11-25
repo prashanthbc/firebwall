@@ -35,18 +35,19 @@
             this.addButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tableDisplay = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.deleteButton = new System.Windows.Forms.Button();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Code = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label4 = new System.Windows.Forms.Label();
+            this.deleteButton = new System.Windows.Forms.Button();
+            this.allBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.tableDisplay)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(66, 317);
+            this.label1.Location = new System.Drawing.Point(123, 316);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(58, 17);
             this.label1.TabIndex = 1;
@@ -55,7 +56,7 @@
             // 
             // typeField
             // 
-            this.typeField.Location = new System.Drawing.Point(125, 314);
+            this.typeField.Location = new System.Drawing.Point(182, 313);
             this.typeField.Name = "typeField";
             this.typeField.Size = new System.Drawing.Size(61, 20);
             this.typeField.TabIndex = 2;
@@ -63,7 +64,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(192, 317);
+            this.label2.Location = new System.Drawing.Point(249, 316);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(54, 13);
             this.label2.TabIndex = 3;
@@ -71,14 +72,14 @@
             // 
             // codeField
             // 
-            this.codeField.Location = new System.Drawing.Point(252, 314);
+            this.codeField.Location = new System.Drawing.Point(309, 313);
             this.codeField.Name = "codeField";
             this.codeField.Size = new System.Drawing.Size(188, 20);
             this.codeField.TabIndex = 4;
             // 
             // addButton
             // 
-            this.addButton.Location = new System.Drawing.Point(456, 312);
+            this.addButton.Location = new System.Drawing.Point(513, 311);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(97, 23);
             this.addButton.TabIndex = 5;
@@ -89,7 +90,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(249, 337);
+            this.label3.Location = new System.Drawing.Point(306, 336);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(164, 13);
             this.label3.TabIndex = 6;
@@ -114,54 +115,17 @@
             this.tableDisplay.Size = new System.Drawing.Size(627, 263);
             this.tableDisplay.TabIndex = 7;
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(16, 15);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(83, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Filtered ICMP";
-            // 
-            // deleteButton
-            // 
-            this.deleteButton.Location = new System.Drawing.Point(456, 342);
-            this.deleteButton.Name = "deleteButton";
-            this.deleteButton.Size = new System.Drawing.Size(97, 23);
-            this.deleteButton.TabIndex = 9;
-            this.deleteButton.Text = "Delete Selected";
-            this.deleteButton.UseVisualStyleBackColor = true;
-            this.deleteButton.Click += new System.EventHandler(this.button1_Click_1);
-            // 
-          // Type
-            // 
-            this.Type.HeaderText = "Type";
-            this.Type.Name = "Type";
-         // Type
+            // Type
             // 
             this.Type.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.Type.HeaderText = "Type";
             this.Type.Name = "Type";
-           // 
-            // Code
-            // 
-            this.Code.HeaderText = "Code";
-            this.Code.Name = "Code";
             this.Type.ReadOnly = true;
             this.Type.Width = 56;
             // 
             // Code
             // 
             this.Code.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            // 
-            // Description
-            // 
-            this.Description.HeaderText = "Description";
-            this.Description.Name = "Description";
-            this.Description.ReadOnly = true;
-            this.Description.Width = 375;
-            // 
             this.Code.HeaderText = "Code";
             this.Code.Name = "Code";
             this.Code.ReadOnly = true;
@@ -174,10 +138,42 @@
             this.Description.Name = "Description";
             this.Description.ReadOnly = true;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(16, 15);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Filtered ICMP";
+            // 
+            // deleteButton
+            // 
+            this.deleteButton.Location = new System.Drawing.Point(513, 341);
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(97, 23);
+            this.deleteButton.TabIndex = 9;
+            this.deleteButton.Text = "Delete Selected";
+            this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // allBox
+            // 
+            this.allBox.AutoSize = true;
+            this.allBox.Location = new System.Drawing.Point(19, 315);
+            this.allBox.Name = "allBox";
+            this.allBox.Size = new System.Drawing.Size(96, 17);
+            this.allBox.TabIndex = 10;
+            this.allBox.Text = "Block All ICMP";
+            this.allBox.UseVisualStyleBackColor = true;
+            this.allBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // ICMPFilterDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.allBox);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.tableDisplay);
@@ -210,6 +206,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Code;
         private System.Windows.Forms.DataGridViewTextBoxColumn Description;
+        private System.Windows.Forms.CheckBox allBox;
 
     }
 }
