@@ -33,7 +33,7 @@ namespace PassThru
             return me;
         }
 
-        public override PacketMainReturn interiorMain(Packet in_packet)
+        public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
             byte[] buffer = new byte[in_packet.Length()];
             Buffer.BlockCopy(in_packet.Data(), 0, buffer, 0, (int)in_packet.Length());

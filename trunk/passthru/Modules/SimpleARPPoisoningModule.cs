@@ -59,58 +59,125 @@ namespace PassThru
             return new ArpPoisoningProtection(this) { Dock = System.Windows.Forms.DockStyle.Fill };
         }
 
-        public override PacketMainReturn interiorMain(Packet in_packet)
+        public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
             if (in_packet.GetHighestLayer() == Protocol.ARP)
             {
-                if (((ARPPacket)in_packet).isRequest() && in_packet.Outbound())
+                ARPPacket arpp = (ARPPacket)in_packet;
+                if (arpp.isRequest && arpp.Outbound)
                 {
-                    int ip = ((ARPPacket)in_packet).ATargetIP.GetHashCode();
+                    int ip = arpp.ATargetIP.GetHashCode();
                     if (!requestedIPs.Contains(ip))
                         requestedIPs.Add(ip);
                 }
-                else if (!in_packet.Outbound() && !((ARPPacket)in_packet).isRequest())
+                else if (!arpp.Outbound)
                 {
-                    int ip = ((ARPPacket)in_packet).ASenderIP.GetHashCode();
-                    if (requestedIPs.Contains(ip))
+                    int ip = arpp.ASenderIP.GetHashCode();
+                    if (!arpp.isRequest)
                     {
-                        lock (padlock)
+                        if (requestedIPs.Contains(ip))
                         {
-                            if (arpCache.ContainsKey(((ARPPacket)in_packet).ASenderIP))
+                            lock (padlock)
                             {
-                                if (!arpCache[((ARPPacket)in_packet).ASenderIP].Equals(((ARPPacket)in_packet).ASenderMac))
+                                if (arpCache.ContainsKey(arpp.ASenderIP))
                                 {
-                                    PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
-                                    pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
-                                    pmr.logMessage = "ARP Response from " + ((ARPPacket)in_packet).ASenderMac.ToString() + " for " + ((ARPPacket)in_packet).ASenderIP.ToString() + " does not match the ARP cache.";
-                                    return pmr;
+                                    if (!arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac))
+                                    {
+                                        PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
+                                        pmr.returnType = PacketMainReturnType.Log | PacketMainReturnType.Edited;                                        
+                                        pmr.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                        arpp.ATargetIP = arpp.ASenderIP;
+                                        arpp.ATargetMac = arpCache[arpp.ATargetIP];
+                                        arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
+                                        arpp.FromMac = arpp.ASenderMac;
+                                        arpp.ToMac = arpp.ATargetMac;
+                                        foreach (UnicastIPAddressInformation ipv4 in adapter.InterfaceInformation.GetIPProperties().UnicastAddresses)
+                                        {
+                                            if (ipv4.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                                            {
+                                                arpp.ASenderIP = ipv4.Address;
+                                                break;
+                                            }
+                                        }                                        
+                                        arpp.Outbound = true;
+                                        in_packet = arpp;
+                                        return pmr;
+                                    }
+                                    else
+                                    {
+                                        requestedIPs.Remove(ip);
+                                    }
                                 }
                                 else
                                 {
+                                    arpCache[arpp.ASenderIP] = arpp.ASenderMac;
+                                    if (UpdatedArpCache != null)
+                                        UpdatedArpCache();
                                     requestedIPs.Remove(ip);
                                 }
                             }
-                            else
+                        }
+                        else
+                        {
+                            lock (padlock)
                             {
-                                arpCache[((ARPPacket)in_packet).ASenderIP] = ((ARPPacket)in_packet).ASenderMac;
-                                if (UpdatedArpCache != null)
-                                    UpdatedArpCache();
-                                requestedIPs.Remove(ip);
+                                if (arpCache.ContainsKey(arpp.ASenderIP))
+                                {
+                                    if (!arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac))
+                                    {
+                                        PacketMainReturn pmra = new PacketMainReturn("Simple ARP Poisoning Protection");
+                                        pmra.returnType = PacketMainReturnType.Log | PacketMainReturnType.Edited;                                        
+                                        pmra.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                        arpp.ATargetIP = arpp.ASenderIP;
+                                        arpp.ATargetMac = arpCache[arpp.ATargetIP];
+                                        arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
+                                        arpp.FromMac = arpp.ASenderMac;
+                                        arpp.ToMac = arpp.ATargetMac;
+                                        foreach (UnicastIPAddressInformation ipv4 in adapter.InterfaceInformation.GetIPProperties().UnicastAddresses)
+                                        {
+                                            if (ipv4.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                                            {
+                                                arpp.ASenderIP = ipv4.Address;
+                                                break;
+                                            }
+                                        }
+                                        arpp.Outbound = true;
+                                        in_packet = arpp;
+                                        return pmra;
+                                    }
+                                }
                             }
+                            PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
+                            pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
+                            pmr.logMessage = "Unsolicited ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString();
+                            return pmr;
                         }
                     }
                     else
                     {
-                        PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
-                        pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
-                        pmr.logMessage = "Unsolicited ARP Response from " + ((ARPPacket)in_packet).ASenderMac.ToString() + " for " + ((ARPPacket)in_packet).ASenderIP.ToString();
-                        return pmr;
+                        lock (padlock)
+                        {
+                            if (arpCache.ContainsKey(arpp.ASenderIP))
+                            {
+                                if (!arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac))
+                                {
+                                    PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
+                                    pmr.returnType = PacketMainReturnType.Log | PacketMainReturnType.Drop;
+                                    pmr.logMessage = "ARP Request from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                    return pmr;
+                                }
+                            }
+                        }
                     }
+                    return new PacketMainReturn("Simple ARP Poisoning Protection"){returnType = PacketMainReturnType.Allow};
                 }
+                PacketMainReturn p = new PacketMainReturn("Simple ARP Poisoning Protection");
+                p.returnType = PacketMainReturnType.Allow;
+                return p;
             }
-            PacketMainReturn p = new PacketMainReturn("Simple ARP Poisoning Protection");
-            p.returnType = PacketMainReturnType.Allow;
-            return p;
+            PacketMainReturn pm = new PacketMainReturn("Simple ARP Poisoning Protection");
+            pm.returnType = PacketMainReturnType.Allow;
+            return pm;
         }
     }
 }

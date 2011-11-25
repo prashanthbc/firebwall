@@ -304,75 +304,16 @@ namespace PassThru
 			Ndisapi.CloseFilterDriver(hNdisapi);
 		}
 
-		static void OpenNDISDriver() {
+		static void OpenNDISDriver() 
+        {
 			if (hNdisapi != IntPtr.Zero)
 			{
-					LogCenter.Instance.Push("NetworkAdapter-static", "Bad state was found, attempting to open the NDIS Filter Driver while the IntPtr != IntPtr.Zero, continuing");
+				LogCenter.Instance.Push("NetworkAdapter-static", "Bad state was found, attempting to open the NDIS Filter Driver while the IntPtr != IntPtr.Zero, continuing");
 			}
 
 			hNdisapi = Ndisapi.OpenFilterDriver("NDISRD");
 			isNdisFilterDriverOpen = true;
 		}
-
-
-        unsafe void ProcessPacket()
-        {
-            ETH_REQUEST Request = new ETH_REQUEST();
-            INTERMEDIATE_BUFFER PacketBuffer = new INTERMEDIATE_BUFFER();
-
-            IntPtr PacketBufferIntPtr = Marshal.AllocHGlobal(Marshal.SizeOf(PacketBuffer));
-            try
-            {
-                win32api.ZeroMemory(PacketBufferIntPtr, Marshal.SizeOf(PacketBuffer));
-
-                Request.hAdapterHandle = adapterHandle;
-                Request.EthPacket.Buffer = PacketBufferIntPtr;
-
-                if (Ndisapi.ReadPacket(hNdisapi, ref Request))
-                {
-                    PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
-
-                    Packet pkt = new EthPacket(PacketBuffer).MakeNextLayerPacket();
-
-                    if (pkt.Outbound())
-                    {
-                        OutBandwidth.AddBytes(pkt.Length());
-                    }
-                    else
-                    {
-                        InBandwidth.AddBytes(pkt.Length());
-                    }
-
-                    bool drop = false;
-
-                    for (int x = 0; x < modules.Count; x++)
-                    {
-                        FirewallModule fm = modules.GetModule(x);
-                        PacketMainReturn pmr = fm.PacketMain(pkt);
-                        if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
-                        {
-                            LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
-                        }
-                        if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
-                        {
-                            drop = true;
-                            break;
-                        }
-                    }
-
-                    if (!drop)
-                    {
-                        if (PacketBuffer.m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND)
-                            Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
-                        else
-                            Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
-                    }
-                }
-
-            }
-            catch { }
-            Marshal.FreeHGlobal(PacketBufferIntPtr);
-        }
 
 		unsafe void ProcessLoop() 
         {
@@ -416,9 +357,9 @@ namespace PassThru
 
                                 PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
 
-                                Packet pkt = new EthPacket(PacketBuffer).MakeNextLayerPacket();
+                                Packet pkt = new EthPacket(ref PacketBuffer).MakeNextLayerPacket();
 
-                                if (pkt.Outbound())
+                                if (pkt.Outbound)
                                 {
                                     OutBandwidth.AddBytes(pkt.Length());
                                 }
@@ -428,11 +369,12 @@ namespace PassThru
                                 }
 
                                 bool drop = false;
+                                bool edit = false;
 
                                 for (int x = 0; x < modules.Count; x++)
                                 {
                                     FirewallModule fm = modules.GetModule(x);
-                                    PacketMainReturn pmr = fm.PacketMain(pkt);
+                                    PacketMainReturn pmr = fm.PacketMain(ref pkt);
                                     if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
                                     {
                                         LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
@@ -442,11 +384,19 @@ namespace PassThru
                                         drop = true;
                                         break;
                                     }
+                                    if ((pmr.returnType & PacketMainReturnType.Edited) == PacketMainReturnType.Edited)
+                                    {
+                                        edit = true;
+                                    }
                                 }
 
                                 if (!drop)
                                 {
-                                    if (PacketBuffer.m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND)
+                                    if (edit)
+                                    {
+                                        Marshal.StructureToPtr(PacketBuffer, PacketBufferIntPtr, false);
+                                    }
+                                    if (pkt.Outbound)
                                         Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
                                     else
                                         Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);

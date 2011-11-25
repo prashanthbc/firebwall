@@ -42,7 +42,7 @@ namespace PassThru
         }
 
         // main routine
-        public override PacketMainReturn interiorMain(Packet in_packet)
+        public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
             PacketMainReturn pmr;
 

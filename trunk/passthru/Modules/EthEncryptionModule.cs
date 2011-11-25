@@ -25,7 +25,7 @@ namespace PassThru.Modules
             throw new NotImplementedException();
         }
 
-        public override PacketMainReturn interiorMain(Packet in_packet)
+        public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
             throw new NotImplementedException();
         }

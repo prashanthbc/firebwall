@@ -105,14 +105,14 @@ namespace PassThru
 
             public PacketStatus GetStatus(Packet pkt)
             {
-                if ((pkt.Outbound() && (Direction & (1 << 1)) == (1 << 1)) || (!pkt.Outbound() && (Direction & 0x1) == 0x1))
+                if ((pkt.Outbound && (Direction & (1 << 1)) == (1 << 1)) || (!pkt.Outbound && (Direction & 0x1) == 0x1))
                 {
                     if (pkt.ContainsLayer(protocol))
                     {
                         if (transport == Protocol.TCP && pkt.ContainsLayer(Protocol.TCP))
                         {
                             TCPPacket tcp = (TCPPacket)pkt;
-                            if ((pkt.Outbound() && (Direction & (1 << 1)) == (1 << 1)) && tcp.SynSet && !tcp.AckSet)
+                            if ((pkt.Outbound && (Direction & (1 << 1)) == (1 << 1)) && tcp.SynSet && !tcp.AckSet)
                             {
                                 if ((CheckPort(tcp.DestPort) == Set) && CheckIP(tcp.DestIP) == Set)
                                 {
@@ -128,7 +128,7 @@ namespace PassThru
                                     return Set;
                                 }
                             }
-                            else if ((!pkt.Outbound() && (Direction & 0x1) == 0x1) && tcp.SynSet && !tcp.AckSet)
+                            else if ((!pkt.Outbound && (Direction & 0x1) == 0x1) && tcp.SynSet && !tcp.AckSet)
                             {
                                 if ((CheckPort(tcp.DestPort) == Set) && CheckIP(tcp.SourceIP) == Set)
                                 {
@@ -148,7 +148,7 @@ namespace PassThru
                         else if (transport == Protocol.UDP && pkt.ContainsLayer(Protocol.UDP))
                         {
                             UDPPacket tcp = (UDPPacket)pkt;
-                            if (pkt.Outbound())
+                            if (pkt.Outbound)
                             {
                                 if (((CheckPort(tcp.DestPort) == Set && (Direction & 0x2) == 0x2) || (CheckPort(tcp.SourcePort) == Set && (Direction & 0x1) == 0x1)) && CheckIP(tcp.DestIP) == Set)
                                 {
@@ -164,7 +164,7 @@ namespace PassThru
                                     return Set;
                                 }
                             }
-                            else if (!pkt.Outbound())
+                            else if (!pkt.Outbound)
                             {
                                 if (((CheckPort(tcp.DestPort) == Set && (Direction & 0x1) == 0x1) || (CheckPort(tcp.SourcePort) == Set && (Direction & 0x2) == 0x2)) && CheckIP(tcp.DestIP) == Set)
                                 {
@@ -331,7 +331,7 @@ namespace PassThru
 
         List<Quad> tcpConnections = new List<Quad>();
 
-        public override PacketMainReturn interiorMain(Packet in_packet)
+        public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
             if (in_packet.ContainsLayer(Protocol.TCP) && !((TCPPacket)in_packet).SynSet)
             {
@@ -357,7 +357,7 @@ namespace PassThru
                             pmr.returnType |= PacketMainReturnType.Log;
                             pmr.logMessage = r.Message;
                             Location l = null;
-                            if (in_packet.Outbound())
+                            if (in_packet.Outbound)
                                 l = Program.ls.getLocation(((IPPacket)in_packet).DestIP);
                             else
                                 l = Program.ls.getLocation(((IPPacket)in_packet).SourceIP);

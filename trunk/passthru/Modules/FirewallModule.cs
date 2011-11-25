@@ -9,11 +9,11 @@ namespace PassThru
 	[Flags]
 	public enum PacketMainReturnType
 	{
-		Error,          //Reports an error in the packet processing
-		Drop,           //Drops the packet
-		Allow,          //Allows the packet to be passed on to the next module
-		SendOutPacket,  //Requires out packet to be sent
-		Log	            //Logs the packet
+		Error = 1,          //Reports an error in the packet processing
+		Drop = 1 << 1,           //Drops the packet
+		Allow = 1 << 2,          //Allows the packet to be passed on to the next module
+        Edited = 1 << 3,
+		Log = 1 << 4	        //Logs the packet
 	}
 
 	public class PacketMainReturn
@@ -35,7 +35,7 @@ namespace PassThru
             logMessage = "An error has occurred in " + moduleName + ". " + e.Message + "\r\n" + e.StackTrace;
         }
 		public string Module = null;
-		public byte[] SendPacket = null;
+		public Packet SendPacket = null;
 		public string logMessage = null;
 		public PacketMainReturnType returnType;
 	}
@@ -89,10 +89,10 @@ namespace PassThru
 		/// </summary>
 		/// <param name="in_packet">Packet to be processed</param>
 		/// <returns>A PacketMainReturn object, either from the interiorMain or default error one</returns>
-		public PacketMainReturn PacketMain(Packet in_packet) {
+		public PacketMainReturn PacketMain(ref Packet in_packet) {
 			try
 			{
-				PacketMainReturn pmr = interiorMain(in_packet);
+				PacketMainReturn pmr = interiorMain(ref in_packet);
 				return pmr;
 			}
 			catch (Exception e)
@@ -107,7 +107,7 @@ namespace PassThru
 		/// <param name="in_packet">Packet to be processed</param>
 		/// <returns>PacketMainReturn object describing what to do with the packet and/or
 		/// anything that is notable during the processing</returns>
-		public abstract PacketMainReturn interiorMain(Packet in_packet);
+		public abstract PacketMainReturn interiorMain(ref Packet in_packet);
 	}
 
 	public class Quad
