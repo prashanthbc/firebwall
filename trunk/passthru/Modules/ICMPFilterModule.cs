@@ -10,8 +10,21 @@ namespace PassThru
      */
     public class ICMPFilterModule : FirewallModule
     {
+        // rule table var and accessor
         private Dictionary<string, List<string>> ruletable = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> RuleTable
+        {
+            get { return ruletable; }
+            set { ruletable = new Dictionary<string, List<string>>(value); }
+        }
+        
+        // deny all var and accessor
         private bool denyAll;
+        public bool DenyAll
+        {
+            get { return denyAll; }
+            set { denyAll = value; }
+        }
 
         // return local user control
         public override System.Windows.Forms.UserControl GetControl()
@@ -96,28 +109,6 @@ namespace PassThru
                 isAllowed = !(temp.Contains(code));
             }
             return isAllowed;
-        }
-
-        /*
-         * used to take updates from the GUI
-         */
-        public void UpdateRuleTable(Dictionary<string, List<string>> t)
-        {
-            this.ruletable = new Dictionary<string, List<string>>(t);
-        }
-
-        /*
-         * Returns an instance of the current dictionary table
-         */
-        public Dictionary<string, List<string>> getTable()
-        {
-            return ruletable;
-        }
-
-        // update the denyAll variable from the GUI
-        public void updateDeny(bool deny)
-        {
-            denyAll = deny;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace PassThru
         public ICMPFilterDisplay(ICMPFilterModule filter)
         {
             this.filter = filter;
-            ruletable = new Dictionary<string, List<string>>(filter.getTable());
+            ruletable = new Dictionary<string, List<string>>(filter.RuleTable);
             InitializeComponent();
         }
 
@@ -126,7 +126,7 @@ namespace PassThru
          */
         private void ICMPFilterDisplay_Load(object sender, EventArgs e)
         {
-            ruletable = new Dictionary<string, List<string>>(filter.getTable());
+            ruletable = new Dictionary<string, List<string>>(filter.RuleTable);
             ICollection keys = ruletable.Keys;
             List<string> lVal;
 
@@ -144,12 +144,18 @@ namespace PassThru
                     tableDisplay.Rows.Add(row);
                 }
             }
+
+            // load up the deny all box
+            if (filter.DenyAll)
+            {
+                allBox.CheckState = CheckState.Checked;
+            }
         }
 
         // pushes update to the ruletable object
         private void UpdateRuleTable()
         {
-            this.filter.UpdateRuleTable(ruletable);
+            this.filter.RuleTable = ruletable;
         }
 
         /*
@@ -164,7 +170,7 @@ namespace PassThru
             codeField.Enabled = !(allBox.Checked);
             addButton.Enabled = !(allBox.Checked);
             deleteButton.Enabled = !(allBox.Checked);
-            this.filter.updateDeny(allBox.Checked);
+            this.filter.DenyAll = allBox.Checked;
         }
         
         /*
@@ -177,7 +183,6 @@ namespace PassThru
         private string getDescription(string type, string code)
         {
             string description = "";
-
             switch (type)
             {
                 // echo

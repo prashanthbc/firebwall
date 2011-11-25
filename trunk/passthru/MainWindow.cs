@@ -17,12 +17,18 @@ namespace PassThru
 				Application.Exit();
 			}
 
+            /*
+             * Object handles logging of a log event to the window
+             * @param le is the log event object to be logged
+             */
 			void AddLogEvent(object le) {
+                // if the logger is busy, invoke it
 				if (textBox1.InvokeRequired)
 				{
 						System.Threading.ParameterizedThreadStart d = new System.Threading.ParameterizedThreadStart(AddLogEvent);
 						textBox1.Invoke(d, new object[] { le });
 				}
+                // else log the message
 				else
 				{
 						LogEvent e = (LogEvent)le;
@@ -30,11 +36,12 @@ namespace PassThru
 				}
 			}
 
+            // receives a log event and pushes it to AddLogEvent
 			void Instance_PushLogEvent(LogEvent e) {
 				AddLogEvent(e);
 			}
-
-			private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) 
+			
+            private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) 
             {
 				if (e.CloseReason == CloseReason.UserClosing)
 				{
@@ -52,6 +59,9 @@ namespace PassThru
                 System.Reflection.Assembly target = System.Reflection.Assembly.GetExecutingAssembly();
                 this.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.HoneyPorts.ico"));
 				LogCenter.PushLogEvent += new LogCenter.NewLogEvent(Instance_PushLogEvent);
+                
+                // call the log purger
+                LogCenter.cleanLogs();
 				//RuleEditor re = new RuleEditor();
 				//re.Dock = DockStyle.Fill;
 				//tabPage2.Controls.Add(re);
