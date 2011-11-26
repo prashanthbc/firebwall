@@ -151,7 +151,7 @@ namespace PassThru
             {
                 string filepath = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
 
-                if (System.IO.Directory.Exists(filepath))
+                if (Directory.Exists(filepath))
                 {
                     // grab all the logs in the directory
                     string[] files = Directory.GetFiles(filepath);

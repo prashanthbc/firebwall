@@ -35,12 +35,13 @@
             this.addButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tableDisplay = new System.Windows.Forms.DataGridView();
-            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Code = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label4 = new System.Windows.Forms.Label();
             this.deleteButton = new System.Windows.Forms.Button();
             this.allBox = new System.Windows.Forms.CheckBox();
+            this.viewICMP = new System.Windows.Forms.Button();
+            this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Code = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.tableDisplay)).BeginInit();
             this.SuspendLayout();
             // 
@@ -111,32 +112,10 @@
             this.tableDisplay.Name = "tableDisplay";
             this.tableDisplay.ReadOnly = true;
             this.tableDisplay.RowHeadersVisible = false;
+            this.tableDisplay.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tableDisplay.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.tableDisplay.Size = new System.Drawing.Size(627, 263);
+            this.tableDisplay.Size = new System.Drawing.Size(604, 263);
             this.tableDisplay.TabIndex = 7;
-            // 
-            // Type
-            // 
-            this.Type.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Type.HeaderText = "Type";
-            this.Type.Name = "Type";
-            this.Type.ReadOnly = true;
-            this.Type.Width = 56;
-            // 
-            // Code
-            // 
-            this.Code.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.Code.HeaderText = "Code";
-            this.Code.Name = "Code";
-            this.Code.ReadOnly = true;
-            this.Code.Width = 57;
-            // 
-            // Description
-            // 
-            this.Description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Description.HeaderText = "Description";
-            this.Description.Name = "Description";
-            this.Description.ReadOnly = true;
             // 
             // label4
             // 
@@ -169,10 +148,44 @@
             this.allBox.UseVisualStyleBackColor = true;
             this.allBox.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
+            // viewICMP
+            // 
+            this.viewICMP.Location = new System.Drawing.Point(513, 371);
+            this.viewICMP.Name = "viewICMP";
+            this.viewICMP.Size = new System.Drawing.Size(97, 23);
+            this.viewICMP.TabIndex = 11;
+            this.viewICMP.Text = "View ICMP";
+            this.viewICMP.UseVisualStyleBackColor = true;
+            this.viewICMP.Click += new System.EventHandler(this.button1_Click_2);
+            // 
+            // Type
+            // 
+            this.Type.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.Type.HeaderText = "Type";
+            this.Type.Name = "Type";
+            this.Type.ReadOnly = true;
+            this.Type.Width = 56;
+            // 
+            // Code
+            // 
+            this.Code.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.Code.HeaderText = "Code";
+            this.Code.Name = "Code";
+            this.Code.ReadOnly = true;
+            this.Code.Width = 57;
+            // 
+            // Description
+            // 
+            this.Description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Description.HeaderText = "Description";
+            this.Description.Name = "Description";
+            this.Description.ReadOnly = true;
+            // 
             // ICMPFilterDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.viewICMP);
             this.Controls.Add(this.allBox);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.label4);
@@ -184,7 +197,7 @@
             this.Controls.Add(this.typeField);
             this.Controls.Add(this.label1);
             this.Name = "ICMPFilterDisplay";
-            this.Size = new System.Drawing.Size(664, 451);
+            this.Size = new System.Drawing.Size(679, 451);
             this.Load += new System.EventHandler(this.ICMPFilterDisplay_Load);
             ((System.ComponentModel.ISupportInitialize)(this.tableDisplay)).EndInit();
             this.ResumeLayout(false);
@@ -203,10 +216,11 @@
         private System.Windows.Forms.DataGridView tableDisplay;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button deleteButton;
+        private System.Windows.Forms.CheckBox allBox;
+        private System.Windows.Forms.Button viewICMP;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn Code;
         private System.Windows.Forms.DataGridViewTextBoxColumn Description;
-        private System.Windows.Forms.CheckBox allBox;
 
     }
 }
