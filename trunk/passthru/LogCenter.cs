@@ -116,27 +116,35 @@ namespace PassThru
                     // if the Log folder exists already
                     if (Directory.Exists(filepath))
                     {
-                        // if todays log file exists
+                        // if the file exists, open in append and write to it
                         if (File.Exists(filepath + filename))
                         {
-                            // log the event in todays log
-                            File.AppendAllText(filepath + filename, le.time.ToString() +
-                                " " + le.Module + ": " + le.Message + "\r\n");
+                            FileStream stream = new FileStream(filepath + filename, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+                            StreamWriter m_streamWriter = new StreamWriter(stream);
+                            m_streamWriter.WriteLine(le.time.ToString() + " " + le.Module + ": " + le.Message + "\r");
+                            m_streamWriter.Close();
+                            stream.Close();
                         }
                         // if todays log file does not exist, create and write to it
                         else
                         {
-                            File.Create(filepath + filename);
-                            File.WriteAllText(filepath + filename, le.time.ToString() +
-                                " " + le.Module + ": " + le.Message + "\r\n");
+                            FileStream stream = new FileStream(filepath + filename, FileMode.CreateNew, FileAccess.Write, FileShare.ReadWrite);
+                            StreamWriter m_streamWriter = new StreamWriter(stream);
+                            m_streamWriter.WriteLine(le.time.ToString() + " " + le.Module + ": " + le.Message + "\r");
+                            m_streamWriter.Close();
+                            stream.Close();
                         }
                     }
+
                     // if the log path does not exist, create it and write out the log
-                    else
+                    if (!(Directory.Exists(filepath)))
                     {
                         Directory.CreateDirectory(filepath);
-                        File.WriteAllText(filepath + filename, le.time.ToString() +
-                            " " + le.Module + ": " + le.Message + "\r\n");
+                        FileStream stream = new FileStream(filepath + filename, FileMode.CreateNew, FileAccess.Write, FileShare.ReadWrite);
+                        StreamWriter m_streamWriter = new StreamWriter(stream);
+                        m_streamWriter.WriteLine(le.time.ToString() + " " + le.Module + ": " + le.Message + "\r");
+                        m_streamWriter.Close();
+                        stream.Close();
                     }
                 }
             }
@@ -155,13 +163,13 @@ namespace PassThru
                 {
                     // grab all the logs in the directory
                     string[] files = Directory.GetFiles(filepath);
-                    
+
                     // iterate through them all looking for any that are old (>5)
                     foreach (string s in files)
                     {
                         // grab the log date from file path name and 
                         // convert to DateTime for day check
-                        string logdate = s.Substring(s.IndexOf("_")+1, 10);
+                        string logdate = s.Substring(s.IndexOf("_") + 1, 10);
                         DateTimeFormatInfo dtfi = new DateTimeFormatInfo();
                         dtfi.ShortDatePattern = "MM-dd-yyyy";
                         dtfi.DateSeparator = "-";

@@ -17,7 +17,7 @@ namespace PassThru
         // global filter obj
         private ICMPFilterModule filter;
 
-        // table of rule mappings
+        // table of user rule mappings
         // key: type
         // value: list<string> of codes
         private Dictionary<string, List<string>> ruletable;
@@ -81,15 +81,8 @@ namespace PassThru
                             ruletable.Add(type, temp);
                         }
 
-                        // add it to the table if it exists
-                        if (icmpList.ContainsKey(type))
-                        {
-                            if (icmpList[type].ContainsKey(s))
-                            {
-                                object[] row = { type, s, icmpList[type][s] };
-                                tableDisplay.Rows.Add(row);
-                            }
-                        }
+                        object[] row = { type, s, icmpList[type][s] };
+                        tableDisplay.Rows.Add(row);
                     }
                 }
             }
