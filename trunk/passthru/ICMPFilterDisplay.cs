@@ -49,39 +49,47 @@ namespace PassThru
             codes = codeField.Text.Replace(" ", string.Empty).Split(',');
             type = typeField.Text;
 
-            // iterate through codes and add them to the table and hashtable
-            foreach ( string s in codes )
+            // if the type exists
+            if (icmpList.ContainsKey(type))
             {
-                // if that type already exists
-                if (ruletable.ContainsKey(type))
+                // iterate through codes and add them to the table and hashtable
+                foreach (string s in codes)
                 {
-                    // get the list of the key
-                    ruletable.TryGetValue(type, out temp);
-                    // don't allow duplicate entries
-                    if (temp.Contains(s))
-                        continue;
-                    // add the code to the list
-                    temp.Add(s);
-                    // remove the old kv pair
-                    ruletable.Remove(type);
-                    // add the new kv pair
-                    ruletable.Add(type, temp);
-                }
-
-                // if the type doesn't exist yet, create it
-                else
-                {
-                    temp.Add(s);
-                    ruletable.Add(type, temp);
-                }
-
-                // add it to the table if it exists
-                if (icmpList.ContainsKey(type))
-                {
-                    if ( icmpList[type].ContainsKey(s))
+                    // if the code exists
+                    if (icmpList[type].ContainsKey(s))
                     {
-                        object[] row = { type, s, icmpList[type][s] };
-                        tableDisplay.Rows.Add(row);
+                        // if that type already exists
+                        if (ruletable.ContainsKey(type))
+                        {
+                            // get the list of the key
+                            ruletable.TryGetValue(type, out temp);
+                            // don't allow duplicate entries
+                            if (temp.Contains(s))
+                                continue;
+                            // add the code to the list
+                            temp.Add(s);
+                            // remove the old kv pair
+                            ruletable.Remove(type);
+                            // add the new kv pair
+                            ruletable.Add(type, temp);
+                        }
+
+                        // if the type doesn't exist yet, create it
+                        else
+                        {
+                            temp.Add(s);
+                            ruletable.Add(type, temp);
+                        }
+
+                        // add it to the table if it exists
+                        if (icmpList.ContainsKey(type))
+                        {
+                            if (icmpList[type].ContainsKey(s))
+                            {
+                                object[] row = { type, s, icmpList[type][s] };
+                                tableDisplay.Rows.Add(row);
+                            }
+                        }
                     }
                 }
             }
