@@ -111,7 +111,6 @@ namespace PassThru
                 folder = folder + Path.DirectorySeparatorChar + "firebwall";
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
-                folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 folder = folder + Path.DirectorySeparatorChar + "Log";
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
