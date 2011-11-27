@@ -107,8 +107,16 @@ namespace PassThru
             private static void WriteLogFile(LogEvent le)
             {
                 string currentdate = DateTime.Now.ToString("M-d-yyyy");
-                string filepath = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
-                string filename = "\\Event_" + currentdate + ".log";
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                folder = folder + Path.DirectorySeparatorChar + "firebwall";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                folder = folder + Path.DirectorySeparatorChar + "Log";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                string filepath = folder;
+                string filename = Path.DirectorySeparatorChar + "Event_" + currentdate + ".log";
 
                 // if the log event is not null
                 if (le != null)
