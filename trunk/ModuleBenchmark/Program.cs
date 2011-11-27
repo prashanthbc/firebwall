@@ -32,10 +32,10 @@ namespace ModuleBenchmark
             {
                 BasicFirewall bm = new BasicFirewall();
                 bfms += bm.Benchmark(packets).TotalMilliseconds;
-                BenchmarkModule benm = new BenchmarkModule();
+                OldBasicFirewall benm = new OldBasicFirewall();
                 benms += benm.Benchmark(packets).TotalMilliseconds;
             }
-            Console.WriteLine(((bfms - benms)/iterations).ToString() + " milliseconds in the module");
+            Console.WriteLine(((benms - bfms) / iterations).ToString() + " milliseconds in the module");
         }
     }
 }

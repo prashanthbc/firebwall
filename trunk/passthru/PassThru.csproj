@@ -87,6 +87,7 @@
     <Compile Include="ArpPoisoningProtection.Designer.cs">
       <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
     </Compile>
+    <Compile Include="BandwidthCounter.cs" />
     <Compile Include="Modules\BasicFirewallModule.cs" />
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
