@@ -58,6 +58,19 @@ namespace PassThru
 		static IntPtr hNdisapi = IntPtr.Zero;
 		static bool isNdisFilterDriverOpen = false;
 		static object staticPadlock = new object();
+        bool enabled = true;
+
+        public bool Enabled
+        {
+            get
+            {
+                return enabled;
+            }
+            set
+            {
+                enabled = value;
+            }
+        }
 
 		public static void ShutdownAll() {
 			lock (staticPadlock)
@@ -128,6 +141,11 @@ namespace PassThru
                 Request.hAdapterHandle = adapterHandle;
                 Request.EthPacket.Buffer = PacketBufferIntPtr;
 
+                // ARP poisoning module
+                SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
+                saap.ModuleStart();
+                modules.AddModule(saap);
+
 				//Static and test modules
 				BasicFirewall tfm = new BasicFirewall(this);
 				tfm.ModuleStart();
@@ -136,11 +154,6 @@ namespace PassThru
 				//DumpToPcapModule dtpm = new DumpToPcapModule(this);
 				//dtpm.ModuleStart();
 				//modules.Add(dtpm);
-
-                // ARP poisoning module
-				SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
-				saap.ModuleStart();
-				modules.AddModule(saap);
 
                 // ICMP filtering module
                 ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
@@ -179,22 +192,25 @@ namespace PassThru
                         bool drop = false;
                         bool edit = false;
 
-                        for (int x = 0; x < modules.Count; x++)
+                        if (enabled)
                         {
-                            FirewallModule fm = modules.GetModule(x);
-                            PacketMainReturn pmr = fm.PacketMain(ref pkt);
-                            if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
+                            for (int x = 0; x < modules.Count; x++)
                             {
-                                LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
-                            }
-                            if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
-                            {
-                                drop = true;
-                                break;
-                            }
-                            if ((pmr.returnType & PacketMainReturnType.Edited) == PacketMainReturnType.Edited)
-                            {
-                                edit = true;
+                                FirewallModule fm = modules.GetModule(x);
+                                PacketMainReturn pmr = fm.PacketMain(ref pkt);
+                                if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
+                                {
+                                    LogCenter.Instance.Push(pmr.Module, pmr.logMessage);
+                                }
+                                if ((pmr.returnType & PacketMainReturnType.Drop) == PacketMainReturnType.Drop)
+                                {
+                                    drop = true;
+                                    break;
+                                }
+                                if ((pmr.returnType & PacketMainReturnType.Edited) == PacketMainReturnType.Edited)
+                                {
+                                    edit = true;
+                                }
                             }
                         }
 
@@ -332,6 +348,34 @@ namespace PassThru
         {
             UpdateAdapterList();
             return new List<NetworkAdapter>(currentAdapters);
+        }
+
+        public static List<NetworkAdapter> GetNewAdapters()
+        {
+            if (!isNdisFilterDriverOpen)
+            {
+                OpenNDISDriver();
+            }
+            TCP_AdapterList adList = new TCP_AdapterList();
+            Ndisapi.GetTcpipBoundAdaptersInfo(hNdisapi, ref adList);
+            List<NetworkAdapter> tempList = new List<NetworkAdapter>();
+            for (int x = 0; x < adList.m_nAdapterCount; x++)
+            {
+                bool found = false;
+                for (int y = 0; y < currentAdapters.Count; y++)
+                {
+                    if (adList.m_nAdapterHandle[x] == currentAdapters[y].adapterHandle)
+                        found = true;
+                }
+                if (!found && !Encoding.ASCII.GetString(adList.m_szAdapterNameList, x * 256, 256).Contains("NDIS"))
+                {
+                    NetworkAdapter newAdapter = new NetworkAdapter(adList.m_nAdapterHandle[x], Encoding.ASCII.GetString(adList.m_szAdapterNameList, x * 256, 256));
+                    tempList.Add(newAdapter);
+                    currentAdapters.Add(newAdapter);
+                }
+            }
+
+            return tempList;
         }
     }
 }

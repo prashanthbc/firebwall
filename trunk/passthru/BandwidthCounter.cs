@@ -4,8 +4,14 @@ using System.Text;
 
 namespace PassThru
 {
+    /// <summary>
+    /// Class to manage an adapters total transfered data
+    /// </summary>
     public class BandwidthCounter
     {
+        /// <summary>
+        /// Class to manage an adapters current transfer rate
+        /// </summary>
         class MiniCounter
         {
             public uint bytes = 0;
@@ -16,6 +22,10 @@ namespace PassThru
             public uint pbytes = 0;
             DateTime lastRead = DateTime.Now;
 
+            /// <summary>
+            /// Adds bits(total misnomer because bits per second looks a lot better than bytes per second)
+            /// </summary>
+            /// <param name="count">The number of bits to add</param>
             public void AddBytes(uint count)
             {
                 bytes += count;
@@ -46,6 +56,10 @@ namespace PassThru
                 }
             }
 
+            /// <summary>
+            /// Returns the bits per second since the last time this function was called
+            /// </summary>
+            /// <returns></returns>
             public override string ToString()
             {
                 if (pbytes > 0)
@@ -119,11 +133,18 @@ namespace PassThru
         public uint pbytes = 0;
         MiniCounter perSecond = new MiniCounter();
 
+        /// <summary>
+        /// Empty constructor, because thats constructive
+        /// </summary>
         public BandwidthCounter()
         {
 
         }
 
+        /// <summary>
+        /// Accesses the current transfer rate, returning the text
+        /// </summary>
+        /// <returns></returns>
         public string GetPerSecond()
         {
             string s = perSecond.ToString() + "/s";
@@ -131,6 +152,10 @@ namespace PassThru
             return s;
         }
 
+        /// <summary>
+        /// Adds bytes to the total transfered
+        /// </summary>
+        /// <param name="count">Byte count</param>
         public void AddBytes(uint count)
         {
             count = 8 * count;
@@ -163,6 +188,10 @@ namespace PassThru
             }
         }
 
+        /// <summary>
+        /// Prints out a relevant string for the bits transfered
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             if (pbytes > 0)

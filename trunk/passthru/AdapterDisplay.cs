@@ -10,13 +10,27 @@ namespace PassThru
 {
     public partial class AdapterDisplay : UserControl
     {
-        AdapterInfo ai;
+        public AdapterInfo ai;
+
+        public void Update()
+        {
+            if (textBoxDetails.InvokeRequired)
+            {
+                System.Threading.ThreadStart ts = new System.Threading.ThreadStart(Update);
+                textBoxDetails.Invoke(ts);
+            }
+            else
+            {
+                textBoxDetails.Text = ai.Summary;
+            }
+        }
 
         public AdapterDisplay(AdapterInfo ai)
         {
             this.ai = ai;
             InitializeComponent();
             textBoxDetails.Text = ai.Summary;
+            checkBox1.Checked = ai.na.Enabled;
         }
 
         private void buttonConfig_Click(object sender, EventArgs e)
@@ -44,6 +58,11 @@ namespace PassThru
             System.Reflection.Assembly target = System.Reflection.Assembly.GetExecutingAssembly();
             f.Icon = new System.Drawing.Icon(target.GetManifestResourceStream("PassThru.Resources.HoneyPorts.ico"));
             f.Show();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            ai.na.Enabled = checkBox1.Checked;
         }
     }
 }

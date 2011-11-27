@@ -59,12 +59,27 @@ namespace PassThru
                 }
                 else
                 {
-                    flowLayoutPanel1.Controls.Clear();
-                    foreach (NetworkAdapter na in NetworkAdapter.GetAllAdapters())
+                    if (flowLayoutPanel1.Controls.Count == 0)
                     {
-                        AdapterDisplay ad = new AdapterDisplay(new AdapterInfo(na.Pointer, na.Name, na.InterfaceInformation, na.InBandwidth, na.OutBandwidth, na));
-                        ad.Width = flowLayoutPanel1.Width - 5;
-                        flowLayoutPanel1.Controls.Add(ad);
+                        foreach (NetworkAdapter na in NetworkAdapter.GetAllAdapters())
+                        {
+                            AdapterDisplay ad = new AdapterDisplay(new AdapterInfo(na.Pointer, na.Name, na.InterfaceInformation, na.InBandwidth, na.OutBandwidth, na));
+                            ad.Width = flowLayoutPanel1.Width - 5;
+                            flowLayoutPanel1.Controls.Add(ad);
+                        }
+                    }
+                    else
+                    {
+                        foreach (AdapterDisplay ad in flowLayoutPanel1.Controls)
+                        {
+                            ad.Update();
+                        }
+                        foreach (NetworkAdapter na in NetworkAdapter.GetNewAdapters())
+                        {
+                            AdapterDisplay ad = new AdapterDisplay(new AdapterInfo(na.Pointer, na.Name, na.InterfaceInformation, na.InBandwidth, na.OutBandwidth, na));
+                            ad.Width = flowLayoutPanel1.Width - 5;
+                            flowLayoutPanel1.Controls.Add(ad);
+                        }
                     }
                 }
 			}
@@ -187,7 +202,7 @@ namespace PassThru
             {
                 get
                 {
-                    return NIName + ":\t" + IPv4 + "\t" + IPv6 + "\r\nIn(" + DataIn + " | " + DataInPerSecond + ")\tOut(" + DataOut + " | " + DataOutPerSecond + ")";
+                    return NIName + ":(" + na.InterfaceInformation.GetPhysicalAddress().ToString() + ") " + IPv4 + "\t" + IPv6 + "\r\nIn(" + DataIn + " | " + DataInPerSecond + ")\tOut(" + DataOut + " | " + DataOutPerSecond + ")";
                 }
             }
 
