@@ -18,6 +18,8 @@
 
 == Brute Force Protection ==
 
+== Packet Shaping ==
+
 == DNS Functions ==
 === Caching ===
 === Verify DNS from Multiple Servers ===
