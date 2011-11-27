@@ -81,24 +81,31 @@
     <Compile Include="AdapterDisplay.Designer.cs">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="ArpPoisoningProtection.cs">
+    <Compile Include="BandwidthCounter.cs" />
+    <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ArpPoisoningProtection.Designer.cs">
+    <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.Designer.cs">
       <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
     </Compile>
-    <Compile Include="BandwidthCounter.cs" />
-    <Compile Include="Modules\BasicFirewallModule.cs" />
+    <Compile Include="Modules\BasicFirewallModule\BasicFirewallModule.cs" />
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
+    <Compile Include="Modules\DDoSModule\DDoSDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\DDoSModule\DDoSDisplay.Designer.cs">
+      <DependentUpon>DDoSDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\DDoSModule\DDoSModule.cs" />
     <Compile Include="Modules\DumpToPcapModule.cs" />
     <Compile Include="Modules\FirewallModule.cs" />
     <Compile Include="Modules\EthEncryptionModule.cs" />
-    <Compile Include="Modules\ICMPFilterModule.cs" />
-    <Compile Include="ICMPFilterDisplay.cs">
+    <Compile Include="Modules\ICMPFilterModule\ICMPFilterModule.cs" />
+    <Compile Include="Modules\ICMPFilterModule\ICMPFilterDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ICMPFilterDisplay.Designer.cs">
+    <Compile Include="Modules\ICMPFilterModule\ICMPFilterDisplay.Designer.cs">
       <DependentUpon>ICMPFilterDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="iphlp.cs" />
@@ -126,13 +133,13 @@
     </Compile>
     <Compile Include="Region.cs" />
     <Compile Include="RegionName.cs" />
-    <Compile Include="RuleEditor.cs">
+    <Compile Include="Modules\BasicFirewallModule\RuleEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="RuleEditor.Designer.cs">
+    <Compile Include="Modules\BasicFirewallModule\RuleEditor.Designer.cs">
       <DependentUpon>RuleEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Modules\SimpleARPPoisoningModule.cs" />
+    <Compile Include="Modules\ARPPoisoningModule\SimpleARPPoisoningModule.cs" />
     <Compile Include="TrayIcon.cs" />
     <Compile Include="UpdateChecker.cs" />
     <Compile Include="win32api.cs" />
@@ -161,10 +168,13 @@
     <EmbeddedResource Include="AdapterDisplay.resx">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ICMPFilterDisplay.resx">
+    <EmbeddedResource Include="Modules\DDoSModule\DDoSDisplay.resx">
+      <DependentUpon>DDoSDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ICMPFilterModule\ICMPFilterDisplay.resx">
       <DependentUpon>ICMPFilterDisplay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ArpPoisoningProtection.resx">
+    <EmbeddedResource Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.resx">
       <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
@@ -174,7 +184,7 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="RuleEditor.resx">
+    <EmbeddedResource Include="Modules\BasicFirewallModule\RuleEditor.resx">
       <DependentUpon>RuleEditor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

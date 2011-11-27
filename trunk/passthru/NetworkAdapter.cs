@@ -160,6 +160,11 @@ namespace PassThru
                 icmpFilter.ModuleStart();
                 modules.AddModule(icmpFilter);
 
+                //DDoS module
+                DDoSModule dos = new DDoSModule(this);
+                dos.ModuleStart();
+                modules.AddModule(dos);
+
                 string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 folder = folder + System.IO.Path.DirectorySeparatorChar + "firebwall";
                 if (!System.IO.Directory.Exists(folder))

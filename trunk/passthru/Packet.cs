@@ -49,6 +49,15 @@ namespace PassThru
             get;
             set;
         }
+
+        // time a packet is captured.
+        // should be logged with DateTime.UtcNow
+        private DateTime packetTime;
+        public DateTime PacketTime
+        {
+            get { return packetTime; }
+            set { packetTime = value; }
+        }
 	}
 
     /*
@@ -208,7 +217,7 @@ namespace PassThru
 		}
 	}
 
-    /*
+       /*
         ICMPPacket object
         */
     public class ICMPPacket : IPPacket
@@ -587,7 +596,15 @@ namespace PassThru
             return 8;
         }
 
-		public bool isDNS() 
+        // check if the UDP packet has an empty header.
+        // This is usually the case with port scans.
+        public bool isEmpty()
+        {
+            return ((data.m_IBuffer[start+8] << 8) == 0x00);
+        }
+		
+        // check if the packet is a UDP DNS packet
+        public bool isDNS() 
         {
 			return (SourcePort == 53 || DestPort == 53);
 		}
