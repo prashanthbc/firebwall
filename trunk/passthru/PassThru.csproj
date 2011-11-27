@@ -90,7 +90,6 @@
     <Compile Include="Modules\BasicFirewallModule.cs" />
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
-    <Compile Include="Modules\DDoSModule.cs" />
     <Compile Include="Modules\DumpToPcapModule.cs" />
     <Compile Include="Modules\FirewallModule.cs" />
     <Compile Include="Modules\EthEncryptionModule.cs" />

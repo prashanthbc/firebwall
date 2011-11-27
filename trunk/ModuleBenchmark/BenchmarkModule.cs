@@ -1,23 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Net.NetworkInformation;
 using System.Net;
-using System.IO;
+using System.Text;
 
-namespace PassThru
+namespace ModuleBenchmark
 {
-    /*
-     * Basic Firewall Module
-     * @summary
-     */
-    public class BasicFirewall : FirewallModule
+    class BenchmarkModule
     {
-        public BasicFirewall(NetworkAdapter adapter)
-            : base(adapter)
+
+
+        public BenchmarkModule()
         {
-            moduleName = "Basic Firewall";
+
         }
 
+        public virtual void Initiate()
+        {
+
+        }
+
+        public virtual void InteriorMain(ref Packet in_packet)
+        {
+
+        }
+
+        public virtual void Close()
+        {
+
+        }
+
+        public TimeSpan Benchmark(List<Packet> packets)
+        {            
+            DateTime start = DateTime.Now;
+            Initiate();
+            for(int x = 0; x < packets.Count; x++)
+            {
+                Packet p = packets[x];
+                InteriorMain(ref p);
+            }
+            Close();
+            return DateTime.Now - start;
+        }
+    }
+
+    class BasicFirewall : BenchmarkModule
+    {
         public enum PacketStatus
         {
             UNDETERMINED,
@@ -273,79 +301,46 @@ namespace PassThru
         readonly object padlock = new object();
         public List<Rule> rules = new List<Rule>();
 
-        public override ModuleError ModuleStart()
+        public BasicFirewall()
         {
-            string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            folder = folder + Path.DirectorySeparatorChar + "firebwall";
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            folder = folder + Path.DirectorySeparatorChar + "modules";
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            folder = folder + Path.DirectorySeparatorChar + "configs";
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-
-            lock (padlock)
-            {
-                if (File.Exists(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf"))
-                {
-                    string[] lines = File.ReadAllLines(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf");
-                    foreach (string line in lines)
-                    {
-                        rules.Add(new Rule(line));
-                    }
-                }
-                else
-                {
-                    rules.Add(new Rule("1:TCP:-1;-1;-1;-1;:-1:True:True:No Incoming TCP Connections:::BLOCKED"));
-                }
-            }
-
-            ModuleError me = new ModuleError();
-            me.errorType = ModuleErrorType.Success;
-            return me;
         }
 
-        public override System.Windows.Forms.UserControl GetControl()
+        public override void Initiate()
         {
-            return new RuleEditor(this) { Dock = System.Windows.Forms.DockStyle.Fill };
+            //rules.Add(new Rule("3:UDP:-1;-1;-1;-1;:-1:True:True:No UDP:::BLOCKED"));
+            rules.Add(new Rule("1:TCP:-1;-1;-1;-1;:42552:False:False::::ALLOWED"));
+            rules.Add(new Rule("3:TCP:-1;-1;-1;-1;:-1:True:True:No Incoming TCP Connections:::BLOCKED"));
         }
 
-        public override ModuleError ModuleStop()
+        public class Quad
         {
-            lock (padlock)
+            public IPAddress dstIP = null;
+            public int dstPort = -1;
+            public IPAddress srcIP = null;
+            public int srcPort = -1;
+
+            public override bool Equals(object obj)
             {
-                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                folder = folder + Path.DirectorySeparatorChar + "firebwall";
-                if (!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder);
-                folder = folder + Path.DirectorySeparatorChar + "modules";
-                if (!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder);
-                folder = folder + Path.DirectorySeparatorChar + "configs";
-                if (!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder);
-                File.Create(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf").Close();
-                foreach (Rule r in rules)
-                {
-                    File.AppendAllText(folder + Path.DirectorySeparatorChar + this.adapter.InterfaceInformation.Name + "BasicFirewallRules.conf", r.ToFileString() + "\r\n");
-                }
+                Quad other = (Quad)obj;
+                return (srcIP == other.srcIP && srcPort == other.srcPort &&
+                        dstIP == other.dstIP && dstPort == other.dstPort) ||
+                        (srcIP == other.dstIP && srcPort == other.dstPort &&
+                        dstIP == other.srcIP && dstPort == other.srcPort);
             }
-            ModuleError me = new ModuleError();
-            me.errorType = ModuleErrorType.Success;
-            return me;
+
+            public override int GetHashCode()
+            {
+                return srcIP.GetHashCode() + dstIP.GetHashCode();
+            }
         }
 
         List<Quad> tcpConnections = new List<Quad>();
 
-        public override PacketMainReturn interiorMain(ref Packet in_packet)
+        public override void InteriorMain(ref Packet in_packet)
         {
             if (in_packet.ContainsLayer(Protocol.TCP) && !((TCPPacket)in_packet).SynSet)
             {
-                PacketMainReturn p = new PacketMainReturn("Basic Firewall");
-                p.returnType = PacketMainReturnType.Allow;
-                return p;
+                return;
             }
             lock (padlock)
             {
@@ -355,33 +350,7 @@ namespace PassThru
                     status = r.GetStatus(in_packet);
                     if (status == PacketStatus.BLOCKED)
                     {
-                        PacketMainReturn pmr = new PacketMainReturn("Basic Firewall");
-                        pmr.returnType = PacketMainReturnType.Drop;
-                        if (r.Log && r.Message != null)
-                        {
-                            pmr.returnType |= PacketMainReturnType.Log;
-                            pmr.logMessage = r.Message;
-                            Location l = null;
-                            if (in_packet.Outbound)
-                                l = Program.ls.getLocation(((IPPacket)in_packet).DestIP);
-                            else
-                                l = Program.ls.getLocation(((IPPacket)in_packet).SourceIP);
-                            if (l != null)
-                                pmr.logMessage += "\r\nThis IP originates from " + l.city + ", " + l.regionName + ", " + l.countryName;
-                        }
-                        //if (r.Notify && r.Message != null)
-                        //{
-                        //    string m = r.Message;
-                        //    Location l = null;
-                        //    if (in_packet.Outbound())
-                        //        l = Program.ls.getLocation(((IPPacket)in_packet).DestIP);
-                        //    else
-                        //        l = Program.ls.getLocation(((IPPacket)in_packet).SourceIP);
-                        //    if (l != null)
-                        //        m += "\r\nThis IP originates from " + l.city + ", " + l.regionName + ", " + l.countryName;
-                        //    Program.tray.AddLine(m);
-                        //}
-                        return pmr;
+                        return;
                     }
                     else if (status == PacketStatus.ALLOWED)
                     {
@@ -389,23 +358,11 @@ namespace PassThru
                         {
                             tcpConnections.Add(MakeQuad(in_packet));
                         }
-                        PacketMainReturn pmr = new PacketMainReturn("Basic Firewall");
-                        pmr.returnType = PacketMainReturnType.Allow;
-                        return pmr;
+                        return;
                     }
                 }
             }
-            PacketMainReturn pa = new PacketMainReturn("Basic Firewall");
-            pa.returnType = PacketMainReturnType.Allow;
-            return pa;
-        }
-
-        public void InstanceGetRuleUpdates(List<Rule> r)
-        {
-            lock (padlock)
-            {
-                rules = new List<Rule>(r);
-            }
+            return;
         }
 
         Quad MakeQuad(Packet in_packet)
@@ -423,6 +380,11 @@ namespace PassThru
                 return q;
             }
             return null;
+        }
+
+        public override void Close()
+        {
+            base.Close();
         }
     }
 }
