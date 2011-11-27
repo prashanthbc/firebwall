@@ -28,6 +28,7 @@ namespace PassThru
         {
 			public static LookupService ls = new LookupService(LookupService.GEOIP_STANDARD);
 			public static MainWindow mainWindow;
+            public static UpdateChecker uc = new UpdateChecker();
 			static bool Running = true;
 
             /// <summary>
@@ -40,6 +41,7 @@ namespace PassThru
 				NetworkAdapter.ShutdownAll();
                 mainWindow.Close();
 				mainWindow.Exit();
+                uc.Close();
 				Running = false;
 				LogCenter.ti.Dispose();
                 LogCenter.Kill();
@@ -52,6 +54,8 @@ namespace PassThru
 			static void Main(string[] args) 
             {                
                 //tray = new TrayIcon();
+                uc.Updater();
+                uc.CheckForNewVersion();
                 mainWindow = new MainWindow();
                 foreach (NetworkAdapter ni in NetworkAdapter.GetAllAdapters())
                 {

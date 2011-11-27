@@ -134,6 +134,7 @@
     </Compile>
     <Compile Include="Modules\SimpleARPPoisoningModule.cs" />
     <Compile Include="TrayIcon.cs" />
+    <Compile Include="UpdateChecker.cs" />
     <Compile Include="win32api.cs" />
   </ItemGroup>
   <ItemGroup>
