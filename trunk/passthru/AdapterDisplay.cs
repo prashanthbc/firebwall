@@ -63,6 +63,7 @@ namespace PassThru
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             ai.na.Enabled = checkBox1.Checked;
+            buttonConfig.Enabled = checkBox1.Checked;
         }
     }
 }
