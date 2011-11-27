@@ -10,8 +10,8 @@ Here is a list of features and changes we'd like to make before each version
 
 = 0.4 =
 
-  * Fix small issues with the installer
-  * Improve ARP Poisoning Protection
+  * Fix small issues with the installer(Done)
+  * Improve ARP Poisoning Protection(Done)
   * Improve Documentation
   * Implement iptables like rules, that priority can be changed
     * Rule sets, and import/export rules
