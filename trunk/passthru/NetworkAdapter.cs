@@ -141,6 +141,11 @@ namespace PassThru
                 Request.hAdapterHandle = adapterHandle;
                 Request.EthPacket.Buffer = PacketBufferIntPtr;
 
+                //DDoS module
+                DDoSModule dos = new DDoSModule(this);
+                dos.ModuleStart();
+                modules.AddModule(dos);
+
                 // ARP poisoning module
                 SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
                 saap.ModuleStart();
@@ -159,11 +164,6 @@ namespace PassThru
                 ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
                 icmpFilter.ModuleStart();
                 modules.AddModule(icmpFilter);
-
-                //DDoS module
-                DDoSModule dos = new DDoSModule(this);
-                dos.ModuleStart();
-                modules.AddModule(dos);
 
                 string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 folder = folder + System.IO.Path.DirectorySeparatorChar + "firebwall";

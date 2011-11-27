@@ -63,7 +63,7 @@ namespace PassThru
         public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
             PacketMainReturn pmr;
-
+            
             // simple sanity check to dump the ipcache if it gets too large.
             // this does not effect the blockcache of banned IPs
             if ((ipcache.Count) > 500)
@@ -99,6 +99,7 @@ namespace PassThru
                             ((ipcache[packet.SourceIP]) > 50) &&
                             (packet.PacketTime.Millisecond - TCPprevious_packet.PacketTime.Millisecond) <= 1)
                         {
+
                             pmr = new PacketMainReturn("DDoS Module");
                             pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
                             pmr.logMessage = "DoS attempt detected from IP " + packet.SourceIP + " (likely spoofed). "
@@ -165,13 +166,17 @@ namespace PassThru
                     // add IP to cache or increment packet count
                     if (!(ipcache.ContainsKey(packet.SourceIP)))
                         ipcache.Add(packet.SourceIP, 1);
+                    // if the packet is 5ms after the previous and it's the same packet, clear up the cache
+                    else if ((packet.PacketTime.Millisecond - ICMPprevious_packet.PacketTime.Millisecond) >= 5 &&
+                                packet.Equals(ICMPprevious_packet))
+                        ipcache[packet.SourceIP] = 1;
                     else
                         ipcache[packet.SourceIP] = (ipcache[packet.SourceIP]) + 1;
 
                     // if the packet is an echo reply and the IP source
                     // is the same as localhost and the time between packets is <= 1 and
                     // there are over 50 accumulated packets, it's probably a smurf attack
-                    if (packet.getType().Equals("0") &&
+                    if ( packet.getType().Equals("0") &&
                          packet.getCode().Equals("0") &&
                          packet.SourceIP.Equals(getLocalIP()) &&
                          (packet.PacketTime.Millisecond - ICMPprevious_packet.PacketTime.Millisecond) <= 1 &&
