@@ -55,7 +55,6 @@ namespace PassThru
             {                
                 //tray = new TrayIcon();
                 uc.Updater();
-                uc.CheckForNewVersion();
                 mainWindow = new MainWindow();
                 foreach (NetworkAdapter ni in NetworkAdapter.GetAllAdapters())
                 {

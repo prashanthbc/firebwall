@@ -4,7 +4,7 @@
 <?define SourceAppDir = "$(var.BASE_DIR)\Release"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="157bc7c9-7d8a-4553-b5bc-d3c921761ce8" Name="fireBwall" Language="1033" Version="0.3.2.2" Manufacturer="bwall" UpgradeCode="33279ee1-989f-4841-a222-fdf4fcc80b88">
+	<Product Id="157bc7c9-7d8a-4553-b5bc-d3c921761ce8" Name="fireBwall" Language="1033" Version="0.3.2.3" Manufacturer="bwall" UpgradeCode="33279ee1-989f-4841-a222-fdf4fcc80b88">
 		<Package InstallerVersion="200" Compressed="yes" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
