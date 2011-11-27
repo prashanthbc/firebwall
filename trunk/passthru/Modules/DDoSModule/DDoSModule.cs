@@ -11,7 +11,7 @@ namespace PassThru
      * 
      * - SYN flood protection and flow control
      * - UDP echos (fraggle)
-     * - ICMP echos and ICMP echo replies (smurf)
+     * - ICMP echo replies (smurf)
      * 
      * @note: this module WILL NOT stop a DDoS; it will only assist in mitigating it.
      * Proper DDoS protection should be implemented at a higher level (ie. hardware or better yet ISP)
@@ -156,33 +156,36 @@ namespace PassThru
                 ICMPPacket packet = ((ICMPPacket)in_packet);
                 packet.PacketTime = DateTime.UtcNow;
 
-                // init the previous packet
-                if (ICMPprevious_packet == null)
-                    ICMPprevious_packet = packet;
-
-                // add IP to cache or increment packet count
-                if ( !(ipcache.ContainsKey(packet.SourceIP)))
-                    ipcache.Add(packet.SourceIP, 1);
-                else
-                    ipcache[packet.SourceIP] = (ipcache[packet.SourceIP])+1;
-
-                // if the packet is an echo reply and the IP source
-                // is the same as localhost and the time between packets is <= 1 and
-                // there are over 50 accumulated packets, it's probably a smurf attack
-                if ( packet.getType().Equals("0") &&
-                     packet.getCode().Equals("0") &&
-                     packet.SourceIP.Equals(getLocalIP()) &&
-                     (packet.PacketTime.Millisecond - ICMPprevious_packet.PacketTime.Millisecond) <= 1 &&
-                     ipcache[packet.SourceIP] < 50 )
+                if (isIPAllowed(packet.SourceIP))
                 {
-                    pmr = new PacketMainReturn("DDoS Module");
-                    pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
-                    pmr.logMessage = "Potential Smurf attack from " + packet.SourceIP + " (likely spoofed). "
-                        + " Packets from this IP will be dropped.  You can unblock this IP from the module interface.";
-                    blockcache.Add ( new BlockedIP(packet.SourceIP, DateTime.UtcNow, "Smurf Attempt"));
-                    return pmr;
+                    // init the previous packet
+                    if (ICMPprevious_packet == null)
+                        ICMPprevious_packet = packet;
+
+                    // add IP to cache or increment packet count
+                    if (!(ipcache.ContainsKey(packet.SourceIP)))
+                        ipcache.Add(packet.SourceIP, 1);
+                    else
+                        ipcache[packet.SourceIP] = (ipcache[packet.SourceIP]) + 1;
+
+                    // if the packet is an echo reply and the IP source
+                    // is the same as localhost and the time between packets is <= 1 and
+                    // there are over 50 accumulated packets, it's probably a smurf attack
+                    if (packet.getType().Equals("0") &&
+                         packet.getCode().Equals("0") &&
+                         packet.SourceIP.Equals(getLocalIP()) &&
+                         (packet.PacketTime.Millisecond - ICMPprevious_packet.PacketTime.Millisecond) <= 1 &&
+                         ipcache[packet.SourceIP] < 50)
+                    {
+                        pmr = new PacketMainReturn("DDoS Module");
+                        pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
+                        pmr.logMessage = "Potential Smurf attack from " + packet.SourceIP + " (likely spoofed). "
+                            + " Packets from this IP will be dropped.  You can unblock this IP from the module interface.";
+                        blockcache.Add(new BlockedIP(packet.SourceIP, DateTime.UtcNow, "Smurf Attempt"));
+                        return pmr;
+                    }
+                    ICMPprevious_packet = packet;
                 }
-                ICMPprevious_packet = packet;
             }
 
             pmr = new PacketMainReturn("DDoS Module");
