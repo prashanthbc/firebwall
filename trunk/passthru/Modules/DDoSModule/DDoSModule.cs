@@ -127,7 +127,7 @@ namespace PassThru
                 packet.PacketTime = DateTime.UtcNow;
 
                 // as long as the IP is allowed
-                if (isIPAllowed(packet.SourceIP))
+                if (isIPAllowed(packet.SourceIP) && !(packet.Outbound))
                 {
                     // add IP to cache or increment packet count
                     if (!(ipcache.ContainsKey(packet.SourceIP)))
@@ -157,7 +157,7 @@ namespace PassThru
                 ICMPPacket packet = ((ICMPPacket)in_packet);
                 packet.PacketTime = DateTime.UtcNow;
 
-                if (isIPAllowed(packet.SourceIP))
+                if (isIPAllowed(packet.SourceIP) && !(packet.Outbound))
                 {
                     // init the previous packet
                     if (ICMPprevious_packet == null)
