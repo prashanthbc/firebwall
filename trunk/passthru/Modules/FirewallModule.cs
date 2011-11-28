@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace PassThru
 {
@@ -66,6 +68,52 @@ namespace PassThru
 		public NetworkAdapter adapter = null;
 		public System.Windows.Forms.UserControl uiControl = null;
 		public string moduleName = null;
+        public object PersistentData = null;
+
+        public void SaveConfig()
+        {
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            folder = folder + Path.DirectorySeparatorChar + "firebwall";
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            folder = folder + Path.DirectorySeparatorChar + "modules";
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            folder = folder + Path.DirectorySeparatorChar + "configs";
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            string file = folder + Path.DirectorySeparatorChar + adapter.InterfaceInformation.Name + moduleName + ".cfg";
+            Stream stream = File.Open(file, FileMode.Create);
+            BinaryFormatter bFormatter = new BinaryFormatter();
+            bFormatter.Serialize(stream, PersistentData);
+            stream.Close();
+        }
+
+        public void LoadConfig()
+        {
+            try
+            {
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                folder = folder + Path.DirectorySeparatorChar + "firebwall";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = folder + Path.DirectorySeparatorChar + "modules";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = folder + Path.DirectorySeparatorChar + "configs";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                string file = folder + Path.DirectorySeparatorChar + adapter.InterfaceInformation.Name + moduleName + ".cfg";
+                Stream stream = File.Open(file, FileMode.Open);
+                BinaryFormatter bFormatter = new BinaryFormatter();
+                PersistentData = bFormatter.Deserialize(stream);
+                stream.Close();
+            }
+            catch
+            {
+                PersistentData = null;
+            }
+        }
 
         public virtual System.Windows.Forms.UserControl GetControl()
         {

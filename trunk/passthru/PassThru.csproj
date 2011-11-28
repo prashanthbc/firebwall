@@ -88,6 +88,18 @@
     <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.Designer.cs">
       <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modules\BasicFirewallModule\AddEditRule.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\BasicFirewallModule\AddEditRule.Designer.cs">
+      <DependentUpon>AddEditRule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\BasicFirewallModule\BasicFirewallControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\BasicFirewallModule\BasicFirewallControl.Designer.cs">
+      <DependentUpon>BasicFirewallControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Modules\BasicFirewallModule\BasicFirewallModule.cs" />
     <Compile Include="Country.cs" />
     <Compile Include="DatabaseInfo.cs" />
@@ -133,12 +145,6 @@
     </Compile>
     <Compile Include="Region.cs" />
     <Compile Include="RegionName.cs" />
-    <Compile Include="Modules\BasicFirewallModule\RuleEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Modules\BasicFirewallModule\RuleEditor.Designer.cs">
-      <DependentUpon>RuleEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="Modules\ARPPoisoningModule\SimpleARPPoisoningModule.cs" />
     <Compile Include="TrayIcon.cs" />
     <Compile Include="UpdateChecker.cs" />
@@ -168,6 +174,12 @@
     <EmbeddedResource Include="AdapterDisplay.resx">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Modules\BasicFirewallModule\AddEditRule.resx">
+      <DependentUpon>AddEditRule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\BasicFirewallModule\BasicFirewallControl.resx">
+      <DependentUpon>BasicFirewallControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Modules\DDoSModule\DDoSDisplay.resx">
       <DependentUpon>DDoSDisplay.cs</DependentUpon>
     </EmbeddedResource>
@@ -183,9 +195,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Modules\BasicFirewallModule\RuleEditor.resx">
-      <DependentUpon>RuleEditor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
