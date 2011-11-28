@@ -13,7 +13,7 @@ namespace PassThru
         int versionA = 0;
         int versionB = 3;
         int versionC = 2;
-        int versionD = 3;
+        int versionD = 4;
         Thread updateThread;
 
         public void Updater()
@@ -69,7 +69,10 @@ namespace PassThru
                             Directory.CreateDirectory(folder);
                         string file = ret.Substring(ret.IndexOf("/files/") + "/files/".Length);
                         MyDownloadFile(new Uri(ret), folder + Path.DirectorySeparatorChar + file);
-                        MessageBox.Show("Update has finished downloading.  Please install the update from the firebwall folder in My Documents.");
+                        if (MessageBox.Show("Update has finished downloading.",  "Would you like the update to install now?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        {
+                            System.Diagnostics.Process.Start(folder + Path.DirectorySeparatorChar + file);
+                        }
                     }
                 }
                 Thread.Sleep(new TimeSpan(0, 15, 0));
@@ -78,53 +81,58 @@ namespace PassThru
 
         public string CheckForNewVersion()
         {
-            WebClient wc = new WebClient();
-            string xml = wc.DownloadString("https://code.google.com/feeds/p/firebwall/downloads/basic");
-            foreach (string line in xml.Split("\n".ToCharArray()))
+            try
             {
-                if (line.Contains("href=\"http://code.google.com/p/firebwall/downloads/detail?name=firebwall-"))
+                WebClient wc = new WebClient();
+                string xml = wc.DownloadString("https://code.google.com/feeds/p/firebwall/downloads/basic");
+                foreach (string line in xml.Split("\n".ToCharArray()))
                 {
-                    string url = line.Substring(line.IndexOf("href=\"") + "href=\"".Length);
-                    url = url.Substring(0, url.IndexOf("\""));
-                    string version = url.Substring(url.IndexOf("-") + 1, url.IndexOf(".msi") - (url.IndexOf("-") + 1));
-                    url = url.Replace("http://code.google.com/p/firebwall/downloads/detail?name=", "https://firebwall.googlecode.com/files/");
-                    string a = version.Substring(0, version.IndexOf("."));
-                    if (versionA == int.Parse(a))
+                    if (line.Contains("href=\"http://code.google.com/p/firebwall/downloads/detail?name=firebwall-"))
                     {
-                        version = version.Substring(version.IndexOf(".") + 1);
-                        string b = version.Substring(0, version.IndexOf("."));
-                        if (versionB == int.Parse(b))
+                        string url = line.Substring(line.IndexOf("href=\"") + "href=\"".Length);
+                        url = url.Substring(0, url.IndexOf("\""));
+                        string version = url.Substring(url.IndexOf("-") + 1, url.IndexOf(".msi") - (url.IndexOf("-") + 1));
+                        url = url.Replace("http://code.google.com/p/firebwall/downloads/detail?name=", "https://firebwall.googlecode.com/files/");
+                        string a = version.Substring(0, version.IndexOf("."));
+                        if (versionA == int.Parse(a))
                         {
                             version = version.Substring(version.IndexOf(".") + 1);
-                            string c = version.Substring(0, version.IndexOf("."));
-                            if (versionC == int.Parse(c))
+                            string b = version.Substring(0, version.IndexOf("."));
+                            if (versionB == int.Parse(b))
                             {
                                 version = version.Substring(version.IndexOf(".") + 1);
-                                if (versionD == int.Parse(version))
+                                string c = version.Substring(0, version.IndexOf("."));
+                                if (versionC == int.Parse(c))
                                 {
-                                    return null;
+                                    version = version.Substring(version.IndexOf(".") + 1);
+                                    if (versionD == int.Parse(version))
+                                    {
+                                        return null;
+                                    }
+                                    else if (versionD < int.Parse(version))
+                                    {
+                                        return url;
+                                    }
                                 }
-                                else if (versionD < int.Parse(version))
+                                else if (versionC < int.Parse(c))
                                 {
                                     return url;
                                 }
                             }
-                            else if (versionC < int.Parse(c))
+                            else if (versionB < int.Parse(b))
                             {
                                 return url;
                             }
                         }
-                        else if (versionB < int.Parse(b))
+                        else if (versionA < int.Parse(a))
                         {
                             return url;
                         }
                     }
-                    else if (versionA < int.Parse(a))
-                    {
-                        return url;
-                    }
                 }
+                return null;
             }
+            catch { }
             return null;
         }
     }
