@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 using System.Windows.Forms;
@@ -23,46 +24,47 @@ using NdisapiSpace;
 using Win32APISPace;
 
 namespace PassThru
-{
-		class Program: System.Object 
+{    
+	class Program
+    {        
+		public static LookupService ls = new LookupService(LookupService.GEOIP_STANDARD);
+		public static MainWindow mainWindow;
+        public static UpdateChecker uc = new UpdateChecker();
+		static bool Running = true;
+
+        /// <summary>
+        /// Makes sure to close everything properly as the whole thing closes
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="ea"></param>
+		public static void Close(object o, EventArgs ea) 
         {
-			public static LookupService ls = new LookupService(LookupService.GEOIP_STANDARD);
-			public static MainWindow mainWindow;
-            public static UpdateChecker uc = new UpdateChecker();
-			static bool Running = true;
-
-            /// <summary>
-            /// Makes sure to close everything properly as the whole thing closes
-            /// </summary>
-            /// <param name="o"></param>
-            /// <param name="ea"></param>
-			public static void Close(object o, EventArgs ea) 
-            {
-				NetworkAdapter.ShutdownAll();
-                mainWindow.Close();
-				mainWindow.Exit();
-                uc.Close();
-				Running = false;
-				LogCenter.ti.Dispose();
-                LogCenter.Kill();
-			}
-
-            /// <summary>
-            /// Entry point for the application
-            /// </summary>
-            /// <param name="args"></param>
-			static void Main(string[] args) 
-            {                
-                //tray = new TrayIcon();
-                uc.Updater();
-                mainWindow = new MainWindow();
-                foreach (NetworkAdapter ni in NetworkAdapter.GetAllAdapters())
-                {
-                    ni.StartProcessing();
-                }
-                Application.Run(mainWindow);
-                while (Running)
-                    Thread.Sleep(100);
-			}
+			NetworkAdapter.ShutdownAll();
+            mainWindow.Close();
+			mainWindow.Exit();
+            uc.Close();
+			Running = false;
+			LogCenter.ti.Dispose();
+            LogCenter.Kill();
 		}
+
+        /// <summary>
+        /// Entry point for the application
+        /// </summary>
+        /// <param name="args"></param>            
+		static void Main(string[] args) 
+        {                
+            //tray = new TrayIcon();
+                
+            uc.Updater();
+            mainWindow = new MainWindow();
+            foreach (NetworkAdapter ni in NetworkAdapter.GetAllAdapters())
+            {
+                ni.StartProcessing();
+            }
+            Application.Run(mainWindow);
+            while (Running)
+                Thread.Sleep(100);
+		}
+	}
 }
