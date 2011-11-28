@@ -63,7 +63,21 @@ namespace PassThru
         public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
             PacketMainReturn pmr;
-            
+
+            // check it the packet is, or contains, IP
+            if (in_packet.ContainsLayer(Protocol.IP))
+            {
+                // create a temp IPPacket obj and
+                // check the IP address
+                IPPacket temp = (IPPacket)in_packet;
+                if (!(isIPAllowed(temp.SourceIP)))
+                {
+                    pmr = new PacketMainReturn("DDoS Module");
+                    pmr.returnType = PacketMainReturnType.Drop;
+                    return pmr;
+                }
+            }
+
             // simple sanity check to dump the ipcache if it gets too large.
             // this does not effect the blockcache of banned IPs
             if ((ipcache.Count) > 500)
@@ -192,7 +206,7 @@ namespace PassThru
                     ICMPprevious_packet = packet;
                 }
             }
-
+      
             pmr = new PacketMainReturn("DDoS Module");
             pmr.returnType = PacketMainReturnType.Allow;
             return pmr;
