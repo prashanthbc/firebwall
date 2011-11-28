@@ -90,8 +90,7 @@ namespace PassThru
                 packet.PacketTime = DateTime.UtcNow;
 
                 // if it's inbound and the SYN flag is set and the IP is allowed
-                if (!packet.Outbound && packet.SynSet && 
-                    isIPAllowed(packet.SourceIP))
+                if (!packet.Outbound && packet.SynSet)
                 {
                     // first packet init
                     if (TCPprevious_packet == null)
@@ -141,7 +140,7 @@ namespace PassThru
                 packet.PacketTime = DateTime.UtcNow;
 
                 // as long as the IP is allowed
-                if (isIPAllowed(packet.SourceIP) && !(packet.Outbound))
+                if (!(packet.Outbound))
                 {
                     // add IP to cache or increment packet count
                     if (!(ipcache.ContainsKey(packet.SourceIP)))
@@ -171,7 +170,7 @@ namespace PassThru
                 ICMPPacket packet = ((ICMPPacket)in_packet);
                 packet.PacketTime = DateTime.UtcNow;
 
-                if (isIPAllowed(packet.SourceIP) && !(packet.Outbound))
+                if (!(packet.Outbound))
                 {
                     // init the previous packet
                     if (ICMPprevious_packet == null)
@@ -194,7 +193,7 @@ namespace PassThru
                          packet.getCode().Equals("0") &&
                          packet.SourceIP.Equals(getLocalIP()) &&
                          (packet.PacketTime.Millisecond - ICMPprevious_packet.PacketTime.Millisecond) <= 1 &&
-                         ipcache[packet.SourceIP] < 50)
+                         ipcache[packet.SourceIP] > 50)
                     {
                         pmr = new PacketMainReturn("DDoS Module");
                         pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
