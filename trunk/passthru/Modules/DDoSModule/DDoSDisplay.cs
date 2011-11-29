@@ -86,6 +86,10 @@ namespace PassThru
         /// <param name="e"></param>
         private void removeButton_Click(object sender, EventArgs e)
         {
+            // if nothing's been selected, get out
+            if (dosBlockTable.SelectedRows.Count <= 0)
+                return;
+
             // grab the rowidx/type from the table
             int rowIdx = dosBlockTable.SelectedCells[0].RowIndex;
             string remIP = dosBlockTable["blockedip", rowIdx].Value.ToString();

@@ -89,7 +89,7 @@ namespace PassThru
                 TCPPacket packet = ((TCPPacket)in_packet);
                 packet.PacketTime = DateTime.UtcNow;
 
-                // if it's inbound and the SYN flag is set and the IP is allowed
+                // if it's inbound and the SYN flag is set
                 if (!packet.Outbound && packet.SynSet)
                 {
                     // first packet init
@@ -99,12 +99,12 @@ namespace PassThru
                     // if the IP hasn't been logged yet 
                     if (!(ipcache.ContainsKey(packet.SourceIP)))
                         ipcache.Add(packet.SourceIP, 1);
-
                     // if the ipcache contains the ip
                     else if (ipcache.ContainsKey(packet.SourceIP))
                     {
-                        // increment the packet count
-                        ipcache[packet.SourceIP] = (ipcache[packet.SourceIP])+1;
+                        // increment the packet count if they're coming in fast
+                        if ( (packet.PacketTime.Millisecond - TCPprevious_packet.PacketTime.Millisecond) <= 1)
+                            ipcache[packet.SourceIP] = (ipcache[packet.SourceIP])+1;
 
                         // check if this packet = previous, if the packet count is > 50, 
                         // and if the time between sent packets is less than a second
@@ -112,7 +112,6 @@ namespace PassThru
                             ((ipcache[packet.SourceIP]) > 50) &&
                             (packet.PacketTime.Millisecond - TCPprevious_packet.PacketTime.Millisecond) <= 1)
                         {
-
                             pmr = new PacketMainReturn("DDoS Module");
                             pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
                             pmr.logMessage = "DoS attempt detected from IP " + packet.SourceIP + " (likely spoofed). "
@@ -139,7 +138,7 @@ namespace PassThru
                 UDPPacket packet = ((UDPPacket)in_packet);
                 packet.PacketTime = DateTime.UtcNow;
 
-                // as long as the IP is allowed
+                // if it's inbound
                 if (!(packet.Outbound))
                 {
                     // add IP to cache or increment packet count
@@ -183,7 +182,8 @@ namespace PassThru
                     else if ((packet.PacketTime.Millisecond - ICMPprevious_packet.PacketTime.Millisecond) >= 5 &&
                                 packet.Equals(ICMPprevious_packet))
                         ipcache[packet.SourceIP] = 1;
-                    else
+                    // if the packet is coming in quickly, add it to the packet count
+                    else if ( (packet.PacketTime.Millisecond - ICMPprevious_packet.PacketTime.Millisecond) <= 1)
                         ipcache[packet.SourceIP] = (ipcache[packet.SourceIP]) + 1;
 
                     // if the packet is an echo reply and the IP source
