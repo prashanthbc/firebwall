@@ -44,15 +44,34 @@ namespace PassThru
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem != null)
+            try
             {
-                string i = (string)listBox1.SelectedItem;
-                IPAddress ip = IPAddress.Parse(i.Split(' ')[2]);
-                cache.Remove(ip);
-                saap.UpdateCache(cache);
-                cache = saap.GetCache();
-                saap_UpdatedArpCache();
+                if (listBox1.SelectedItem != null)
+                {
+                    string i = (string)listBox1.SelectedItem;
+                    IPAddress ip = IPAddress.Parse(i.Split(' ')[2]);
+                    cache.Remove(ip);
+                    saap.UpdateCache(cache);
+                    cache = saap.GetCache();
+                    saap_UpdatedArpCache();
+                }
             }
+            catch { }
+        }
+
+        private void checkBoxSave_CheckedChanged(object sender, EventArgs e)
+        {
+            saap.data.Save = checkBoxSave.Checked;
+        }
+
+        private void checkBoxLogUnsolicited_CheckedChanged(object sender, EventArgs e)
+        {
+            saap.data.LogUnsolic = checkBoxLogUnsolicited.Checked;
+        }
+
+        private void checkBoxLogPoisoning_CheckedChanged(object sender, EventArgs e)
+        {
+            saap.data.LogAttacks = checkBoxLogPoisoning.Checked;
         }
     }
 }

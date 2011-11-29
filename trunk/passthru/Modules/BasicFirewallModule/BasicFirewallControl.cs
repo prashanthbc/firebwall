@@ -54,10 +54,31 @@ namespace PassThru.Modules.BasicFirewallModule
 
         private void button1_Click(object sender, EventArgs e)
         {
-            AddEditRule aer = new AddEditRule();
-            if (aer.ShowDialog() == DialogResult.OK)
+            try
             {
-                listBox1.Items.Add(aer.newRule);
+                AddEditRule aer = new AddEditRule();
+                if (aer.ShowDialog() == DialogResult.OK)
+                {
+                    listBox1.Items.Add(aer.newRule);
+                    List<BasicFirewall.Rule> r = new List<BasicFirewall.Rule>();
+                    foreach (object rule in listBox1.Items)
+                    {
+                        r.Add((BasicFirewall.Rule)rule);
+                    }
+
+                    basicfirewall.InstanceGetRuleUpdates(r);
+                }
+            }
+            catch { }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (listBox1.SelectedItem == null) return;
+                listBox1.Items.RemoveAt(listBox1.SelectedIndex);
+
                 List<BasicFirewall.Rule> r = new List<BasicFirewall.Rule>();
                 foreach (object rule in listBox1.Items)
                 {
@@ -65,21 +86,8 @@ namespace PassThru.Modules.BasicFirewallModule
                 }
 
                 basicfirewall.InstanceGetRuleUpdates(r);
-            }            
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (listBox1.SelectedItem == null) return;
-            listBox1.Items.RemoveAt(listBox1.SelectedIndex);
-
-            List<BasicFirewall.Rule> r = new List<BasicFirewall.Rule>();
-            foreach (object rule in listBox1.Items)
-            {
-                r.Add((BasicFirewall.Rule)rule);
             }
-
-            basicfirewall.InstanceGetRuleUpdates(r);
+            catch { }
         }
 
         private void BasicFirewallControl_Load(object sender, EventArgs e)
