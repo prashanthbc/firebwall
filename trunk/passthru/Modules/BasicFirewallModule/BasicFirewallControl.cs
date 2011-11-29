@@ -32,6 +32,7 @@ namespace PassThru.Modules.BasicFirewallModule
         {
             if (dragged == null) return;
             int index = this.listBox1.IndexFromPoint(new Point(e.X, e.Y));
+            if (listBox1.Items.IndexOf(dragged) == index) return;
             if (index < 0) index = this.listBox1.Items.Count - 1;
             this.listBox1.Items.Remove(dragged);
             this.listBox1.Items.Insert(index, dragged);
