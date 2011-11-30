@@ -50,6 +50,7 @@
             // 
             // button1
             // 
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Location = new System.Drawing.Point(3, 241);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(403, 37);
@@ -132,6 +133,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ArpPoisoningProtection";
             this.Size = new System.Drawing.Size(409, 281);
+            this.Load += new System.EventHandler(this.ArpPoisoningProtection_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();

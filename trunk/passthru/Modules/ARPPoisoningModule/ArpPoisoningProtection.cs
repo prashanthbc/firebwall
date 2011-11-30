@@ -13,7 +13,7 @@ namespace PassThru
     public partial class ArpPoisoningProtection : UserControl
     {
         SimpleAntiARPPoisoning saap;
-        Dictionary<IPAddress, PhysicalAddress> cache = new Dictionary<IPAddress, PhysicalAddress>();
+        SerializableDictionary<IPAddress, string> cache = new SerializableDictionary<IPAddress, string>();
 
         public ArpPoisoningProtection(SimpleAntiARPPoisoning saap)
         {
@@ -34,10 +34,10 @@ namespace PassThru
             }
             else
             {
-                listBox1.Items.Clear();                
-                foreach (KeyValuePair<IPAddress, PhysicalAddress> i in cache)
+                listBox1.Items.Clear();
+                foreach (KeyValuePair<IPAddress, string> i in cache)
                 {
-                    listBox1.Items.Add(i.Value.ToString() + " -> " + i.Key.ToString());
+                    listBox1.Items.Add(i.Value + " -> " + i.Key.ToString());
                 }
             }
         }
@@ -72,6 +72,14 @@ namespace PassThru
         private void checkBoxLogPoisoning_CheckedChanged(object sender, EventArgs e)
         {
             saap.data.LogAttacks = checkBoxLogPoisoning.Checked;
+        }
+
+        private void ArpPoisoningProtection_Load(object sender, EventArgs e)
+        {
+            checkBoxLogPoisoning.Checked = saap.data.LogAttacks;
+            checkBoxLogUnsolicited.Checked = saap.data.LogUnsolic;
+            checkBoxSave.Checked = saap.data.Save;
+            saap_UpdatedArpCache();
         }
     }
 }

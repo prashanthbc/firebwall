@@ -37,7 +37,7 @@ namespace PassThru
         public override ModuleError ModuleStop()
         {
             if (!data.Save)
-                data.arpCache = new Dictionary<IPAddress, PhysicalAddress>();
+                data.arpCache = new SerializableDictionary<IPAddress, string>();
 
             PersistentData = data;
             SaveConfig();
@@ -51,7 +51,7 @@ namespace PassThru
         [Serializable]
         public class ArpData
         {
-            public Dictionary<IPAddress, PhysicalAddress> arpCache = new Dictionary<IPAddress, PhysicalAddress>();
+            public SerializableDictionary<IPAddress, string> arpCache = new SerializableDictionary<IPAddress, string>();
             public bool Save = true;
             public bool LogUnsolic = true;
             public bool LogAttacks = true;
@@ -62,21 +62,21 @@ namespace PassThru
         public event System.Threading.ThreadStart UpdatedArpCache;
         object padlock = new object();
 
-        
 
-        public Dictionary<IPAddress, PhysicalAddress> GetCache()
+
+        public SerializableDictionary<IPAddress, string> GetCache()
         {
             lock (padlock)
             {
-                return new Dictionary<IPAddress, PhysicalAddress>(data.arpCache);
+                return new SerializableDictionary<IPAddress, string>(data.arpCache);
             }
         }
 
-        public void UpdateCache(Dictionary<IPAddress, PhysicalAddress> cache)
+        public void UpdateCache(SerializableDictionary<IPAddress, string> cache)
         {
             lock (padlock)
             {
-                data.arpCache = new Dictionary<IPAddress, PhysicalAddress>(cache);
+                data.arpCache = new SerializableDictionary<IPAddress, string>(cache);
             }
         }
 
@@ -107,7 +107,7 @@ namespace PassThru
                             {
                                 if (data.arpCache.ContainsKey(arpp.ASenderIP))
                                 {
-                                    if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac))
+                                    if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac.ToString()))
                                     {
                                         PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmr.returnType = PacketMainReturnType.Edited;                                        
@@ -115,7 +115,7 @@ namespace PassThru
                                             pmr.returnType |= PacketMainReturnType.Log;                                        
                                         pmr.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
                                         arpp.ATargetIP = arpp.ASenderIP;
-                                        arpp.ATargetMac = data.arpCache[arpp.ATargetIP];
+                                        arpp.ATargetMac = PhysicalAddress.Parse(data.arpCache[arpp.ATargetIP]);
                                         arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
                                         arpp.FromMac = arpp.ASenderMac;
                                         arpp.ToMac = arpp.ATargetMac;
@@ -138,7 +138,7 @@ namespace PassThru
                                 }
                                 else
                                 {
-                                    data.arpCache[arpp.ASenderIP] = arpp.ASenderMac;
+                                    data.arpCache[arpp.ASenderIP] = arpp.ASenderMac.ToString();
                                     if (UpdatedArpCache != null)
                                         UpdatedArpCache();
                                     requestedIPs.Remove(ip);
@@ -151,7 +151,7 @@ namespace PassThru
                             {
                                 if (data.arpCache.ContainsKey(arpp.ASenderIP))
                                 {
-                                    if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac))
+                                    if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac.ToString()))
                                     {
                                         PacketMainReturn pmra = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmra.returnType = PacketMainReturnType.Edited;
@@ -159,7 +159,7 @@ namespace PassThru
                                             pmra.returnType |= PacketMainReturnType.Log;                                        
                                         pmra.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
                                         arpp.ATargetIP = arpp.ASenderIP;
-                                        arpp.ATargetMac = data.arpCache[arpp.ATargetIP];
+                                        arpp.ATargetMac = PhysicalAddress.Parse(data.arpCache[arpp.ATargetIP]);
                                         arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
                                         arpp.FromMac = arpp.ASenderMac;
                                         arpp.ToMac = arpp.ATargetMac;
@@ -191,7 +191,7 @@ namespace PassThru
                         {
                             if (data.arpCache.ContainsKey(arpp.ASenderIP))
                             {
-                                if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac))
+                                if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac.ToString()))
                                 {
                                     PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                     pmr.returnType = PacketMainReturnType.Drop;

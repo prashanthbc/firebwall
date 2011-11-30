@@ -146,6 +146,7 @@
     <Compile Include="Region.cs" />
     <Compile Include="RegionName.cs" />
     <Compile Include="Modules\ARPPoisoningModule\SimpleARPPoisoningModule.cs" />
+    <Compile Include="SerializableDictionary.cs" />
     <Compile Include="TrayIcon.cs" />
     <Compile Include="UpdateChecker.cs" />
     <Compile Include="win32api.cs" />
