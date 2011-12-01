@@ -70,11 +70,14 @@ namespace PassThru
         /// Adds a packet to the file
         /// </summary>
         /// <param name="packet"></param>
-		public void AddPacket(byte[] packet) 
+		public unsafe void AddPacket(byte* packet, int length) 
         {
+            byte[] pkt = new byte[length];
+            for (int x = 0; x < length; x++)
+                pkt[x] = packet[x];
             lock (padlock)
-            {
-                packetQueue.Enqueue(new KeyValuePair<DateTime, byte[]>(DateTime.UtcNow, packet));
+            {                
+                packetQueue.Enqueue(new KeyValuePair<DateTime, byte[]>(DateTime.UtcNow, pkt));
             }
 		}
 

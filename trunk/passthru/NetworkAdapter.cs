@@ -141,6 +141,11 @@ namespace PassThru
                 Request.hAdapterHandle = adapterHandle;
                 Request.EthPacket.Buffer = PacketBufferIntPtr;
 
+                //Static and test modules
+                BasicFirewall tfm = new BasicFirewall(this);
+                tfm.ModuleStart();
+                modules.AddModule(tfm);
+
                 //DDoS module
                 DDoSModule dos = new DDoSModule(this);
                 dos.ModuleStart();
@@ -149,12 +154,7 @@ namespace PassThru
                 // ARP poisoning module
                 SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
                 saap.ModuleStart();
-                modules.AddModule(saap);
-
-				//Static and test modules
-				BasicFirewall tfm = new BasicFirewall(this);
-				tfm.ModuleStart();
-				modules.AddModule(tfm);
+                modules.AddModule(saap);				
 
 				//DumpToPcapModule dtpm = new DumpToPcapModule(this);
 				//dtpm.ModuleStart();
@@ -175,15 +175,17 @@ namespace PassThru
                 string f = folder + System.IO.Path.DirectorySeparatorChar + "blocked-" + this.InterfaceInformation.Name + "-" + PcapCreator.Instance.GetNewDate() + ".pcap";
                 pcaplog = new PcapFileWriter(f);
 
+                INTERMEDIATE_BUFFER* PacketPointer;
+
 				while (true)
 				{
 					hEvent.WaitOne();
                     while (Ndisapi.ReadPacket(hNdisapi, ref Request))
                     {
+                        PacketPointer = (INTERMEDIATE_BUFFER*)PacketBufferIntPtr;
+                        //PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
 
-                        PacketBuffer = (INTERMEDIATE_BUFFER)Marshal.PtrToStructure(PacketBufferIntPtr, typeof(INTERMEDIATE_BUFFER));
-
-                        Packet pkt = new EthPacket(ref PacketBuffer).MakeNextLayerPacket();
+                        Packet pkt = new EthPacket(PacketPointer).MakeNextLayerPacket();
 
                         if (pkt.Outbound)
                         {
@@ -221,17 +223,13 @@ namespace PassThru
 
                         if (!drop)
                         {
-                            if (edit)
-                            {
-                                Marshal.StructureToPtr(PacketBuffer, PacketBufferIntPtr, false);
-                            }
                             if (pkt.Outbound)
                                 Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
                             else
                                 Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
                         }
                         else
-                            pcaplog.AddPacket(pkt.Data());
+                            pcaplog.AddPacket(pkt.Data(), (int)pkt.Length());
                     }
 
 					hEvent.Reset();

@@ -28,11 +28,11 @@ namespace PassThru
     /// Interface for a network Packet
     /// Packets are upward processing!
     /// </summary>
-	public abstract class Packet 
+	public abstract unsafe class Packet 
     {
 		public abstract bool ContainsLayer(Protocol layer);
 
-        public abstract byte[] Data();
+        public abstract byte* Data();
 
         public abstract Protocol GetHighestLayer();
 
@@ -63,22 +63,22 @@ namespace PassThru
     /*
         Ethernet frame packet
         */
-	public class EthPacket: Packet 
+	public unsafe class EthPacket: Packet 
     {
-		public EthPacket(ref INTERMEDIATE_BUFFER in_packet) 
+		public EthPacket(INTERMEDIATE_BUFFER* in_packet) 
         {
 			data = in_packet;
 		}
-		public INTERMEDIATE_BUFFER data;
+		public INTERMEDIATE_BUFFER* data;
 
 		public override bool ContainsLayer(Protocol layer) 
         {
 			return (layer == Protocol.Ethernet);
 		}
 
-		public override byte[] Data() 
+		public override byte* Data() 
         {
-			return data.m_IBuffer;
+			return data->m_IBuffer;
 		}
 
 		public override Protocol GetHighestLayer() 
@@ -88,7 +88,7 @@ namespace PassThru
 
 		public override uint Length() 
         {
-			return data.m_Length;
+			return data->m_Length;
 		}
 
         public override uint LayerStart()
@@ -105,14 +105,14 @@ namespace PassThru
         {
             if (isEETH())
             {
-                return new EETHPacket(ref data).MakeNextLayerPacket();
+                return new EETHPacket(data).MakeNextLayerPacket();
             }
             else if (isIP())
             {
-                return new IPPacket(ref data).MakeNextLayerPacket();
+                return new IPPacket(data).MakeNextLayerPacket();
             }
             else if (isARP())
-                return new ARPPacket(ref data);
+                return new ARPPacket(data);
             else
                 return this;
 		}
@@ -121,17 +121,17 @@ namespace PassThru
         {
             get
             {
-                return (data.m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND);
+                return (data->m_dwDeviceFlags == Ndisapi.PACKET_FLAG_ON_SEND);
             }
             set
             {
                 if (value)
                 {
-                    data.m_dwDeviceFlags = Ndisapi.PACKET_FLAG_ON_SEND;
+                    data->m_dwDeviceFlags = Ndisapi.PACKET_FLAG_ON_SEND;
                 }
                 else
                 {
-                    data.m_dwDeviceFlags = Ndisapi.PACKET_FLAG_ON_RECEIVE;
+                    data->m_dwDeviceFlags = Ndisapi.PACKET_FLAG_ON_RECEIVE;
                 }
             }
 		}
@@ -139,17 +139,17 @@ namespace PassThru
         // check Type for 0x0806
 		public bool isARP() 
         {
-            return (data.m_IBuffer[0x0c] == 0x08 && data.m_IBuffer[0x0d] == 0x06);
+            return (data->m_IBuffer[0x0c] == 0x08 && data->m_IBuffer[0x0d] == 0x06);
 		}
 
 		public bool isEETH() 
         {
-			return (data.m_IBuffer[0x0c] == 0x98 && data.m_IBuffer[0x0d] == 0x09);
+			return (data->m_IBuffer[0x0c] == 0x98 && data->m_IBuffer[0x0d] == 0x09);
 		}
 
 		public bool isIP() 
         {
-			return (data.m_IBuffer[0x0c] == 0x08 && data.m_IBuffer[0x0d] == 0x00);
+			return (data->m_IBuffer[0x0c] == 0x08 && data->m_IBuffer[0x0d] == 0x00);
 		}
 
 		public PhysicalAddress FromMac 
@@ -157,13 +157,15 @@ namespace PassThru
 			get 
             {
 				byte[] mac = new byte[6];
-				Buffer.BlockCopy(data.m_IBuffer, 6, mac, 0, 6);
+                for (int x = 0; x < 6; x++)
+                    mac[x] = data->m_IBuffer[x + 6];
 				return new PhysicalAddress(mac);
 			}
             set
             {
                 byte[] mac = value.GetAddressBytes();
-                Buffer.BlockCopy(mac, 0, data.m_IBuffer, 6, 6);
+                for (int x = 0; x < 6; x++)
+                    data->m_IBuffer[6 + x] = mac[x];
             }
 		}
 
@@ -172,13 +174,15 @@ namespace PassThru
 			get 
             {
 				byte[] mac = new byte[6];
-				Buffer.BlockCopy(data.m_IBuffer, 0, mac, 0, 6);
+                for (int x = 0; x < 6; x++)
+                    mac[x] = data->m_IBuffer[x];
 				return new PhysicalAddress(mac);
 			}
             set
             {
                 byte[] mac = value.GetAddressBytes();
-                Buffer.BlockCopy(mac, 0, data.m_IBuffer, 0, 6);
+                for (int x = 0; x < 6; x++)
+                    data->m_IBuffer[x] = mac[x];
             }
 		}
 	}
@@ -187,14 +191,14 @@ namespace PassThru
     /// Encrypted ethernet packet
     /// (Not yet implemented)
     /// </summary>
-	public class EETHPacket: EthPacket 
+	public unsafe class EETHPacket: EthPacket 
     {
-		public EETHPacket(ref EthPacket eth): base(ref eth.data) 
+		public EETHPacket(EthPacket eth): base(eth.data) 
         {
 		}
 
-        public EETHPacket(ref INTERMEDIATE_BUFFER in_packet)
-            : base(ref in_packet) 
+        public EETHPacket(INTERMEDIATE_BUFFER* in_packet)
+            : base(in_packet) 
         {
 		}
 
@@ -220,11 +224,11 @@ namespace PassThru
        /*
         ICMPPacket object
         */
-    public class ICMPPacket : IPPacket
+    public unsafe class ICMPPacket : IPPacket
     {
         // accepts intermediate buff, checks if ICMP
-        public ICMPPacket(ref INTERMEDIATE_BUFFER in_packet)
-            : base(ref in_packet) 
+        public ICMPPacket(INTERMEDIATE_BUFFER* in_packet)
+            : base(in_packet) 
         {
 			if (!isICMP())
 				throw new Exception("Not an ICMP packet!");
@@ -232,8 +236,8 @@ namespace PassThru
 		}
 
         // accepts IPPacket, checks if ICMP
-        public ICMPPacket(ref IPPacket eth)
-            : base(ref eth.data)
+        public ICMPPacket(IPPacket eth)
+            : base(eth.data)
         {
             if (!isICMP())
                 throw new Exception("Not an ICMP packet!");
@@ -276,23 +280,23 @@ namespace PassThru
         // return ICMP code
         public string getCode()
         {
-            return (data.m_IBuffer[start + 1]).ToString();
+            return (data->m_IBuffer[start + 1]).ToString();
         }
 
         // return ICMP type
         public string getType()
         {
-            return (data.m_IBuffer[start]).ToString();
+            return (data->m_IBuffer[start]).ToString();
         }
     }
 
     /*
         ARP object
         */
-	public class ARPPacket: EthPacket 
+	public unsafe class ARPPacket: EthPacket 
     {
-        public ARPPacket(ref EthPacket eth)
-            : base(ref eth.data) 
+        public ARPPacket(EthPacket eth)
+            : base(eth.data) 
         {
 			if (!isARP())
 				throw new Exception("Not an ARP packet!");
@@ -300,8 +304,8 @@ namespace PassThru
             length = this.Length() - base.LayerLength();
 		}
 
-        public ARPPacket(ref INTERMEDIATE_BUFFER in_packet)
-            : base(ref in_packet) 
+        public ARPPacket(INTERMEDIATE_BUFFER* in_packet)
+            : base(in_packet) 
         {
 			if (!isARP())
 				throw new Exception("Not an ARP packet!");
@@ -345,19 +349,19 @@ namespace PassThru
         {
             get
             {
-                return (data.m_IBuffer[start + 6] == 0x00 && data.m_IBuffer[start + 7] == 0x01);
+                return (data->m_IBuffer[start + 6] == 0x00 && data->m_IBuffer[start + 7] == 0x01);
             }
             set
             {
                 if (value)
                 {
-                    data.m_IBuffer[start + 6] = 0x00;
-                    data.m_IBuffer[start + 7] = 0x01;
+                    data->m_IBuffer[start + 6] = 0x00;
+                    data->m_IBuffer[start + 7] = 0x01;
                 }
                 else
                 {
-                    data.m_IBuffer[start + 6] = 0x00;
-                    data.m_IBuffer[start + 7] = 0x02;
+                    data->m_IBuffer[start + 6] = 0x00;
+                    data->m_IBuffer[start + 7] = 0x02;
                 }
             }
 		}
@@ -367,13 +371,15 @@ namespace PassThru
 			get 
             {
 				byte[] ip = new byte[4];
-                Buffer.BlockCopy(data.m_IBuffer, (int)start + 0xe, ip, 0, 4);
+                for (int x = 0; x < 4; x++)
+                    ip[x] = data->m_IBuffer[start + 0xe + x];
 				return new IPAddress(ip);
 			}
             set
             {
                 byte[] ip = value.GetAddressBytes();
-                Buffer.BlockCopy(ip, 0, data.m_IBuffer, (int)start + 0xe, 4);
+                for (int x = 0; x < 4; x++)
+                    data->m_IBuffer[start + 0xe + x] = ip[x];
             }
 		}
 
@@ -382,13 +388,15 @@ namespace PassThru
 			get 
             {
 				byte[] ip = new byte[6];
-                Buffer.BlockCopy(data.m_IBuffer, (int)start + 0x8, ip, 0, 6);
+                for (int x = 0; x < 6; x++)
+                    ip[x] = data->m_IBuffer[start + 0x8 + x];
 				return new PhysicalAddress(ip);
 			}
             set
             {
                 byte[] ip = value.GetAddressBytes();
-                Buffer.BlockCopy(ip, 0, data.m_IBuffer, (int)start + 0x8, 6);
+                for (int x = 0; x < 6; x++)
+                    data->m_IBuffer[start + 0x8 + x] = ip[x];
             }
 		}
 
@@ -397,13 +405,15 @@ namespace PassThru
 			get 
             {
 				byte[] ip = new byte[4];
-                Buffer.BlockCopy(data.m_IBuffer, (int)start + 0x18, ip, 0, 4);
+                for (int x = 0; x < 4; x++)
+                    ip[x] = data->m_IBuffer[start + 0x18 + x];
 				return new IPAddress(ip);
 			}
             set
             {
                 byte[] ip = value.GetAddressBytes();
-                Buffer.BlockCopy(ip, 0, data.m_IBuffer, (int)start + 0x18, 4);
+                for (int x = 0; x < 4; x++)
+                    data->m_IBuffer[start + 0x18 + x] = ip[x];
             }
 		}
 
@@ -412,13 +422,15 @@ namespace PassThru
 			get
             {
 				byte[] ip = new byte[6];
-                Buffer.BlockCopy(data.m_IBuffer, (int)start + 0x12, ip, 0, 6);
+                for (int x = 0; x < 6; x++)
+                    ip[x] = data->m_IBuffer[start + 0x12 + x];
 				return new PhysicalAddress(ip);
 			}
             set
             {
                 byte[] ip = value.GetAddressBytes();
-                Buffer.BlockCopy(ip, 0, data.m_IBuffer, (int)start + 0x12, 6);
+                for (int x = 0; x < 6; x++)
+                    data->m_IBuffer[start + 0x12 + x] = ip[x];
             }
 		}
 	}
@@ -426,24 +438,24 @@ namespace PassThru
     /*
         IP Packet object
         */
-	public class IPPacket: EthPacket 
+	public unsafe class IPPacket: EthPacket 
     {
-        public IPPacket(ref EthPacket eth)
-            : base(ref eth.data) 
+        public IPPacket(EthPacket eth)
+            : base(eth.data) 
         {
 			if (!isIP())
 				throw new Exception("Not an IP packet!");
             start = base.LayerStart() + base.LayerLength();
-            length = (uint)((data.m_IBuffer[start] & 0xf) * 4);
+            length = (uint)((data->m_IBuffer[start] & 0xf) * 4);
 		}
 
-        public IPPacket(ref INTERMEDIATE_BUFFER in_packet)
-            : base(ref in_packet) 
+        public IPPacket(INTERMEDIATE_BUFFER* in_packet)
+            : base(in_packet) 
         {
 			if (!isIP())
 				throw new Exception("Not an IP packet!");
             start = base.LayerStart() + base.LayerLength();
-            length = (uint)((data.m_IBuffer[start] & 0xf) * 4);
+            length = (uint)((data->m_IBuffer[start] & 0xf) * 4);
 		}
 
 		public override bool ContainsLayer(Protocol layer) 
@@ -463,12 +475,12 @@ namespace PassThru
         {
             if (isTCP())
             {
-                return new TCPPacket(ref data).MakeNextLayerPacket();
+                return new TCPPacket(data).MakeNextLayerPacket();
             }
             else if (isUDP())
-                return new UDPPacket(ref data).MakeNextLayerPacket();
+                return new UDPPacket(data).MakeNextLayerPacket();
             else if (isICMP())
-                return new ICMPPacket(ref data).MakeNextLayerPacket();
+                return new ICMPPacket(data).MakeNextLayerPacket();
             else
                 return this;
 		}
@@ -489,17 +501,17 @@ namespace PassThru
 
 		public bool isTCP() 
         {
-            return (data.m_IBuffer[start + 0x9] == 0x06);
+            return (data->m_IBuffer[start + 0x9] == 0x06);
 		}
 
 		public bool isUDP() 
         {
-            return (data.m_IBuffer[start + 0x9] == 0x11);
+            return (data->m_IBuffer[start + 0x9] == 0x11);
 		}
 
         public bool isICMP()
         {
-            return (data.m_IBuffer[start + 0x9] == 0x01);
+            return (data->m_IBuffer[start + 0x9] == 0x01);
         }
 
 		public IPAddress DestIP 
@@ -508,12 +520,15 @@ namespace PassThru
             {
 				if (IPVersion == 0x4)
 				{
-						byte[] ip = new byte[4];
-						Buffer.BlockCopy(data.m_IBuffer, (int)start + 0x10, ip, 0, 4);
-						return new IPAddress(ip);
+					byte[] ip = new byte[4];
+                    for (int x = 0; x < 4; x++)
+                    {
+                        ip[x] = data->m_IBuffer[start + 0x10 + x];
+                    }
+					return new IPAddress(ip);
 				}
 				else
-						return null;
+					return null;
 			}
 		}
 
@@ -521,7 +536,7 @@ namespace PassThru
         {
 			get 
             {
-				return (byte)(data.m_IBuffer[start] >> 4);
+				return (byte)(data->m_IBuffer[start] >> 4);
 			}
 		}
 
@@ -531,12 +546,15 @@ namespace PassThru
             {
 				if (IPVersion == 0x4)
 				{
-						byte[] ip = new byte[4];
-                        Buffer.BlockCopy(data.m_IBuffer, (int)start + 0xc, ip, 0, 4);
-						return new IPAddress(ip);
+					byte[] ip = new byte[4];
+                    for (int x = 0; x < 4; x++)
+                    {
+                        ip[x] = data->m_IBuffer[start + 0xc + x];
+                    }
+					return new IPAddress(ip);
 				}
 				else
-						return null;
+					return null;
 			}
 		}
 	}
@@ -544,18 +562,18 @@ namespace PassThru
     /*
         UDP Packet object
      */
-	public class UDPPacket: IPPacket 
+	public unsafe class UDPPacket: IPPacket 
     {
-        public UDPPacket(ref INTERMEDIATE_BUFFER in_packet)
-            : base(ref in_packet) 
+        public UDPPacket(INTERMEDIATE_BUFFER* in_packet)
+            : base(in_packet) 
         {
 			if (!isUDP())
 				throw new Exception("Not a UDP packet!");
             start = base.LayerStart() + base.LayerLength();
 		}
 
-        public UDPPacket(ref IPPacket eth)
-            : base(ref eth.data) 
+        public UDPPacket(IPPacket eth)
+            : base(eth.data) 
         {
 			if (!isUDP())
 				throw new Exception("Not a UDP packet!");
@@ -579,7 +597,7 @@ namespace PassThru
         {
 			if (isDNS())
 			{
-                return new DNSPacket(ref data).MakeNextLayerPacket();
+                return new DNSPacket(data).MakeNextLayerPacket();
 			}
 			return this;
 		}
@@ -600,7 +618,7 @@ namespace PassThru
         // This is usually the case with port scans.
         public bool isEmpty()
         {
-            return ((data.m_IBuffer[start+8] << 8) == 0x00);
+            return ((data->m_IBuffer[start+8] << 8) == 0x00);
         }
 		
         // check if the packet is a UDP DNS packet
@@ -613,7 +631,7 @@ namespace PassThru
         {
 			get 
             {
-                return (ushort)((data.m_IBuffer[start + 2] << 8) + data.m_IBuffer[start + 3]);
+                return (ushort)((data->m_IBuffer[start + 2] << 8) + data->m_IBuffer[start + 3]);
 			}
 		}
 
@@ -621,7 +639,7 @@ namespace PassThru
         {
 			get 
             {
-                return (ushort)((data.m_IBuffer[start] << 8) + data.m_IBuffer[start + 1]);
+                return (ushort)((data->m_IBuffer[start] << 8) + data->m_IBuffer[start + 1]);
 			}
 		}
 	}
@@ -629,13 +647,13 @@ namespace PassThru
         /*
             DNS Packet object
          */
-		public class DNSPacket: UDPPacket 
+		public unsafe class DNSPacket: UDPPacket 
         {
             uint start = 0;
             uint length = 0;
 
-            public DNSPacket(ref INTERMEDIATE_BUFFER in_packet)
-                : base(ref in_packet)
+            public DNSPacket(INTERMEDIATE_BUFFER* in_packet)
+                : base(in_packet)
             {
 				if (!isDNS())
 					throw new Exception("Not a DNS packet!");
@@ -643,8 +661,8 @@ namespace PassThru
                 length = Length() - start;
 			}
 
-            public DNSPacket(ref UDPPacket eth)
-                : base(ref eth.data)
+            public DNSPacket(UDPPacket eth)
+                : base(eth.data)
             {
 				if (!isDNS())
 					throw new Exception("Not a DNS packet!");
@@ -656,18 +674,18 @@ namespace PassThru
             {
                 get
                 {
-                    return (data.m_IBuffer[start] & 0x80) == 0x80;
+                    return (data->m_IBuffer[start] & 0x80) == 0x80;
                 }
                 set
                 {
                     if (value)
                     {
-                        data.m_IBuffer[start] = (byte)(data.m_IBuffer[start] | 0x80);
+                        data->m_IBuffer[start] = (byte)(data->m_IBuffer[start] | 0x80);
                     }
                     else
                     {
-                        if ((data.m_IBuffer[start] & 0x80) == 0x80)
-                            data.m_IBuffer[start] -= 0x80;
+                        if ((data->m_IBuffer[start] & 0x80) == 0x80)
+                            data->m_IBuffer[start] -= 0x80;
                     }
                 }
             }
@@ -676,12 +694,12 @@ namespace PassThru
             {
                 get
                 {
-                    return (ushort)((data.m_IBuffer[start + 2] << 8) + data.m_IBuffer[start + 3]);
+                    return (ushort)((data->m_IBuffer[start + 2] << 8) + data->m_IBuffer[start + 3]);
                 }
                 set
                 {
-                    data.m_IBuffer[start + 2] = (byte)(value >> 8);
-                    data.m_IBuffer[start + 3] = (byte)(value & 0xff);
+                    data->m_IBuffer[start + 2] = (byte)(value >> 8);
+                    data->m_IBuffer[start + 3] = (byte)(value & 0xff);
                 }
             }
 
@@ -714,24 +732,24 @@ namespace PassThru
         /*
             TCP Packet object
          */
-		public class TCPPacket: IPPacket 
+		public unsafe class TCPPacket: IPPacket 
         {
-            public TCPPacket(ref INTERMEDIATE_BUFFER in_packet)
-                : base(ref in_packet) 
+            public TCPPacket(INTERMEDIATE_BUFFER* in_packet)
+                : base(in_packet) 
             {
 				if (!isTCP())
 					throw new Exception("Not a TCP packet!");
                 start = base.LayerStart() + base.LayerLength();
-                length = (uint)((data.m_IBuffer[start + 12] >> 4) * 4);
+                length = (uint)((data->m_IBuffer[start + 12] >> 4) * 4);
 			}
 
-            public TCPPacket(ref IPPacket eth)
-                : base(ref eth.data) 
+            public TCPPacket(IPPacket eth)
+                : base(eth.data) 
             {
 				if (!isTCP())
 					throw new Exception("Not a TCP packet!");
                 start = base.LayerStart() + base.LayerLength();
-                length = (uint)((data.m_IBuffer[start + 12] >> 4) * 4);
+                length = (uint)((data->m_IBuffer[start + 12] >> 4) * 4);
 			}
 
 			public override bool ContainsLayer(Protocol layer) 
@@ -770,7 +788,7 @@ namespace PassThru
             {
 				get 
                 {
-                    return ((data.m_IBuffer[start + 13] & 0x10) == 0x10);
+                    return ((data->m_IBuffer[start + 13] & 0x10) == 0x10);
 				}
 			}
 
@@ -778,7 +796,7 @@ namespace PassThru
             {
 				get 
                 {
-                    return (ushort)((data.m_IBuffer[start + 2] << 8) + data.m_IBuffer[start + 3]);
+                    return (ushort)((data->m_IBuffer[start + 2] << 8) + data->m_IBuffer[start + 3]);
 				}
 			}
 
@@ -786,7 +804,7 @@ namespace PassThru
             {
 				get 
                 {
-                    return ((data.m_IBuffer[start + 13] & 0x01) == 0x01);
+                    return ((data->m_IBuffer[start + 13] & 0x01) == 0x01);
 				}
 			}
 
@@ -794,7 +812,7 @@ namespace PassThru
             {
 				get 
                 {
-                    return ((data.m_IBuffer[start + 13] & 0x08) == 0x08);
+                    return ((data->m_IBuffer[start + 13] & 0x08) == 0x08);
 				}
 			}
 
@@ -802,7 +820,7 @@ namespace PassThru
             {
 				get 
                 {
-                    return ((data.m_IBuffer[start + 13] & 0x04) == 0x04);
+                    return ((data->m_IBuffer[start + 13] & 0x04) == 0x04);
 				}
 			}
 
@@ -810,7 +828,7 @@ namespace PassThru
             {
 				get 
                 {
-                    return (ushort)((data.m_IBuffer[start] << 8) + data.m_IBuffer[start + 1]);
+                    return (ushort)((data->m_IBuffer[start] << 8) + data->m_IBuffer[start + 1]);
 				}
 			}
 
@@ -818,7 +836,7 @@ namespace PassThru
             {
 				get 
                 {
-                    return ((data.m_IBuffer[start + 13] & 0x02) == 0x02);
+                    return ((data->m_IBuffer[start + 13] & 0x02) == 0x02);
 				}
 			}
 		}

@@ -33,11 +33,15 @@ namespace PassThru
             return me;
         }
 
-        public override PacketMainReturn interiorMain(ref Packet in_packet)
+        public override unsafe PacketMainReturn interiorMain(ref Packet in_packet)
         {
             byte[] buffer = new byte[in_packet.Length()];
-            Buffer.BlockCopy(in_packet.Data(), 0, buffer, 0, (int)in_packet.Length());
-            file.AddPacket(buffer);
+            byte* data = in_packet.Data();
+            for (int x = 0; x < in_packet.Length(); x++)
+            {
+                buffer[x] = data[x];
+            }
+            file.AddPacket(data, (int)in_packet.Length());
             PacketMainReturn pmr = new PacketMainReturn("Dump to Pcap");
             pmr.returnType = PacketMainReturnType.Allow;
             return pmr;

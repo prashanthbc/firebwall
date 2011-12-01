@@ -17,6 +17,35 @@ namespace PassThru.Modules.BasicFirewallModule
 
         public BasicFirewall.Rule newRule;
 
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox1.Text)
+            {
+                case "All UDP Rule":
+                    labelArgs.Text = "(Space Separated) No args";
+                    break;
+                case "UDP Port Rule":
+                    labelArgs.Text = "(Space Separated) Port";
+                    break;
+                case "TCP IP and Port Rule":
+                    labelArgs.Text = "(Space Separated) IP Port";
+                    break;
+                case "TCP Port Rule":
+                    labelArgs.Text = "(Space Separated) Port";
+                    break;
+                case "All TCP Rule":
+                    labelArgs.Text = "(Space Separated) No args";
+                    break;
+                case "MAC Rule":
+                    labelArgs.Text = "(Space Separated) MAC";
+                    break;
+                case "All Rule":
+                    labelArgs.Text = "(Space Separated) No args";
+                    break;
+            }
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             if (checkBoxIn.Checked || checkBoxOut.Checked)
@@ -26,23 +55,26 @@ namespace PassThru.Modules.BasicFirewallModule
                     BasicFirewall.RuleType rt = BasicFirewall.RuleType.MAC;
                     switch (comboBox1.Text)
                     {
-                        case "UDPALL":
+                        case "All UDP Rule":
                             rt = BasicFirewall.RuleType.UDPALL;
                             break;
-                        case "UDPPORT":
+                        case "UDP Port Rule":
                             rt = BasicFirewall.RuleType.UDPPORT;
                             break;
-                        case "TCPIPPORT":
+                        case "TCP IP and Port Rule":
                             rt = BasicFirewall.RuleType.TCPIPPORT;
                             break;
-                        case "TCPPORT":
+                        case "TCP Port Rule":
                             rt = BasicFirewall.RuleType.TCPPORT;
                             break;
-                        case "TCPALL":
+                        case "All TCP Rule":
                             rt = BasicFirewall.RuleType.TCPALL;
                             break;
-                        case "MAC":
+                        case "MAC Rule":
                             rt = BasicFirewall.RuleType.MAC;
+                            break;
+                        case "All Rule":
+                            rt = BasicFirewall.RuleType.ALL;
                             break;
                     }
                     BasicFirewall.Direction dir;
@@ -81,6 +113,18 @@ namespace PassThru.Modules.BasicFirewallModule
         private void button2_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void AddEditRule_Load(object sender, EventArgs e)
+        {
+            comboBox1.Text = "MAC Rule";
+            comboBox1.Items.Add("MAC Rule");
+            comboBox1.Items.Add("All TCP Rule");
+            comboBox1.Items.Add("TCP IP and Port Rule");
+            comboBox1.Items.Add("TCP Port Rule");
+            comboBox1.Items.Add("All UDP Rule");
+            comboBox1.Items.Add("UDP Port Rule");
+            comboBox1.Items.Add("All Rule");
         }
     }
 }

@@ -46,18 +46,12 @@
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "UDPALL",
-            "UDPPORT",
-            "TCPIPPORT",
-            "TCPPORT",
-            "TCPALL",
-            "MAC"});
             this.comboBox1.Location = new System.Drawing.Point(12, 29);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(451, 21);
             this.comboBox1.TabIndex = 0;
             this.comboBox1.Text = "UDPALL";
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -194,6 +188,7 @@
             this.Controls.Add(this.comboBox1);
             this.Name = "AddEditRule";
             this.Text = "AddEditRule";
+            this.Load += new System.EventHandler(this.AddEditRule_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -50,7 +50,8 @@ namespace PassThru
             TCPIPPORT,
             TCPPORT,
             TCPALL,
-            MAC
+            MAC,
+            ALL
         }
 
         public class RuleFactory
@@ -71,7 +72,91 @@ namespace PassThru
                         return new UDPAllRule(ps, dir, log);
                     case RuleType.UDPPORT:
                         return new UDPPortRule(ps, int.Parse(args), dir, log);
+                    case RuleType.ALL:
+                        return new AllRule(ps, dir, log);
                 }
+                return null;
+            }
+        }
+
+        [Serializable]
+        public class AllRule : Rule
+        {
+            PacketStatus ps;
+            Direction direction;
+            bool log = true;
+
+            public AllRule(PacketStatus ps, Direction direction, bool log)
+            {
+                this.ps = ps;
+                this.direction = direction;
+                this.log = log;
+            }
+
+            public PacketStatus GetStatus(Packet pkt)
+            {
+                if (pkt.Outbound && (direction & Direction.OUT) == Direction.OUT)
+                {
+                    if (log)
+                        message = " packet";
+                    return ps;
+                }
+                else if (!pkt.Outbound && (direction & Direction.IN) == Direction.IN)
+                {
+                    if (log)
+                        message = " packet";
+                    return ps;
+                }
+                return PacketStatus.UNDETERMINED;
+            }
+
+            string message = null;
+            public string GetLogMessage()
+            {
+                if (!log) return null;
+                if (ps == PacketStatus.ALLOWED)
+                {
+                    return "Allowed " + message;
+                }
+                return "Blocked " + message;
+            }
+
+            public string String
+            {
+                get { return ToString(); }
+            }
+
+            public override string ToString()
+            {
+                string ret = "";
+                if (ps == PacketStatus.ALLOWED)
+                {
+                    ret = "Allows";
+                }
+                else
+                {
+                    ret = "Blocks";
+                }
+                ret += " all";
+                if (direction == (Direction.IN | Direction.OUT))
+                {
+                    ret += " in and out";
+                }
+                else if(direction == Direction.OUT)
+                {
+                    ret += " out";
+                }
+                else if (direction == Direction.IN)
+                {
+                    ret += " in";
+                }
+                if (log)
+                    ret += " and logs";
+                return ret;
+            }
+
+            public string ToFileString()
+            {
                 return null;
             }
         }
@@ -535,7 +620,7 @@ namespace PassThru
         public class MacRule : Rule
         {
             PacketStatus ps;
-            PhysicalAddress mac;
+            string mac;
             Direction direction;
             bool log = true;
 
@@ -576,7 +661,7 @@ namespace PassThru
             public MacRule(PacketStatus ps, PhysicalAddress mac, Direction direction, bool log)
             {
                 this.ps = ps;
-                this.mac = mac;
+                this.mac = mac.ToString();
                 this.direction = direction;
                 this.log = log;
             }
@@ -585,7 +670,7 @@ namespace PassThru
             {
                 if (pkt.Outbound && (direction & Direction.OUT) == Direction.OUT)
                 {
-                    if (mac.Equals(((EthPacket)pkt).ToMac) || mac == null)
+                    if (mac.Equals(((EthPacket)pkt).ToMac.ToString()) || mac == null)
                     {
                         if (log)
                             message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();
@@ -594,7 +679,7 @@ namespace PassThru
                 }
                 else if (!pkt.Outbound && (direction & Direction.IN) == Direction.IN)
                 {
-                    if (mac.Equals(((EthPacket)pkt).FromMac) || mac == null)
+                    if (mac.Equals(((EthPacket)pkt).FromMac.ToString()) || mac == null)
                     {
                         if (log)
                             message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();

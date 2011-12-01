@@ -243,14 +243,12 @@ namespace NdisapiSpace
 		}
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public struct INTERMEDIATE_BUFFER {
+		public unsafe struct INTERMEDIATE_BUFFER {
 			public LIST_ENTRY m_qLink;
 			public uint m_dwDeviceFlags;
 			public uint m_Length;
 			public uint m_Flags;
-
-			[MarshalAs(UnmanagedType.ByValArray, SizeConst = Ndisapi.MAX_ETHER_FRAME)]
-			public byte[] m_IBuffer;
+			public fixed byte m_IBuffer[1514];
 		}
 
 		//
