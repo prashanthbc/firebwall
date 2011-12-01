@@ -13,7 +13,7 @@ namespace PassThru
         int versionA = 0;
         int versionB = 3;
         int versionC = 2;
-        int versionD = 6;
+        int versionD = 8;
         Thread updateThread;
 
         public void Updater()
@@ -69,7 +69,7 @@ namespace PassThru
                             Directory.CreateDirectory(folder);
                         string file = ret.Substring(ret.IndexOf("/files/") + "/files/".Length);
                         MyDownloadFile(new Uri(ret), folder + Path.DirectorySeparatorChar + file);
-                        if (MessageBox.Show("Update has finished downloading.",  "Would you like the update to install now?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        if (MessageBox.Show("Would you like the update to install now?", "Update has finished downloading.", MessageBoxButtons.YesNo) == DialogResult.Yes)
                         {
                             System.Diagnostics.Process.Start(folder + Path.DirectorySeparatorChar + file);
                         }
