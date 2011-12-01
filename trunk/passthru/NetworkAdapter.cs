@@ -165,6 +165,11 @@ namespace PassThru
                 icmpFilter.ModuleStart();
                 modules.AddModule(icmpFilter);
 
+                // IP monitor module
+                IPMonitorModule ipm = new IPMonitorModule(this);
+                ipm.ModuleStart();
+                modules.AddModule(ipm);
+
                 string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 folder = folder + System.IO.Path.DirectorySeparatorChar + "firebwall";
                 if (!System.IO.Directory.Exists(folder))

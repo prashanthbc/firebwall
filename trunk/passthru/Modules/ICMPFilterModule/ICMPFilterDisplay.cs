@@ -68,10 +68,8 @@ namespace PassThru
                                 continue;
                             // add the code to the list
                             temp.Add(s);
-                            // remove the old kv pair
-                            ruletable.Remove(type);
-                            // add the new kv pair
-                            ruletable.Add(type, temp);
+                            // assignment of updated kv pair
+                            ruletable[type] = temp;
                         }
 
                         // if the type doesn't exist yet, create it
@@ -104,7 +102,7 @@ namespace PassThru
         private void button1_Click_1(object sender, EventArgs e)
         {
             // if nothing's been selected, get out
-            if (tableDisplay.SelectedRows.Count < 0)
+            if (tableDisplay.SelectedRows.Count <= 0)
                 return;
 
             // grab the type/code/rowIdx from the table
@@ -122,10 +120,8 @@ namespace PassThru
                 {
                     // remove code from temp list
                     temp.Remove(code);
-                    // remove type from ruletable
-                    ruletable.Remove(type);
-                    // add it all back updated
-                    ruletable.Add(type, temp);
+                    // assignment of updated kv pair
+                    ruletable[type] = temp;
                     // remove from display table
                     tableDisplay.Rows.Remove(tableDisplay.Rows[rowIdx]);
                 }

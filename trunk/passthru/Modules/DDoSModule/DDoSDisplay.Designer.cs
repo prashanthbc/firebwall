@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.dosBlockTable = new System.Windows.Forms.DataGridView();
+            this.blockedip = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DateBlocked = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.removeButton = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.addField = new System.Windows.Forms.TextBox();
-            this.blockedip = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Reason = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DateBlocked = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dosBlockTable)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,8 +52,30 @@
             this.dosBlockTable.Name = "dosBlockTable";
             this.dosBlockTable.ReadOnly = true;
             this.dosBlockTable.RowHeadersVisible = false;
+            this.dosBlockTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dosBlockTable.Size = new System.Drawing.Size(574, 193);
             this.dosBlockTable.TabIndex = 0;
+            // 
+            // blockedip
+            // 
+            this.blockedip.HeaderText = "IP Address";
+            this.blockedip.Name = "blockedip";
+            this.blockedip.ReadOnly = true;
+            this.blockedip.Width = 165;
+            // 
+            // Reason
+            // 
+            this.Reason.HeaderText = "Reason";
+            this.Reason.Name = "Reason";
+            this.Reason.ReadOnly = true;
+            this.Reason.Width = 200;
+            // 
+            // DateBlocked
+            // 
+            this.DateBlocked.HeaderText = "Date Blocked";
+            this.DateBlocked.Name = "DateBlocked";
+            this.DateBlocked.ReadOnly = true;
+            this.DateBlocked.Width = 200;
             // 
             // removeButton
             // 
@@ -91,27 +113,6 @@
             this.addField.Name = "addField";
             this.addField.Size = new System.Drawing.Size(117, 20);
             this.addField.TabIndex = 4;
-            // 
-            // blockedip
-            // 
-            this.blockedip.HeaderText = "IP Address";
-            this.blockedip.Name = "blockedip";
-            this.blockedip.ReadOnly = true;
-            this.blockedip.Width = 165;
-            // 
-            // Reason
-            // 
-            this.Reason.HeaderText = "Reason";
-            this.Reason.Name = "Reason";
-            this.Reason.ReadOnly = true;
-            this.Reason.Width = 200;
-            // 
-            // DateBlocked
-            // 
-            this.DateBlocked.HeaderText = "Date Blocked";
-            this.DateBlocked.Name = "DateBlocked";
-            this.DateBlocked.ReadOnly = true;
-            this.DateBlocked.Width = 200;
             // 
             // DDoSDisplay
             // 

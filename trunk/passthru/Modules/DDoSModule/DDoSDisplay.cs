@@ -87,8 +87,8 @@ namespace PassThru
         private void removeButton_Click(object sender, EventArgs e)
         {
             // if nothing's been selected, get out
-            if (dosBlockTable.SelectedRows.Count < 0)
-                return;
+            if (dosBlockTable.SelectedRows.Count <= 0)
+                return;                
 
             // grab the rowidx/type from the table
             int rowIdx = dosBlockTable.SelectedCells[0].RowIndex;
@@ -106,9 +106,9 @@ namespace PassThru
                 }
             }
 
-            // remove from the cache, update the blockcache, and rebuild grid
+            // remove from the cache, update the module blockcache, and rebuild grid
             blockcache.Remove(remove);
-            UpdateBlockedCache();
+            this.dosmod.BlockCache = this.blockcache;
             RebuildTable();
         }
 

@@ -131,6 +131,13 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ModuleList.cs" />
+    <Compile Include="Modules\IPMonitorModule\IPMonitorDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\IPMonitorModule\IPMonitorDisplay.Designer.cs">
+      <DependentUpon>IPMonitorDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\IPMonitorModule\IPMonitorModule.cs" />
     <Compile Include="ndisapi.cs" />
     <Compile Include="NetworkAdapter.cs" />
     <Compile Include="Packet.cs" />
@@ -192,6 +199,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\IPMonitorModule\IPMonitorDisplay.resx">
+      <DependentUpon>IPMonitorDisplay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
