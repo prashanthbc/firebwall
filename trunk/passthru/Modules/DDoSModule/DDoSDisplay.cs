@@ -87,7 +87,7 @@ namespace PassThru
         private void removeButton_Click(object sender, EventArgs e)
         {
             // if nothing's been selected, get out
-            if (dosBlockTable.SelectedRows.Count <= 0)
+            if (dosBlockTable.SelectedRows.Count < 0)
                 return;
 
             // grab the rowidx/type from the table

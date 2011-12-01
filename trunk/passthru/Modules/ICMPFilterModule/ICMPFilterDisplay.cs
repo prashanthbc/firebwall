@@ -104,7 +104,7 @@ namespace PassThru
         private void button1_Click_1(object sender, EventArgs e)
         {
             // if nothing's been selected, get out
-            if (tableDisplay.SelectedRows.Count <= 0)
+            if (tableDisplay.SelectedRows.Count < 0)
                 return;
 
             // grab the type/code/rowIdx from the table
