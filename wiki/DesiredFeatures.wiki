@@ -10,6 +10,7 @@ Here is a list of features and changes we'd like to make before each version
 
 = 0.4 =
 
+  * Multilingual text
   * Fix small issues with the installer(Done)
   * Improve ARP Poisoning Protection(Done)
   * Improve Documentation
