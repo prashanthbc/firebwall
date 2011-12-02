@@ -47,7 +47,10 @@ namespace PassThru
         /// <returns></returns>
         public override System.Windows.Forms.UserControl GetControl()
         {
-            return new IPMonitorDisplay(this) { Dock = DockStyle.Fill };
+            ipmon = new IPMonitorDisplay(this) { Dock = System.Windows.Forms.DockStyle.Fill };
+            // force a tick when the GUI is loaded
+            timer_Tick(updateTimer, null);
+            return ipmon;
         }
 
         /// <summary>
@@ -65,8 +68,6 @@ namespace PassThru
             updateTimer.Interval = 5000;
             updateTimer.Enabled = true;
             updateTimer.Start();
-
-            timer_Tick(updateTimer, null);
 
             moduleError.errorType = ModuleErrorType.Success;
             return moduleError;
