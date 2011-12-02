@@ -47,7 +47,7 @@ namespace PassThru
         /// <returns></returns>
         public override System.Windows.Forms.UserControl GetControl()
         {
-            return ipmon;
+            return new IPMonitorDisplay(this) { Dock = DockStyle.Fill };
         }
 
         /// <summary>
