@@ -8,11 +8,13 @@
 
 == ICMP Filtering ==
 
+== DoS Protection == 
+
+== Connection Statistics and Monitoring ==
+
 = Future =
 
 == firewall to firewall encryption ==
-
-== DDoS Protection ==
 
 == Port Scan Detection ==
 
