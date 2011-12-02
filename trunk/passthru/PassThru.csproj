@@ -138,6 +138,12 @@
       <DependentUpon>IPMonitorDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Modules\IPMonitorModule\IPMonitorModule.cs" />
+    <Compile Include="Modules\ModuleConfiguration.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\ModuleConfiguration.Designer.cs">
+      <DependentUpon>ModuleConfiguration.cs</DependentUpon>
+    </Compile>
     <Compile Include="ndisapi.cs" />
     <Compile Include="NetworkAdapter.cs" />
     <Compile Include="Packet.cs" />
@@ -202,6 +208,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\IPMonitorModule\IPMonitorDisplay.resx">
       <DependentUpon>IPMonitorDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\ModuleConfiguration.resx">
+      <DependentUpon>ModuleConfiguration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

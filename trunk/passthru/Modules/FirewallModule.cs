@@ -39,7 +39,7 @@ namespace PassThru
 		public string Module = null;
 		public Packet SendPacket = null;
 		public string logMessage = null;
-		public PacketMainReturnType returnType;
+		public PacketMainReturnType returnType;        
 	}
 
 	public enum ModuleErrorType
@@ -69,6 +69,7 @@ namespace PassThru
 		public System.Windows.Forms.UserControl uiControl = null;
 		public string moduleName = null;
         public object PersistentData = null;
+        public bool Enabled = true;
 
         public void SaveConfig()
         {
@@ -138,15 +139,20 @@ namespace PassThru
 		/// <param name="in_packet">Packet to be processed</param>
 		/// <returns>A PacketMainReturn object, either from the interiorMain or default error one</returns>
 		public PacketMainReturn PacketMain(ref Packet in_packet) {
-			try
-			{
-				PacketMainReturn pmr = interiorMain(ref in_packet);
-				return pmr;
-			}
-			catch (Exception e)
-			{
-				return new PacketMainReturn(moduleName, e);
-			}
+            if (Enabled)
+            {
+                try
+                {
+                    PacketMainReturn pmr = interiorMain(ref in_packet);
+                    return pmr;
+                }
+                catch (Exception e)
+                {
+                    return new PacketMainReturn(moduleName, e);
+                }
+            }
+            else
+                return new PacketMainReturn(moduleName) { returnType = PacketMainReturnType.Allow };
 		}
 
 		/// <summary>

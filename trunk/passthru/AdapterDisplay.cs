@@ -40,7 +40,12 @@ namespace PassThru
             f.Width = 640;
             f.Height = 480;
             TabControl tc = new TabControl();
-            tc.Dock = DockStyle.Fill;            
+            tc.Dock = DockStyle.Fill;
+            TabPage tpage = new TabPage("Module Configurations");
+            tpage.Name = "Module Configurations";
+            tpage.Controls.Add(new Modules.ModuleConfiguration(ai.na){Dock = DockStyle.Fill});
+            tpage.Controls[0].BringToFront();
+            tc.TabPages.Add(tpage);
             for (int i = 0; i < ai.na.modules.Count; i++)
             {
                 FirewallModule fm = ai.na.modules.GetModule(i);

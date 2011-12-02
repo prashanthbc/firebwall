@@ -86,7 +86,7 @@
                 this.ClientSize = new System.Drawing.Size(476, 347);
                 this.Controls.Add(this.tabControl1);
                 this.Name = "MainWindow";
-                this.Text = "fireBwall v0.3.2.8";
+                this.Text = "fireBwall v0.3.2.9";
                 this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
                 this.Load += new System.EventHandler(this.MainWindow_Load);
                 this.tabControl1.ResumeLayout(false);
