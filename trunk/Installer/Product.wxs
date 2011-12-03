@@ -3,14 +3,19 @@
 <?define BASE_DIR = ".."?>
 <?define SourceAppDir = "$(var.BASE_DIR)\Release"?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="157bc7c9-7d8a-4553-b5bc-d3c921761ce8" Name="fireBwall" Language="1033" Version="0.3.2.9" Manufacturer="bwall" UpgradeCode="33279ee1-989f-4841-a222-fdf4fcc80b88">    
-		<Package InstallerVersion="200" Compressed="yes" />
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <?include $(sys.CURRENTDIR)Include1.wxi ?>
+	<Product Id="*" Name="fireBwall $(var.VersionNumber)" Language="1033" Version="$(var.VersionNumber)" Manufacturer="bwall" UpgradeCode="$(var.UpgradeCode)">    
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"/>
 
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
-		<Directory Id="TARGETDIR" Name="SourceDir">
+    <Upgrade Id="$(var.UpgradeCode)">
+      <UpgradeVersion OnlyDetect="yes" Minimum="$(var.VersionNumber)" IncludeMinimum="no" Property="NEWER_VERSION_FOUND" />
+      <UpgradeVersion Minimum="0.0.0.0" IncludeMinimum="yes" Maximum="$(var.VersionNumber)" IncludeMaximum="no" Property="OLDER_VERSION_FOUND" />
+    </Upgrade>
 
+    <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION" Name="fireBwall">
           <Directory Id="MODULELOCATOIN" Name="Modules">
@@ -34,7 +39,6 @@
           </Component>
         </Directory>
       </Directory>
-
       <!-- Start menu structure -->
       <Directory Id="ProgramMenuFolder">
         <Directory Id="ApplicationProgramsFolder" Name="fireBwall">
@@ -48,9 +52,7 @@
       </Directory>
 		</Directory>
 
-    <Property Id="ASSISTANCE_START_VIA_REGISTRY">1</Property>
-
-       
+    <Property Id="ASSISTANCE_START_VIA_REGISTRY">1</Property>    
     
 		<Feature Id="ProductFeature" Title="fireBwall" Level="1">
       <ComponentRef Id="firebwallAutostart" />
@@ -58,28 +60,28 @@
 			<ComponentRef Id="cfBwallExe" />
       <ComponentRef Id="cDrivers" />
       <ComponentRef Id="cndisapi"/>
-			<ComponentGroupRef Id="Product.Generated" />
+
 		</Feature>
 
     <Property Id="WixShellExecTarget" Value="[#winpkflt_rtl.exe]" />
     <CustomAction Id="InstallDrivers" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
 
+    <Property Id="ApplicationFolderName" Value="My Application Folder" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+
+    <UIRef Id="WixUI_Minimal" />
     <UI>
-      <UIRef Id="WixUI_Minimal"/>
-
-
-      <DialogRef Id="ErrorDlg" />
-      <DialogRef Id="FatalError" />
+      <!-- These dialog references are needed for CloseApplication above to work correctly -->
       <DialogRef Id="FilesInUse" />
       <DialogRef Id="MsiRMFilesInUse" />
-      <DialogRef Id="PrepareDlg" />
-      <DialogRef Id="ProgressDlg" />
-      <DialogRef Id="UserExit" />
+      <!-- Here we'll add the GUI logic for installation and updating in a future post-->
     </UI>
 
     <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallInitialize"/>
+      <Custom Action="WixCloseApplications" Before="InstallInitialize" />
       <Custom Action="InstallDrivers" OnExit="success" />
     </InstallExecuteSequence>
-    
+    <util:CloseApplication Id="CloseSuperForm" CloseMessage="no" ElevatedCloseMessage="no" RebootPrompt="no" Target="$(var.ExeProcessName)" />
 	</Product>
 </Wix>
