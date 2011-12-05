@@ -50,7 +50,6 @@ namespace PassThru
             TCPIPPORT,
             TCPPORT,
             TCPALL,
-            MAC,
             ALL
         }
 
@@ -60,8 +59,6 @@ namespace PassThru
             {
                 switch (ruleType)
                 {
-                    case RuleType.MAC:
-                        return new MacRule(ps, PhysicalAddress.Parse(args), dir, log);
                     case RuleType.TCPALL:
                         return new TCPAllRule(ps, dir, log);
                     case RuleType.TCPIPPORT:
@@ -592,97 +589,6 @@ namespace PassThru
                     {
                         if (log)
                             message = " TCP packet from " + ((TCPPacket)pkt).SourceIP.ToString() + ":" + ((TCPPacket)pkt).SourcePort.ToString() + " to " + ((TCPPacket)pkt).DestIP.ToString() + ":" + ((TCPPacket)pkt).DestPort.ToString();
-                        return ps;
-                    }
-                }
-                return PacketStatus.UNDETERMINED;
-            }
-
-            string message = null;
-            public string GetLogMessage()
-            {
-                if (!log)
-                    return null;
-                if (ps == PacketStatus.ALLOWED)
-                {
-                    return "Allowed " + message;
-                }
-                return "Blocked " + message;
-            }
-
-            public string ToFileString()
-            {
-                return null;
-            }
-        }
-
-        [Serializable]
-        public class MacRule : Rule
-        {
-            PacketStatus ps;
-            string mac;
-            Direction direction;
-            bool log = true;
-
-            public string String
-            {
-                get { return ToString(); }
-            }
-
-            public override string ToString()
-            {
-                string ret = "";
-                if (ps == PacketStatus.ALLOWED)
-                {
-                    ret = "Allows";
-                }
-                else
-                {
-                    ret = "Blocks";
-                }
-                ret += " MAC " + mac.ToString();
-                if (direction == (Direction.IN | Direction.OUT))
-                {
-                    ret += " in and out";
-                }
-                else if (direction == Direction.OUT)
-                {
-                    ret += " out";
-                }
-                else if (direction == Direction.IN)
-                {
-                    ret += " in";
-                }
-                if (log)
-                    ret += " and logs";
-                return ret;
-            }
-
-            public MacRule(PacketStatus ps, PhysicalAddress mac, Direction direction, bool log)
-            {
-                this.ps = ps;
-                this.mac = mac.ToString();
-                this.direction = direction;
-                this.log = log;
-            }
-
-            public PacketStatus GetStatus(Packet pkt)
-            {
-                if (pkt.Outbound && (direction & Direction.OUT) == Direction.OUT)
-                {
-                    if (mac.Equals(((EthPacket)pkt).ToMac.ToString()) || mac == null)
-                    {
-                        if (log)
-                            message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();
-                        return ps;
-                    }
-                }
-                else if (!pkt.Outbound && (direction & Direction.IN) == Direction.IN)
-                {
-                    if (mac.Equals(((EthPacket)pkt).FromMac.ToString()) || mac == null)
-                    {
-                        if (log)
-                            message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();
                         return ps;
                     }
                 }

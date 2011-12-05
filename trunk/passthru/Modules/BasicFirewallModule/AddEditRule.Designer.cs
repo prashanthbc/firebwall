@@ -146,6 +146,7 @@
             this.textBoxArguments.Name = "textBoxArguments";
             this.textBoxArguments.Size = new System.Drawing.Size(451, 20);
             this.textBoxArguments.TabIndex = 11;
+            this.textBoxArguments.TextChanged += new System.EventHandler(this.textBoxArguments_TextChanged);
             // 
             // label4
             // 

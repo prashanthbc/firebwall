@@ -37,9 +37,6 @@ namespace PassThru.Modules.BasicFirewallModule
                 case "All TCP Rule":
                     labelArgs.Text = "(Space Separated) No args";
                     break;
-                case "MAC Rule":
-                    labelArgs.Text = "(Space Separated) MAC";
-                    break;
                 case "All Rule":
                     labelArgs.Text = "(Space Separated) No args";
                     break;
@@ -52,7 +49,7 @@ namespace PassThru.Modules.BasicFirewallModule
             {
                 try
                 {
-                    BasicFirewall.RuleType rt = BasicFirewall.RuleType.MAC;
+                    BasicFirewall.RuleType rt = BasicFirewall.RuleType.ALL;
                     switch (comboBox1.Text)
                     {
                         case "All UDP Rule":
@@ -69,9 +66,6 @@ namespace PassThru.Modules.BasicFirewallModule
                             break;
                         case "All TCP Rule":
                             rt = BasicFirewall.RuleType.TCPALL;
-                            break;
-                        case "MAC Rule":
-                            rt = BasicFirewall.RuleType.MAC;
                             break;
                         case "All Rule":
                             rt = BasicFirewall.RuleType.ALL;
@@ -117,14 +111,18 @@ namespace PassThru.Modules.BasicFirewallModule
 
         private void AddEditRule_Load(object sender, EventArgs e)
         {
-            comboBox1.Text = "MAC Rule";
-            comboBox1.Items.Add("MAC Rule");
+            comboBox1.Text = "All Rule";
             comboBox1.Items.Add("All TCP Rule");
             comboBox1.Items.Add("TCP IP and Port Rule");
             comboBox1.Items.Add("TCP Port Rule");
             comboBox1.Items.Add("All UDP Rule");
             comboBox1.Items.Add("UDP Port Rule");
             comboBox1.Items.Add("All Rule");
+        }
+
+        private void textBoxArguments_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

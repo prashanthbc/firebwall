@@ -138,6 +138,19 @@
       <DependentUpon>IPMonitorDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Modules\IPMonitorModule\IPMonitorModule.cs" />
+    <Compile Include="Modules\MacFilter\AddEditMacRule.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\MacFilter\AddEditMacRule.Designer.cs">
+      <DependentUpon>AddEditMacRule.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\MacFilter\MacFilterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\MacFilter\MacFilterControl.Designer.cs">
+      <DependentUpon>MacFilterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\MacFilter\MacFilterModule.cs" />
     <Compile Include="Modules\ModuleConfiguration.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -208,6 +221,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\IPMonitorModule\IPMonitorDisplay.resx">
       <DependentUpon>IPMonitorDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\MacFilter\AddEditMacRule.resx">
+      <DependentUpon>AddEditMacRule.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modules\MacFilter\MacFilterControl.resx">
+      <DependentUpon>MacFilterControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\ModuleConfiguration.resx">
       <DependentUpon>ModuleConfiguration.cs</DependentUpon>

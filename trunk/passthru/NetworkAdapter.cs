@@ -142,6 +142,10 @@ namespace PassThru
                 Request.EthPacket.Buffer = PacketBufferIntPtr;
 
                 //Static and test modules
+                PassThru.Modules.MacFilter.MacFilterModule mfm = new Modules.MacFilter.MacFilterModule(this);
+                mfm.ModuleStart();
+                modules.AddModule(mfm);
+
                 BasicFirewall tfm = new BasicFirewall(this);
                 tfm.ModuleStart();
                 modules.AddModule(tfm);
