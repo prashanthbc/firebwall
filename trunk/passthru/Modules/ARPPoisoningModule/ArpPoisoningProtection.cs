@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.NetworkInformation;
 
-namespace ArpPoisoningProtection
+namespace PassThru
 {
     public partial class ArpPoisoningProtection : UserControl
     {

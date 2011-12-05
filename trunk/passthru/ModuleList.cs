@@ -21,7 +21,7 @@ namespace PassThru
 
             public void LoadModule(string file)
             {
-                if (file.Contains("FirewallModule.dll"))
+                if (file.Contains("FirewallModule.dll") || !file.Contains(".dll"))
                     return;
                 try
                 {
@@ -48,6 +48,14 @@ namespace PassThru
 
             public void LoadExternalModules()
             {
+                if (Directory.Exists("modules"))
+                {
+                    DirectoryInfo di = new DirectoryInfo("modules");
+                    foreach (FileInfo fi in di.GetFiles())
+                    {
+                        LoadModule(fi.FullName);
+                    }
+                }
                 string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 if(Directory.Exists(folder + Path.DirectorySeparatorChar + "firebwall" + Path.DirectorySeparatorChar + "modules"))
                 {

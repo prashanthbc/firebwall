@@ -70,6 +70,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.Designer.cs">
+      <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\ARPPoisoningModule\ARPPP.cs" />
     <Compile Include="Tabs\AdapterControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -192,6 +199,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.resx">
+      <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\AdapterControl.resx">
       <DependentUpon>AdapterControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -248,9 +258,7 @@
       <Name>FirewallModule</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Modules\ARPPoisoningModule\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

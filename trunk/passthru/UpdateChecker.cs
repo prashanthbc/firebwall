@@ -12,7 +12,7 @@ namespace PassThru
     {
         int versionA = 0;
         int versionB = 3;
-        int versionC = 3;
+        int versionC = 4;
         int versionD = 0;
         Thread updateThread;
 
@@ -59,7 +59,7 @@ namespace PassThru
                 if (ret != null)
                 {
                     if (MessageBox.Show("Would you like to download the newest version of fireBwall?", "New Update Available!", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    {                        
+                    {
                         string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                         folder = folder + Path.DirectorySeparatorChar + "firebwall";
                         if (!Directory.Exists(folder))

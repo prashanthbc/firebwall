@@ -149,6 +149,10 @@ namespace PassThru
                 mfm.ModuleStart();
                 modules.AddModule(mfm);
 
+                ARPPP afm = new ARPPP(this);
+                afm.ModuleStart();
+                modules.AddModule(afm);
+
                 BasicFirewall tfm = new BasicFirewall(this);
                 tfm.ModuleStart();
                 modules.AddModule(tfm);

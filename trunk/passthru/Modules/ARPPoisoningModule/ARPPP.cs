@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using FM;
 
-namespace ArpPoisoningProtection
+namespace PassThru
 {
     public class ARPPP : FirewallModule
     {

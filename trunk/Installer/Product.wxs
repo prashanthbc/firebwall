@@ -18,8 +18,6 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLLOCATION" Name="fireBwall">
-          <Directory Id="MODULELOCATOIN" Name="Modules">
-          </Directory>
           <!-- Auto-start via Registry -->
           <Component Id="firebwallAutostart">
             <RegistryKey Root="HKCU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" >
@@ -30,6 +28,9 @@
           <Component Id="cfBwallExe" Guid="C7021A24-C661-4C9C-9C8F-B047E8096298">
             <File Source="..\passthru\bin\Release\fireBwall.exe" KeyPath="yes" Id="fireBwall.exe">
             </File>
+          </Component>
+          <Component Id="FirewallModuleDll">
+            <File Source="..\passthru\bin\Release\FirewallModule.dll" KeyPath="yes" Id="FirewallModule.dll"></File>
           </Component>
           <Component Id="cDrivers">
             <File Source="..\winpkflt_rtl.exe" KeyPath="yes" Id="winpkflt_rtl.exe"></File>
@@ -60,7 +61,7 @@
 			<ComponentRef Id="cfBwallExe" />
       <ComponentRef Id="cDrivers" />
       <ComponentRef Id="cndisapi"/>
-
+      <ComponentRef Id="FirewallModuleDll"/>
 		</Feature>
 
     <Property Id="WixShellExecTarget" Value="[#winpkflt_rtl.exe]" />

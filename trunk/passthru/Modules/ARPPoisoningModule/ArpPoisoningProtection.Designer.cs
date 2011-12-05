@@ -1,4 +1,4 @@
-﻿namespace ArpPoisoningProtection
+﻿namespace PassThru
 {
     partial class ArpPoisoningProtection
     {
