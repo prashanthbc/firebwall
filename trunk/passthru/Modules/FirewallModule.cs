@@ -73,21 +73,25 @@ namespace PassThru
 
         public void SaveConfig()
         {
-            string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            folder = folder + Path.DirectorySeparatorChar + "firebwall";
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            folder = folder + Path.DirectorySeparatorChar + "modules";
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            folder = folder + Path.DirectorySeparatorChar + "configs";
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            string file = folder + Path.DirectorySeparatorChar + adapter.InterfaceInformation.Name + moduleName + ".cfg";
-            Stream stream = File.Open(file, FileMode.Create);
-            BinaryFormatter bFormatter = new BinaryFormatter();
-            bFormatter.Serialize(stream, PersistentData);
-            stream.Close();
+            try
+            {
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                folder = folder + Path.DirectorySeparatorChar + "firebwall";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = folder + Path.DirectorySeparatorChar + "modules";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = folder + Path.DirectorySeparatorChar + "configs";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                string file = folder + Path.DirectorySeparatorChar + adapter.InterfaceInformation.Name + moduleName + ".cfg";
+                FileStream stream = File.Open(file, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                BinaryFormatter bFormatter = new BinaryFormatter();
+                bFormatter.Serialize(stream, PersistentData);
+                stream.Close();
+            }
+            catch { }
         }
 
         public void LoadConfig()
@@ -105,7 +109,7 @@ namespace PassThru
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
                 string file = folder + Path.DirectorySeparatorChar + adapter.InterfaceInformation.Name + moduleName + ".cfg";
-                Stream stream = File.Open(file, FileMode.Open);
+                FileStream stream = File.Open(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 BinaryFormatter bFormatter = new BinaryFormatter();
                 PersistentData = bFormatter.Deserialize(stream);
                 stream.Close();
