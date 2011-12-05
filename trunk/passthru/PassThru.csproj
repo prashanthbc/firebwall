@@ -31,6 +31,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -82,12 +83,6 @@
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Tabs\BandwidthCounter.cs" />
-    <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.Designer.cs">
-      <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
-    </Compile>
     <Compile Include="Modules\BasicFirewallModule\AddEditRule.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,7 +106,6 @@
     </Compile>
     <Compile Include="Modules\DDoSModule\DDoSModule.cs" />
     <Compile Include="Modules\DumpToPcapModule.cs" />
-    <Compile Include="Modules\FirewallModule.cs" />
     <Compile Include="Modules\EthEncryptionModule.cs" />
     <Compile Include="Modules\ICMPFilterModule\ICMPFilterModule.cs" />
     <Compile Include="Modules\ICMPFilterModule\ICMPFilterDisplay.cs">
@@ -159,7 +153,6 @@
     </Compile>
     <Compile Include="ndisapi.cs" />
     <Compile Include="NetworkAdapter.cs" />
-    <Compile Include="Packet.cs" />
     <Compile Include="PcapCreator.cs" />
     <Compile Include="PcapFileWriter.cs" />
     <Compile Include="Program.cs" />
@@ -171,8 +164,6 @@
     </Compile>
     <Compile Include="Region.cs" />
     <Compile Include="RegionName.cs" />
-    <Compile Include="Modules\ARPPoisoningModule\SimpleARPPoisoningModule.cs" />
-    <Compile Include="SerializableDictionary.cs" />
     <Compile Include="Tabs\OptionsDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -219,9 +210,6 @@
     <EmbeddedResource Include="Modules\ICMPFilterModule\ICMPFilterDisplay.resx">
       <DependentUpon>ICMPFilterDisplay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.resx">
-      <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Tabs\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -250,6 +238,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\HoneyPorts.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FirewallModule\FirewallModule.csproj">
+      <Project>{EFB8E62C-9C88-42A5-B4A6-BC8634DBE318}</Project>
+      <Name>FirewallModule</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Modules\ARPPoisoningModule\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

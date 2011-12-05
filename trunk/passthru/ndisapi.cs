@@ -41,8 +41,6 @@ namespace NdisapiSpace
 			public const uint MSTCP_FLAG_SENT_TUNNEL = 0x00000001;
 			public const String NDISRD_DRIVER_NAME = "NDISRD";
 			public const uint NETWORK_LAYER_VALID = 0x00000002;
-			public const uint PACKET_FLAG_ON_RECEIVE = 0x00000002;
-			public const uint PACKET_FLAG_ON_SEND = 0x00000001;
 			public const int RAS_LINKS_MAX = 256;
 			public const int RAS_LINK_BUFFER_LENGTH = 1024;
 			public const uint TCPUDP = 0x00000001;
@@ -233,23 +231,6 @@ namespace NdisapiSpace
 			public ushort[] m_usMTU;
 		}
 
-		//
-		// INTERMEDIATE_BUFFER contains packet buffer, packet NDIS flags, WinpkFilter specific flags
-		//
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public struct LIST_ENTRY {
-			public IntPtr Flink;
-			public IntPtr Blink;
-		}
-
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public unsafe struct INTERMEDIATE_BUFFER {
-			public LIST_ENTRY m_qLink;
-			public uint m_dwDeviceFlags;
-			public uint m_Length;
-			public uint m_Flags;
-			public fixed byte m_IBuffer[1514];
-		}
 
 		//
 		// NDISRD_ETH_Packet is a container for INTERMEDIATE_BUFFER pointer

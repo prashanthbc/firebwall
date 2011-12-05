@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Text;
+using FM;
 
-namespace PassThru
+namespace ArpPoisoningProtection
 {
-    /*
-         * ARP Poisoning module.
-         * @summary: //TODO 
-         */
-    public class SimpleAntiARPPoisoning : FirewallModule
+    public class ARPPP : FirewallModule
     {
-        public SimpleAntiARPPoisoning(NetworkAdapter adapter)
+        public ARPPP()
+            : base()
+        {
+            this.moduleName = "Arp Poisoning Protection";
+        }
+
+        public ARPPP(INetworkAdapter adapter)
             : base(adapter)
         {
             this.moduleName = "Arp Poisoning Protection";

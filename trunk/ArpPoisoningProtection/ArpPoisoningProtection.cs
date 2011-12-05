@@ -8,14 +8,14 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.NetworkInformation;
 
-namespace PassThru
+namespace ArpPoisoningProtection
 {
     public partial class ArpPoisoningProtection : UserControl
     {
-        SimpleAntiARPPoisoning saap;
+        ARPPP saap;
         SerializableDictionary<IPAddress, string> cache = new SerializableDictionary<IPAddress, string>();
 
-        public ArpPoisoningProtection(SimpleAntiARPPoisoning saap)
+        public ArpPoisoningProtection(ARPPP saap)
         {
             this.saap = saap;
             cache = saap.GetCache();

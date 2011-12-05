@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+using System;
+using FM;
+using System.Reflection;
+using System.IO;
 
 namespace PassThru
 {
@@ -7,10 +11,53 @@ namespace PassThru
             List<int> ProcessingIndex = new List<int>();
             List<FirewallModule> modules = new List<FirewallModule>();
             object padlock = new object();
+            Dictionary<string, string> loadedMods = new Dictionary<string, string>();
+            NetworkAdapter na;
 
-			public ModuleList() 
+			public ModuleList(NetworkAdapter na) 
             {
+                this.na = na;
 			}
+
+            public void LoadModule(string file)
+            {
+                if (file.Contains("FirewallModule.dll"))
+                    return;
+                try
+                {
+                    if (loadedMods.ContainsValue(file))
+                        return;
+                    Assembly assembly = Assembly.Load(File.ReadAllBytes(file));
+                    Type[] type = assembly.GetTypes();
+                    foreach (Type t in type)
+                    {
+                        if (typeof(FirewallModule).IsAssignableFrom(t))
+                        {
+                            FirewallModule mod = (FirewallModule)Activator.CreateInstance(t);
+                            mod.adapter = na;
+                            mod.ModuleStart();
+                            AddModule(mod);
+                            loadedMods.Add(mod.moduleName, file);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+            }
+
+            public void LoadExternalModules()
+            {
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                if(Directory.Exists(folder + Path.DirectorySeparatorChar + "firebwall" + Path.DirectorySeparatorChar + "modules"))
+                {
+                    DirectoryInfo di = new DirectoryInfo(folder + Path.DirectorySeparatorChar + "firebwall" + Path.DirectorySeparatorChar + "modules");
+                    foreach (FileInfo fi in di.GetFiles())
+                    {
+                        LoadModule(fi.FullName);
+                    }
+                }
+            }
 
             public void InsertPIndex(int oIndex, int nIndex)
             {

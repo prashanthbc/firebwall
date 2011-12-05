@@ -6,68 +6,70 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace PassThru
+namespace FM
 {
-	[Flags]
-	public enum PacketMainReturnType
-	{
-		Error = 1,          //Reports an error in the packet processing
-		Drop = 1 << 1,           //Drops the packet
-		Allow = 1 << 2,          //Allows the packet to be passed on to the next module
-        Edited = 1 << 3,
-		Log = 1 << 4	        //Logs the packet
-	}
-
-	public class PacketMainReturn
+    [Flags]
+    public enum PacketMainReturnType
     {
-		/// <summary>
-		/// Creates a PacketMainReturn with the basic unknown error message
-		/// </summary>
-		/// <param name="moduleName"></param>
-		public PacketMainReturn(string moduleName) 
+        Error = 1,          //Reports an error in the packet processing
+        Drop = 1 << 1,           //Drops the packet
+        Allow = 1 << 2,          //Allows the packet to be passed on to the next module
+        Edited = 1 << 3,
+        Log = 1 << 4	        //Logs the packet
+    }
+
+    public class PacketMainReturn
+    {
+        /// <summary>
+        /// Creates a PacketMainReturn with the basic unknown error message
+        /// </summary>
+        /// <param name="moduleName"></param>
+        public PacketMainReturn(string moduleName)
         {
-			Module = moduleName;
-			returnType = PacketMainReturnType.Error | PacketMainReturnType.Log;
-			logMessage = "An error has occurred in " + moduleName + " with no other details.";
-		}
+            Module = moduleName;
+            returnType = PacketMainReturnType.Error | PacketMainReturnType.Log;
+            logMessage = "An error has occurred in " + moduleName + " with no other details.";
+        }
         public PacketMainReturn(string moduleName, Exception e)
         {
             Module = moduleName;
             returnType = PacketMainReturnType.Error | PacketMainReturnType.Log;
             logMessage = "An error has occurred in " + moduleName + ". " + e.Message + "\r\n" + e.StackTrace;
         }
-		public string Module = null;
-		public Packet SendPacket = null;
-		public string logMessage = null;
-		public PacketMainReturnType returnType;        
-	}
+        public string Module = null;
+        public Packet SendPacket = null;
+        public string logMessage = null;
+        public PacketMainReturnType returnType;
+    }
 
-	public enum ModuleErrorType
-	{
-		Success,        //No error
-		UnknownError    //I'm not sure what type of errors it'll run into yet
-	}
-
-	public class ModuleError
+    public enum ModuleErrorType
     {
-		public byte[] errorBinary = null;
-		public string errorMessage = null;
-		public ModuleErrorType errorType;
-		public string moduleName = null;
-	}
+        Success,        //No error
+        UnknownError    //I'm not sure what type of errors it'll run into yet
+    }
 
-	/// <summary>
-	/// An abstract class for the firewall modules, making input and output uniform
-	/// </summary>
-	public abstract class FirewallModule
+    public class ModuleError
     {
-		public FirewallModule(NetworkAdapter adapter) 
+        public byte[] errorBinary = null;
+        public string errorMessage = null;
+        public ModuleErrorType errorType;
+        public string moduleName = null;
+    }
+
+    /// <summary>
+    /// An abstract class for the firewall modules, making input and output uniform
+    /// </summary>
+    public abstract class FirewallModule
+    {
+        public FirewallModule() { }
+
+        public FirewallModule(INetworkAdapter adapter)
         {
-			this.adapter = adapter;
-		}
-		public NetworkAdapter adapter = null;
-		public System.Windows.Forms.UserControl uiControl = null;
-		public string moduleName = null;
+            this.adapter = adapter;
+        }
+        public INetworkAdapter adapter = null;
+        public System.Windows.Forms.UserControl uiControl = null;
+        public string moduleName = null;
         public object PersistentData = null;
         public bool Enabled = true;
 
@@ -125,24 +127,25 @@ namespace PassThru
             return null;
         }
 
-		/// <summary>
-		/// Ran after the module is loaded, to prime it for processing if required
-		/// </summary>
-		/// <returns>Any error that occured during the starting of it</returns>
-		public abstract ModuleError ModuleStart();
+        /// <summary>
+        /// Ran after the module is loaded, to prime it for processing if required
+        /// </summary>
+        /// <returns>Any error that occured during the starting of it</returns>
+        public abstract ModuleError ModuleStart();
 
-		/// <summary>
-		/// Ran when the module is to be stopped, to clear up any uneeded resources
-		/// </summary>
-		/// <returns>Any error that occured during the stopping of it</returns>
-		public abstract ModuleError ModuleStop();
+        /// <summary>
+        /// Ran when the module is to be stopped, to clear up any uneeded resources
+        /// </summary>
+        /// <returns>Any error that occured during the stopping of it</returns>
+        public abstract ModuleError ModuleStop();
 
-		/// <summary>
-		/// The wrapper function for processing packets
-		/// </summary>
-		/// <param name="in_packet">Packet to be processed</param>
-		/// <returns>A PacketMainReturn object, either from the interiorMain or default error one</returns>
-		public PacketMainReturn PacketMain(ref Packet in_packet) {
+        /// <summary>
+        /// The wrapper function for processing packets
+        /// </summary>
+        /// <param name="in_packet">Packet to be processed</param>
+        /// <returns>A PacketMainReturn object, either from the interiorMain or default error one</returns>
+        public PacketMainReturn PacketMain(ref Packet in_packet)
+        {
             if (Enabled)
             {
                 try
@@ -157,36 +160,36 @@ namespace PassThru
             }
             else
                 return new PacketMainReturn(moduleName) { returnType = PacketMainReturnType.Allow };
-		}
+        }
 
-		/// <summary>
-		/// The internal function for processing packets implemented by the module
-		/// </summary>
-		/// <param name="in_packet">Packet to be processed</param>
-		/// <returns>PacketMainReturn object describing what to do with the packet and/or
-		/// anything that is notable during the processing</returns>
-		public abstract PacketMainReturn interiorMain(ref Packet in_packet);
-	}
+        /// <summary>
+        /// The internal function for processing packets implemented by the module
+        /// </summary>
+        /// <param name="in_packet">Packet to be processed</param>
+        /// <returns>PacketMainReturn object describing what to do with the packet and/or
+        /// anything that is notable during the processing</returns>
+        public abstract PacketMainReturn interiorMain(ref Packet in_packet);
+    }
 
-	public class Quad
+    public class Quad
     {
-		public IPAddress dstIP = null;
-		public int dstPort = -1;
-		public IPAddress srcIP = null;
-		public int srcPort = -1;
+        public IPAddress dstIP = null;
+        public int dstPort = -1;
+        public IPAddress srcIP = null;
+        public int srcPort = -1;
 
-		public override bool Equals(object obj) 
+        public override bool Equals(object obj)
         {
-			Quad other = (Quad)obj;
-			return (srcIP == other.srcIP && srcPort == other.srcPort && 
-                    dstIP == other.dstIP && dstPort == other.dstPort) || 
-                    (srcIP == other.dstIP && srcPort == other.dstPort && 
+            Quad other = (Quad)obj;
+            return (srcIP == other.srcIP && srcPort == other.srcPort &&
+                    dstIP == other.dstIP && dstPort == other.dstPort) ||
+                    (srcIP == other.dstIP && srcPort == other.dstPort &&
                     dstIP == other.srcIP && dstPort == other.srcPort);
-		}
+        }
 
-		public override int GetHashCode() 
+        public override int GetHashCode()
         {
-			return srcIP.GetHashCode() + dstIP.GetHashCode();
-		}
-	}
+            return srcIP.GetHashCode() + dstIP.GetHashCode();
+        }
+    }
 }

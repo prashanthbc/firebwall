@@ -6,10 +6,11 @@ using System.Threading;
 using Win32APISPace;
 using System.Runtime.InteropServices;
 using System.Net.NetworkInformation;
+using FM;
 
 namespace PassThru
 {
-	public class NetworkAdapter
+	public class NetworkAdapter : INetworkAdapter
     {
         static List<NetworkAdapter> currentAdapters = new List<NetworkAdapter>();
 
@@ -49,7 +50,7 @@ namespace PassThru
 		ManualResetEvent hEvent = null;
 		NetworkInterface inter = null;
 		ADAPTER_MODE mode = new ADAPTER_MODE();
-		public ModuleList modules = new ModuleList();
+        public ModuleList modules;
 		string ndisDeviveName = "";
 		object padlock = new object();
 		bool processing = false;
@@ -141,6 +142,8 @@ namespace PassThru
                 Request.hAdapterHandle = adapterHandle;
                 Request.EthPacket.Buffer = PacketBufferIntPtr;
 
+                modules = new ModuleList(this);                
+
                 //Static and test modules
                 PassThru.Modules.MacFilter.MacFilterModule mfm = new Modules.MacFilter.MacFilterModule(this);
                 mfm.ModuleStart();
@@ -155,15 +158,6 @@ namespace PassThru
                 dos.ModuleStart();
                 modules.AddModule(dos);
 
-                // ARP poisoning module
-                SimpleAntiARPPoisoning saap = new SimpleAntiARPPoisoning(this);
-                saap.ModuleStart();
-                modules.AddModule(saap);				
-
-				//DumpToPcapModule dtpm = new DumpToPcapModule(this);
-				//dtpm.ModuleStart();
-				//modules.Add(dtpm);
-
                 // ICMP filtering module
                 ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
                 icmpFilter.ModuleStart();
@@ -173,6 +167,8 @@ namespace PassThru
                 IPMonitorModule ipm = new IPMonitorModule(this);
                 ipm.ModuleStart();
                 modules.AddModule(ipm);
+
+                modules.LoadExternalModules();
 
                 string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 folder = folder + System.IO.Path.DirectorySeparatorChar + "firebwall";

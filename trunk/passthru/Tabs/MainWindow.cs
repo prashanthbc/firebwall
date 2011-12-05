@@ -8,8 +8,10 @@ using System.Windows.Forms;
 
 namespace PassThru
 {
-		public partial class MainWindow: Form {
-			public MainWindow() {
+		public partial class MainWindow: Form 
+        {
+			public MainWindow() 
+            {
 				InitializeComponent();                
 			}
 
@@ -81,5 +83,39 @@ namespace PassThru
                 od.Dock = DockStyle.Fill;
                 tabPage2.Controls.Add(od);
 			}
+
+            private void optionsTab_DrawItem(object sender, DrawItemEventArgs e)
+            {
+                Font TabFont;
+                Brush BackBrush = new SolidBrush(Color.Black); //Set background color
+                Brush ForeBrush = new SolidBrush(Color.DarkRed);//Set foreground color
+                if (e.Index == this.optionsTab.SelectedIndex)
+                {
+                    TabFont = new Font(e.Font, FontStyle.Italic | FontStyle.Bold);
+                }
+                else
+                {
+                    TabFont = e.Font;
+                }
+                string TabName = this.optionsTab.TabPages[e.Index].Text;
+                StringFormat sf = new StringFormat();
+                sf.Alignment = StringAlignment.Center;
+                e.Graphics.FillRectangle(BackBrush, e.Bounds);
+                Rectangle r = e.Bounds;
+                r = new Rectangle(r.X, r.Y + 3, r.Width, r.Height - 3);
+                e.Graphics.DrawString(TabName, TabFont, ForeBrush, r, sf);
+                //Dispose objects
+                sf.Dispose();
+                if (e.Index == this.optionsTab.SelectedIndex)
+                {
+                    TabFont.Dispose();
+                    BackBrush.Dispose();
+                }
+                else
+                {
+                    BackBrush.Dispose();
+                    ForeBrush.Dispose();
+                }
+            }
 		}
 }
