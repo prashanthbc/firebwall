@@ -11,6 +11,9 @@ namespace PassThru
     /// </summary>
 	public class TrayIcon
     {
+        // var updated whenever options checkbox changes
+        public static bool displayTrayLogs;
+
         /// <summary>
         /// Makes the actual NotifyIcon, and hooks up all the events for it
         /// </summary>
@@ -26,6 +29,7 @@ namespace PassThru
 			tray.Visible = true;
 			tray.BalloonTipClosed += new EventHandler(tray_BalloonTipClosed);
 			tray.DoubleClick += new EventHandler(tray_DoubleClick);
+            displayTrayLogs = true;
 		}
 		NotifyIcon tray;
 
@@ -40,9 +44,12 @@ namespace PassThru
         /// <param name="line"></param>
 		public void AddLine(string line) 
         {
-			tray.BalloonTipText = line;
-
-            tray.ShowBalloonTip(5000);
+            // only display if checked
+            if (displayTrayLogs)
+            {
+                tray.BalloonTipText = line;
+                tray.ShowBalloonTip(5000);
+            }
             //if (lines.Count == 5)
             //{
             //    lines.Dequeue();

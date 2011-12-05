@@ -69,19 +69,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterControl.cs">
+    <Compile Include="Tabs\AdapterControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="AdapterControl.Designer.cs">
+    <Compile Include="Tabs\AdapterControl.Designer.cs">
       <DependentUpon>AdapterControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="AdapterDisplay.cs">
+    <Compile Include="Tabs\AdapterDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="AdapterDisplay.Designer.cs">
+    <Compile Include="Tabs\AdapterDisplay.Designer.cs">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="BandwidthCounter.cs" />
+    <Compile Include="Tabs\BandwidthCounter.cs" />
     <Compile Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -124,10 +124,10 @@
     <Compile Include="Location.cs" />
     <Compile Include="LogCenter.cs" />
     <Compile Include="LookupService.cs" />
-    <Compile Include="MainWindow.cs">
+    <Compile Include="Tabs\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainWindow.Designer.cs">
+    <Compile Include="Tabs\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ModuleList.cs" />
@@ -173,7 +173,13 @@
     <Compile Include="RegionName.cs" />
     <Compile Include="Modules\ARPPoisoningModule\SimpleARPPoisoningModule.cs" />
     <Compile Include="SerializableDictionary.cs" />
-    <Compile Include="TrayIcon.cs" />
+    <Compile Include="Tabs\OptionsDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tabs\OptionsDisplay.Designer.cs">
+      <DependentUpon>OptionsDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tabs\TrayIcon.cs" />
     <Compile Include="UpdateChecker.cs" />
     <Compile Include="win32api.cs" />
   </ItemGroup>
@@ -195,10 +201,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AdapterControl.resx">
+    <EmbeddedResource Include="Tabs\AdapterControl.resx">
       <DependentUpon>AdapterControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AdapterDisplay.resx">
+    <EmbeddedResource Include="Tabs\AdapterDisplay.resx">
       <DependentUpon>AdapterDisplay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\BasicFirewallModule\AddEditRule.resx">
@@ -216,7 +222,7 @@
     <EmbeddedResource Include="Modules\ARPPoisoningModule\ArpPoisoningProtection.resx">
       <DependentUpon>ArpPoisoningProtection.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainWindow.resx">
+    <EmbeddedResource Include="Tabs\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modules\IPMonitorModule\IPMonitorDisplay.resx">
@@ -234,6 +240,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tabs\OptionsDisplay.resx">
+      <DependentUpon>OptionsDisplay.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

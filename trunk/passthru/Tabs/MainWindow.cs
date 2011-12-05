@@ -53,6 +53,7 @@ namespace PassThru
 
             //RuleEditor re;
             AdapterControl ac;
+            OptionsDisplay od;
 
 			private void MainWindow_Load(object sender, EventArgs e) 
             {
@@ -70,9 +71,15 @@ namespace PassThru
                 //re.Dock = DockStyle.Fill;
                 //tabPage2.Controls.Add(re);
 
+                // load up the adapter control handler
 				ac = new AdapterControl();
 				ac.Dock = DockStyle.Fill;
 				tabPage3.Controls.Add(ac);
+
+                // load up the options tab handler
+                od = new OptionsDisplay();
+                od.Dock = DockStyle.Fill;
+                tabPage2.Controls.Add(od);
 			}
 		}
 }
