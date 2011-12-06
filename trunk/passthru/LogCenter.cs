@@ -164,7 +164,14 @@ namespace PassThru
              */
             public static void cleanLogs()
             {
-                string filepath = Path.GetDirectoryName(Application.ExecutablePath) + "\\Log";
+                string folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                folder = folder + Path.DirectorySeparatorChar + "firebwall";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                folder = folder + Path.DirectorySeparatorChar + "Log";
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+                string filepath = folder;
 
                 if (Directory.Exists(filepath))
                 {
