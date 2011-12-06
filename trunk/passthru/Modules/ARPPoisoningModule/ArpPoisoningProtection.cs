@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.NetworkInformation;
+using FM;
 
 namespace PassThru
 {
@@ -79,6 +80,40 @@ namespace PassThru
             checkBoxLogPoisoning.Checked = saap.data.LogAttacks;
             checkBoxLogUnsolicited.Checked = saap.data.LogUnsolic;
             checkBoxSave.Checked = saap.data.Save;
+            switch (LanguageConfig.GetCurrentLanguage())
+            {
+                case LanguageConfig.Language.NONE:
+                case LanguageConfig.Language.ENGLISH:
+                    checkBoxSave.Text = "Save ARP Cache";
+                    checkBoxLogUnsolicited.Text = "Log Unsolicitied";
+                    checkBoxLogPoisoning.Text = "Log Attacks";
+                    button1.Text = "Remove Entry";
+                    break;
+                case LanguageConfig.Language.CHINESE:
+                    checkBoxSave.Text = "保存ARP缓存";
+                    checkBoxLogUnsolicited.Text = "登录未经请求";
+                    checkBoxLogPoisoning.Text = "登录攻击";
+                    button1.Text = "删除条目";
+                    break;
+                case LanguageConfig.Language.GERMAN:
+                    checkBoxSave.Text = "Save ARP Cache";
+                    checkBoxLogUnsolicited.Text = "Log Initiativbewerbung";
+                    checkBoxLogPoisoning.Text = "Log Attacks";
+                    button1.Text = "Eintrag entfernen";
+                    break;
+                case LanguageConfig.Language.RUSSIAN:
+                    checkBoxSave.Text = "Сохранить ARP кэш";
+                    checkBoxLogUnsolicited.Text = "Вход Незапрошенные";
+                    checkBoxLogPoisoning.Text = "Вход атак";
+                    button1.Text = "Удалить Вступление";
+                    break;
+                case LanguageConfig.Language.SPANISH:
+                    checkBoxSave.Text = "Guardar la caché ARP";
+                    checkBoxLogUnsolicited.Text = "registro no solicitados";
+                    checkBoxLogPoisoning.Text = "Los ataques de registro";
+                    button1.Text = "eliminar entrada";
+                    break;
+            }
             saap_UpdatedArpCache();
         }
     }

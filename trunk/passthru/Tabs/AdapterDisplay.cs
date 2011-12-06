@@ -71,5 +71,33 @@ namespace PassThru
             ai.na.Enabled = checkBox1.Checked;
             buttonConfig.Enabled = checkBox1.Checked;
         }
+
+        private void AdapterDisplay_Load(object sender, EventArgs e)
+        {
+            switch (LanguageConfig.GetCurrentLanguage())
+            {
+                case LanguageConfig.Language.NONE:
+                case LanguageConfig.Language.ENGLISH:
+                    checkBox1.Text = "Enable";
+                    buttonConfig.Text = "Configure Device";
+                    break;
+                case LanguageConfig.Language.CHINESE:
+                    checkBox1.Text = "启用";
+                    buttonConfig.Text = "配置设备";
+                    break;
+                case LanguageConfig.Language.GERMAN:
+                    checkBox1.Text = "ermöglichen";
+                    buttonConfig.Text = "Gerät konfigurieren";
+                    break;
+                case LanguageConfig.Language.RUSSIAN:
+                    checkBox1.Text = "Включить";
+                    buttonConfig.Text = "Настройка устройства";
+                    break;
+                case LanguageConfig.Language.SPANISH:
+                    checkBox1.Text = "permitir";
+                    buttonConfig.Text = "configurar dispositivo";
+                    break;
+            }
+        }
     }
 }

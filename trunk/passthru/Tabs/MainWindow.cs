@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using FM;
 
 namespace PassThru
 {
@@ -82,6 +83,36 @@ namespace PassThru
                 od = new OptionsDisplay();
                 od.Dock = DockStyle.Fill;
                 tabPage2.Controls.Add(od);
+
+                switch (LanguageConfig.GetCurrentLanguage())
+                {
+                    case LanguageConfig.Language.NONE:
+                    case LanguageConfig.Language.ENGLISH:
+                        tabPage1.Text = "Log";
+                        tabPage2.Text = "Adapters";
+                        tabPage3.Text = "Options";
+                        break;
+                    case LanguageConfig.Language.CHINESE:
+                        tabPage1.Text = "登录";
+                        tabPage2.Text = "适配器";
+                        tabPage3.Text = "选项";
+                        break;
+                    case LanguageConfig.Language.GERMAN:
+                        tabPage1.Text = "Log";
+                        tabPage2.Text = "Adapter";
+                        tabPage3.Text = "Optionen";
+                        break;
+                    case LanguageConfig.Language.RUSSIAN:
+                        tabPage1.Text = "журнал";
+                        tabPage2.Text = "Адаптеры";
+                        tabPage3.Text = "опции";
+                        break;
+                    case LanguageConfig.Language.SPANISH:
+                        tabPage1.Text = "log";
+                        tabPage2.Text = "adaptadores";
+                        tabPage3.Text = "opciones";
+                        break;
+                }
 			}
 
             private void optionsTab_DrawItem(object sender, DrawItemEventArgs e)

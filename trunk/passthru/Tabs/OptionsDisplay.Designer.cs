@@ -51,6 +51,7 @@
             this.Controls.Add(this.displayTrayLogs);
             this.Name = "OptionsDisplay";
             this.Size = new System.Drawing.Size(555, 330);
+            this.Load += new System.EventHandler(this.OptionsDisplay_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using FM;
 
 namespace PassThru
 {
@@ -26,6 +27,29 @@ namespace PassThru
         private void displayTrayLogs_CheckedChanged(object sender, EventArgs e)
         {
             TrayIcon.displayTrayLogs = displayTrayLogs.Checked;
+        }
+
+        private void OptionsDisplay_Load(object sender, EventArgs e)
+        {
+            switch (LanguageConfig.GetCurrentLanguage())
+            {
+                case LanguageConfig.Language.NONE:
+                case LanguageConfig.Language.ENGLISH:
+                    displayTrayLogs.Text = "Display Icon Popups";
+                    break;
+                case LanguageConfig.Language.CHINESE:
+                    displayTrayLogs.Text = "显示图标弹出窗口";
+                    break;
+                case LanguageConfig.Language.GERMAN:
+                    displayTrayLogs.Text = "Anzeige Icon Popups";
+                    break;
+                case LanguageConfig.Language.RUSSIAN:
+                    displayTrayLogs.Text = "Показать Иконка всплывающие окна";
+                    break;
+                case LanguageConfig.Language.SPANISH:
+                    displayTrayLogs.Text = "Mostrar ventanas emergentes Icono";
+                    break;
+            }
         }
     }
 }

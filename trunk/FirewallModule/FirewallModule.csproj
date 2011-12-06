@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="FirewallModule.cs" />
     <Compile Include="INetworkAdapter.cs" />
+    <Compile Include="LanguageConfig.cs" />
     <Compile Include="Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableDictionary.cs" />
