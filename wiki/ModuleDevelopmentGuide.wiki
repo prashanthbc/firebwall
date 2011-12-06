@@ -8,7 +8,7 @@ This guide is an entry point into module development, and more advanced features
 == Project Environment ==
 Begin by creating a new Class Library project.  Our module title for this example is Chili Soup, but something more pertinent to the modules intent is preferred.  The first thing you'll want to do is switch the target framework over to .NET 2.0.  This can be done in the project's Properties window. 
 
-We'll need a copy of the FirewallModule.dll next to inherit the basic objects necessary for usage.  By this point you should have a copy of firebwall installed; right click on your project and select Add Reference.  Navigate to your firebwall install and select the FirewallModule.dll. 
+We'll need a copy of the FirewallModule.dll next to inherit the basic objects necessary for usage.  We will also need to use FirewallModule.dll as a reference.  By this point you should have a copy of firebwall installed; right click on your project and select Add Reference.  Navigate to your firebwall install and select the FirewallModule.dll. 
 
 Now that you've got the reference in place, you need to set up your directive:
 
@@ -123,6 +123,23 @@ if ( in_packet.GetHighestLayer() == Protocol.ICMP )
 }}}
 
 The above code determines whether the highest layer of the packet is ICMP or not, then creates a new ICMP packet by casting in_packet to type ICMPPacket.  With this new packet we can determine specifics about ICMP, such as type and code.  We can also retrieve any other information contained within the lower layers, i.e. MAC, source/destination IP, etc.
+
+=== Saving and Loading Module Configuration ===
+
+The PersistentData object in the FirewallModule abstract class is used to save and load information.  In ModuleStart, you first need to add this.
+{{{LoadConfig();}}}
+This will populate PersistentData with the object deserialized from the configuration file.
+
+Now for creating the class to use for configuration, it must hold all and only the information you want to save between each run of the firewall(like when the computer reboots).  All this data must be serializable.  The class you create will need to have the Serializable tag.
+{{{[Serializable]}}}
+That goes right before the class definition.  To save data, in ModuleStop, or whenever you want to save, you should set PersistentData to the object that you are storing all the data to be saved then run SaveConfig.
+{{{
+PersistentData = rules;
+SaveConfig();
+}}}
+That is example save code from the ModuleStop code in BasicFirewallModule.cs
+
+Now, Dictionaries are often used in C#, but .NET 2.0 does not serialize them, so, included in FirewallModule.dll is the SerializableDictionary class.  It should be used instead of a Dictionary inside of your PersistentData class.
 
 == Loading Our Module ==
 Once we build our solution (F6 in VS2010), we can navigate to our module's folder, into /bin/release, and find a copy of your module's dynamically linking library.  This is what we need to get firebwall to load our module.  Firebwall loads external modules when it's first booted up; that means to load one of your modules, you need to drop the DLL into the appropriate path and restart firebwall.  
