@@ -127,11 +127,15 @@ The above code determines whether the highest layer of the packet is ICMP or not
 === Saving and Loading Module Configuration ===
 
 The PersistentData object in the FirewallModule abstract class is used to save and load information.  In ModuleStart, you first need to add this.
-{{{LoadConfig();}}}
+{{{
+LoadConfig();
+}}}
 This will populate PersistentData with the object deserialized from the configuration file.
 
 Now for creating the class to use for configuration, it must hold all and only the information you want to save between each run of the firewall(like when the computer reboots).  All this data must be serializable.  The class you create will need to have the Serializable tag.
-{{{[Serializable]}}}
+{{{
+[Serializable]
+}}}
 That goes right before the class definition.  To save data, in ModuleStop, or whenever you want to save, you should set PersistentData to the object that you are storing all the data to be saved then run SaveConfig.
 {{{
 PersistentData = rules;
