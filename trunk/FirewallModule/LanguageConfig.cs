@@ -19,6 +19,11 @@ namespace FM
 
         static Language cLanguage = Language.NONE;
 
+        public static void SetLanguage(Language l)
+        {
+            cLanguage = l;
+        }
+
         public static Language GetCurrentLanguage()
         {
             if (cLanguage == Language.NONE)
