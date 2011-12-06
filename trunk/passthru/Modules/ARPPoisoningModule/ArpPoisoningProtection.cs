@@ -14,7 +14,7 @@ namespace PassThru
     public partial class ArpPoisoningProtection : UserControl
     {
         ARPPP saap;
-        SerializableDictionary<IPAddress, string> cache = new SerializableDictionary<IPAddress, string>();
+        SerializableDictionary<IPAddress, byte[]> cache = new SerializableDictionary<IPAddress, byte[]>();
 
         public ArpPoisoningProtection(ARPPP saap)
         {
@@ -36,9 +36,9 @@ namespace PassThru
             else
             {
                 listBox1.Items.Clear();
-                foreach (KeyValuePair<IPAddress, string> i in cache)
+                foreach (KeyValuePair<IPAddress, byte[]> i in cache)
                 {
-                    listBox1.Items.Add(i.Value + " -> " + i.Key.ToString());
+                    listBox1.Items.Add(BitConverter.ToString(i.Value).Replace("-", "") + " -> " + i.Key.ToString());
                 }
             }
         }

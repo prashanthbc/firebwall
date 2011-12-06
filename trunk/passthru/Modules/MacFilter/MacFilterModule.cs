@@ -25,7 +25,7 @@ namespace PassThru.Modules.MacFilter
         public class MacRule
         {
             PacketStatus ps;
-            string mac;
+            byte[] mac;
             Direction direction;
             bool log = true;
 
@@ -46,7 +46,7 @@ namespace PassThru.Modules.MacFilter
                     ret = "Blocks";
                 }
                 if (mac != null)
-                    ret += " MAC " + mac.ToString();
+                    ret += " MAC " + new PhysicalAddress(mac).ToString();
                 else
                     ret += " all MACs ";
                 if (direction == (Direction.IN | Direction.OUT))
@@ -77,16 +77,26 @@ namespace PassThru.Modules.MacFilter
             public MacRule(PacketStatus ps, PhysicalAddress mac, Direction direction, bool log)
             {
                 this.ps = ps;
-                this.mac = mac.ToString();
+                this.mac = mac.GetAddressBytes();
                 this.direction = direction;
                 this.log = log;
+            }
+
+            bool Compare(byte[] a, byte[] b)
+            {
+                for (int x = 0; x < 6; x++)
+                {
+                    if (a[x] != b[x])
+                        return false;
+                }
+                return true;
             }
 
             public PacketStatus GetStatus(Packet pkt)
             {
                 if (pkt.Outbound && (direction & Direction.OUT) == Direction.OUT)
                 {
-                    if (mac == null || mac.Equals(((EthPacket)pkt).ToMac.ToString()))
+                    if (mac == null || Compare(mac, ((EthPacket)pkt).ToMac.GetAddressBytes()))
                     {
                         if (log)
                             message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();
@@ -95,7 +105,7 @@ namespace PassThru.Modules.MacFilter
                 }
                 else if (!pkt.Outbound && (direction & Direction.IN) == Direction.IN)
                 {
-                    if (mac == null || mac.Equals(((EthPacket)pkt).FromMac.ToString()))
+                    if (mac == null || Compare(mac, ((EthPacket)pkt).FromMac.GetAddressBytes()))
                     {
                         if (log)
                             message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();

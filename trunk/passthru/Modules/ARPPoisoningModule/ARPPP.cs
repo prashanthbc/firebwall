@@ -40,7 +40,7 @@ namespace PassThru
         public override ModuleError ModuleStop()
         {
             if (!data.Save)
-                data.arpCache = new SerializableDictionary<IPAddress, string>();
+                data.arpCache = new SerializableDictionary<IPAddress, byte[]>();
 
             PersistentData = data;
             SaveConfig();
@@ -54,7 +54,7 @@ namespace PassThru
         [Serializable]
         public class ArpData
         {
-            public SerializableDictionary<IPAddress, string> arpCache = new SerializableDictionary<IPAddress, string>();
+            public SerializableDictionary<IPAddress, byte[]> arpCache = new SerializableDictionary<IPAddress, byte[]>();
             public bool Save = true;
             public bool LogUnsolic = true;
             public bool LogAttacks = true;
@@ -67,19 +67,19 @@ namespace PassThru
 
 
 
-        public SerializableDictionary<IPAddress, string> GetCache()
+        public SerializableDictionary<IPAddress, byte[]> GetCache()
         {
             lock (padlock)
             {
-                return new SerializableDictionary<IPAddress, string>(data.arpCache);
+                return new SerializableDictionary<IPAddress, byte[]>(data.arpCache);
             }
         }
 
-        public void UpdateCache(SerializableDictionary<IPAddress, string> cache)
+        public void UpdateCache(SerializableDictionary<IPAddress, byte[]> cache)
         {
             lock (padlock)
             {
-                data.arpCache = new SerializableDictionary<IPAddress, string>(cache);
+                data.arpCache = new SerializableDictionary<IPAddress, byte[]>(cache);
             }
         }
 
@@ -87,6 +87,8 @@ namespace PassThru
         {
             return new ArpPoisoningProtection(this) { Dock = System.Windows.Forms.DockStyle.Fill };
         }
+
+
 
         public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
@@ -136,7 +138,7 @@ namespace PassThru
                                                 break;
                                         }                                        
                                         arpp.ATargetIP = arpp.ASenderIP;
-                                        arpp.ATargetMac = PhysicalAddress.Parse(data.arpCache[arpp.ATargetIP]);
+                                        arpp.ATargetMac = new PhysicalAddress(data.arpCache[arpp.ATargetIP]);
                                         arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
                                         arpp.FromMac = arpp.ASenderMac;
                                         arpp.ToMac = arpp.ATargetMac;
@@ -159,7 +161,7 @@ namespace PassThru
                                 }
                                 else
                                 {
-                                    data.arpCache[arpp.ASenderIP] = arpp.ASenderMac.ToString();
+                                    data.arpCache[arpp.ASenderIP] = arpp.ASenderMac.GetAddressBytes();
                                     if (UpdatedArpCache != null)
                                         UpdatedArpCache();
                                     requestedIPs.Remove(ip);
@@ -198,7 +200,7 @@ namespace PassThru
                                                 break;
                                         }     
                                         arpp.ATargetIP = arpp.ASenderIP;
-                                        arpp.ATargetMac = PhysicalAddress.Parse(data.arpCache[arpp.ATargetIP]);
+                                        arpp.ATargetMac = new PhysicalAddress(data.arpCache[arpp.ATargetIP]);
                                         arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
                                         arpp.FromMac = arpp.ASenderMac;
                                         arpp.ToMac = arpp.ATargetMac;
@@ -248,7 +250,7 @@ namespace PassThru
                         {
                             if (data.arpCache.ContainsKey(arpp.ASenderIP))
                             {
-                                if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac.ToString()))
+                                if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac.GetAddressBytes()))
                                 {
                                     PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                     pmr.returnType = PacketMainReturnType.Drop;
@@ -287,6 +289,16 @@ namespace PassThru
             PacketMainReturn pm = new PacketMainReturn("Simple ARP Poisoning Protection");
             pm.returnType = PacketMainReturnType.Allow;
             return pm;
+        }
+
+        bool Compare(byte[] a, byte[] b)
+        {
+            for (int x = 0; x < 6; x++)
+            {
+                if (a[x] != b[x])
+                    return false;
+            }
+            return true;
         }
     }
 }
