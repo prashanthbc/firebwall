@@ -23,7 +23,7 @@ public class ChiliSoup : FirewallModule
 
 == Basic Framework ==
 
-You should take this type to look around the FirewallModule.dll's references.  This is your development framework guide for interacting with the firebwall framework.
+You should take this time to look around the FirewallModule.dll's references.  This is your development framework guide for interacting with the firebwall framework.
 
 If you dig around the object's references, you'll note there are a couple abstract classes we need to override.  We'll step through these briefly.
 
