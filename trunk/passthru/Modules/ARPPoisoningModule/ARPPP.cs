@@ -115,8 +115,26 @@ namespace PassThru
                                         PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmr.returnType = PacketMainReturnType.Edited;                                        
                                         if (data.LogAttacks)
-                                            pmr.returnType |= PacketMainReturnType.Log;                                        
-                                        pmr.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                            pmr.returnType |= PacketMainReturnType.Log;
+                                        switch (LanguageConfig.GetCurrentLanguage())
+                                        {
+                                            case LanguageConfig.Language.NONE:
+                                            case LanguageConfig.Language.ENGLISH:
+                                                pmr.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                                break;
+                                            case LanguageConfig.Language.CHINESE:
+                                                pmr.logMessage = arpp.ASenderMac.ToString() + "为" + arpp.ASenderIP.ToString() + "的ARP响应不匹配的ARP缓存。";
+                                                break;
+                                            case LanguageConfig.Language.GERMAN:
+                                                pmr.logMessage = "ARP Response von " + arpp.ASenderMac.ToString() + " für " + arpp.ASenderIP.ToString() + " nicht mit dem ARP-Cache.";
+                                                break;
+                                            case LanguageConfig.Language.RUSSIAN:
+                                                pmr.logMessage = "ARP-ответ от " + arpp.ASenderMac.ToString() + " для " + arpp.ASenderIP.ToString() + " не соответствует кэш ARP.";
+                                                break;
+                                            case LanguageConfig.Language.SPANISH:
+                                                pmr.logMessage = "Respuesta de ARP de " + arpp.ASenderMac.ToString() + " para " + arpp.ASenderIP.ToString() + " no coincide con la caché ARP.";
+                                                break;
+                                        }                                        
                                         arpp.ATargetIP = arpp.ASenderIP;
                                         arpp.ATargetMac = PhysicalAddress.Parse(data.arpCache[arpp.ATargetIP]);
                                         arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
@@ -159,8 +177,26 @@ namespace PassThru
                                         PacketMainReturn pmra = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmra.returnType = PacketMainReturnType.Edited;
                                         if (data.LogAttacks)
-                                            pmra.returnType |= PacketMainReturnType.Log;                                        
-                                        pmra.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                            pmra.returnType |= PacketMainReturnType.Log;
+                                        switch (LanguageConfig.GetCurrentLanguage())
+                                        {
+                                            case LanguageConfig.Language.NONE:
+                                            case LanguageConfig.Language.ENGLISH:
+                                                pmra.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                                break;
+                                            case LanguageConfig.Language.CHINESE:
+                                                pmra.logMessage = arpp.ASenderMac.ToString() + "为" + arpp.ASenderIP.ToString() + "的ARP响应不匹配的ARP缓存。";
+                                                break;
+                                            case LanguageConfig.Language.GERMAN:
+                                                pmra.logMessage = "ARP Response von " + arpp.ASenderMac.ToString() + " für " + arpp.ASenderIP.ToString() + " nicht mit dem ARP-Cache.";
+                                                break;
+                                            case LanguageConfig.Language.RUSSIAN:
+                                                pmra.logMessage = "ARP-ответ от " + arpp.ASenderMac.ToString() + " для " + arpp.ASenderIP.ToString() + " не соответствует кэш ARP.";
+                                                break;
+                                            case LanguageConfig.Language.SPANISH:
+                                                pmra.logMessage = "Respuesta de ARP de " + arpp.ASenderMac.ToString() + " para " + arpp.ASenderIP.ToString() + " no coincide con la caché ARP.";
+                                                break;
+                                        }     
                                         arpp.ATargetIP = arpp.ASenderIP;
                                         arpp.ATargetMac = PhysicalAddress.Parse(data.arpCache[arpp.ATargetIP]);
                                         arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
@@ -183,8 +219,26 @@ namespace PassThru
                             PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                             pmr.returnType = PacketMainReturnType.Drop;
                             if (data.LogUnsolic)
-                                pmr.returnType |= PacketMainReturnType.Log;                            
-                            pmr.logMessage = "Unsolicited ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString();
+                                pmr.returnType |= PacketMainReturnType.Log;
+                            switch (LanguageConfig.GetCurrentLanguage())
+                            {
+                                case LanguageConfig.Language.NONE:
+                                case LanguageConfig.Language.ENGLISH:
+                                    pmr.logMessage = "Unsolicited ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString();
+                                    break;
+                                case LanguageConfig.Language.CHINESE:
+                                    pmr.logMessage = "未经请求的ARP应答为" + arpp.ASenderIP.ToString() + "从" + arpp.ASenderMac.ToString();
+                                    break;
+                                case LanguageConfig.Language.GERMAN:
+                                    pmr.logMessage = "Initiativbewerbung ARP Response von " + arpp.ASenderMac.ToString() + " für " + arpp.ASenderIP.ToString();
+                                    break;
+                                case LanguageConfig.Language.RUSSIAN:
+                                    pmr.logMessage = "Незапрошенные ответ ARP от " + arpp.ASenderMac.ToString() + " для " + arpp.ASenderIP.ToString();
+                                    break;
+                                case LanguageConfig.Language.SPANISH:
+                                    pmr.logMessage = "Respuesta ARP no solicitados de " + arpp.ASenderMac.ToString() + " para " + arpp.ASenderIP.ToString();
+                                    break;
+                            }                                 
                             return pmr;
                         }
                     }
@@ -199,8 +253,26 @@ namespace PassThru
                                     PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                     pmr.returnType = PacketMainReturnType.Drop;
                                     if (data.LogAttacks)
-                                        pmr.returnType |= PacketMainReturnType.Log; 
-                                    pmr.logMessage = "ARP Request from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                        pmr.returnType |= PacketMainReturnType.Log;
+                                    switch (LanguageConfig.GetCurrentLanguage())
+                                    {
+                                        case LanguageConfig.Language.NONE:
+                                        case LanguageConfig.Language.ENGLISH:
+                                            pmr.logMessage = "ARP Response from " + arpp.ASenderMac.ToString() + " for " + arpp.ASenderIP.ToString() + " does not match the ARP cache.";
+                                            break;
+                                        case LanguageConfig.Language.CHINESE:
+                                            pmr.logMessage = arpp.ASenderMac.ToString() + "为" + arpp.ASenderIP.ToString() + "的ARP响应不匹配的ARP缓存。";
+                                            break;
+                                        case LanguageConfig.Language.GERMAN:
+                                            pmr.logMessage = "ARP Response von " + arpp.ASenderMac.ToString() + " für " + arpp.ASenderIP.ToString() + " nicht mit dem ARP-Cache.";
+                                            break;
+                                        case LanguageConfig.Language.RUSSIAN:
+                                            pmr.logMessage = "ARP-ответ от " + arpp.ASenderMac.ToString() + " для " + arpp.ASenderIP.ToString() + " не соответствует кэш ARP.";
+                                            break;
+                                        case LanguageConfig.Language.SPANISH:
+                                            pmr.logMessage = "Respuesta de ARP de " + arpp.ASenderMac.ToString() + " para " + arpp.ASenderIP.ToString() + " no coincide con la caché ARP.";
+                                            break;
+                                    }     
                                     return pmr;
                                 }
                             }
