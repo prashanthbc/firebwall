@@ -177,7 +177,7 @@ namespace PassThru
                 {
                     // grab all the logs in the directory
                     string[] files = Directory.GetFiles(filepath);
-
+    
                     // iterate through them all looking for any that are old (>5)
                     foreach (string s in files)
                     {

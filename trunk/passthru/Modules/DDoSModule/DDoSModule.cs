@@ -81,7 +81,7 @@ namespace PassThru
 
             // simple sanity check to dump the ipcache if it gets too large.
             // this does not effect the blockcache of banned IPs
-            if ((ipcache.Count) > 500)
+            if ((ipcache.Count) > 200)
                 ipcache.Clear();
 
             // TCP incoming packets
