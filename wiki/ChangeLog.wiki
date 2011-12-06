@@ -1,0 +1,13 @@
+#summary Shows the major changes between versions
+
+= 0.3.4.0 =
+  * Added the ability to load user developed modules
+  * Added the Mac Filter module
+  * Added the Options tab, and the ability to turn off the pop up notifications
+
+= 0.3.3.0 =
+  * Improved the installer so it will uninstall previous versions
+
+= 0.3.2.9 =
+  * Allow users to enable/disable modules and change their processing order
+  * Added the IP Monitor module
