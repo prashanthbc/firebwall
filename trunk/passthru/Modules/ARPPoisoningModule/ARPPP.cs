@@ -112,7 +112,7 @@ namespace PassThru
                             {
                                 if (data.arpCache.ContainsKey(arpp.ASenderIP))
                                 {
-                                    if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac.ToString()))
+                                    if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac.GetAddressBytes()))
                                     {
                                         PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmr.returnType = PacketMainReturnType.Edited;                                        
@@ -174,7 +174,7 @@ namespace PassThru
                             {
                                 if (data.arpCache.ContainsKey(arpp.ASenderIP))
                                 {
-                                    if (!data.arpCache[arpp.ASenderIP].Equals(arpp.ASenderMac.ToString()))
+                                    if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac.GetAddressBytes()))
                                     {
                                         PacketMainReturn pmra = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmra.returnType = PacketMainReturnType.Edited;
