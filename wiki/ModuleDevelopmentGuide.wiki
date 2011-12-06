@@ -1,3 +1,4 @@
+#summary A quick start guide to starting to develop modules for fireBwall
 =Developing firebwall Modules=
 
 Firebwall modules are written on Microsoft's .NET 2.0 framework.  The developers of this application use VS2010 for development and building, and test in Windows XP and 7.  Loading modules into firebwall requires an installation of firebwall (.3.3 or later) and a DLL of your module.  More on installation later.
