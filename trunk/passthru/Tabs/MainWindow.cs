@@ -89,28 +89,28 @@ namespace PassThru
                     case LanguageConfig.Language.NONE:
                     case LanguageConfig.Language.ENGLISH:
                         tabPage1.Text = "Log";
-                        tabPage2.Text = "Adapters";
-                        tabPage3.Text = "Options";
+                        tabPage2.Text = "Options";
+                        tabPage3.Text = "Adapters";
                         break;
                     case LanguageConfig.Language.CHINESE:
                         tabPage1.Text = "登录";
-                        tabPage2.Text = "适配器";
-                        tabPage3.Text = "选项";
+                        tabPage2.Text = "选项";
+                        tabPage3.Text = "适配器";
                         break;
                     case LanguageConfig.Language.GERMAN:
                         tabPage1.Text = "Log";
-                        tabPage2.Text = "Adapter";
-                        tabPage3.Text = "Optionen";
+                        tabPage2.Text = "Optionen";
+                        tabPage3.Text = "Adapter";
                         break;
                     case LanguageConfig.Language.RUSSIAN:
                         tabPage1.Text = "журнал";
-                        tabPage2.Text = "Адаптеры";
-                        tabPage3.Text = "опции";
+                        tabPage2.Text = "опции";
+                        tabPage3.Text = "Адаптеры";
                         break;
                     case LanguageConfig.Language.SPANISH:
                         tabPage1.Text = "log";
-                        tabPage2.Text = "adaptadores";
-                        tabPage3.Text = "opciones";
+                        tabPage2.Text = "opciones";
+                        tabPage3.Text = "adaptadores";
                         break;
                 }
 			}

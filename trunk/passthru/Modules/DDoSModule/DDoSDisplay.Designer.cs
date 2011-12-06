@@ -34,7 +34,7 @@
             this.DateBlocked = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.removeButton = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.blockipLabel = new System.Windows.Forms.Label();
             this.addField = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dosBlockTable)).BeginInit();
             this.SuspendLayout();
@@ -97,15 +97,15 @@
             this.addButton.UseVisualStyleBackColor = true;
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
-            // label1
+            // blockipLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(11, 13);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Blocked IPs";
+            this.blockipLabel.AutoSize = true;
+            this.blockipLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blockipLabel.Location = new System.Drawing.Point(11, 13);
+            this.blockipLabel.Name = "blockipLabel";
+            this.blockipLabel.Size = new System.Drawing.Size(75, 13);
+            this.blockipLabel.TabIndex = 3;
+            this.blockipLabel.Text = "Blocked IPs";
             // 
             // addField
             // 
@@ -119,7 +119,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.addField);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.blockipLabel);
             this.Controls.Add(this.addButton);
             this.Controls.Add(this.removeButton);
             this.Controls.Add(this.dosBlockTable);
@@ -137,7 +137,7 @@
         private System.Windows.Forms.DataGridView dosBlockTable;
         private System.Windows.Forms.Button removeButton;
         private System.Windows.Forms.Button addButton;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label blockipLabel;
         private System.Windows.Forms.TextBox addField;
         private System.Windows.Forms.DataGridViewTextBoxColumn blockedip;
         private System.Windows.Forms.DataGridViewTextBoxColumn Reason;

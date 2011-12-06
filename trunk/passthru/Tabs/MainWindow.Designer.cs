@@ -115,7 +115,7 @@
             this.ResumeLayout(false);
 
             }
-
+            
             private System.Windows.Forms.TabPage tabPage2;
 		}
 }
