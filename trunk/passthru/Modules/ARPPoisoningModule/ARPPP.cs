@@ -112,7 +112,7 @@ namespace PassThru
                             {
                                 if (data.arpCache.ContainsKey(arpp.ASenderIP))
                                 {
-                                    if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac.GetAddressBytes()))
+                                    if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac))
                                     {
                                         PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmr.returnType = PacketMainReturnType.Edited;                                        
@@ -138,8 +138,8 @@ namespace PassThru
                                                 break;
                                         }                                        
                                         arpp.ATargetIP = arpp.ASenderIP;
-                                        arpp.ATargetMac = new PhysicalAddress(data.arpCache[arpp.ATargetIP]);
-                                        arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
+                                        arpp.ATargetMac = data.arpCache[arpp.ATargetIP];
+                                        arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress().GetAddressBytes();
                                         arpp.FromMac = arpp.ASenderMac;
                                         arpp.ToMac = arpp.ATargetMac;
                                         foreach (UnicastIPAddressInformation ipv4 in adapter.InterfaceInformation.GetIPProperties().UnicastAddresses)
@@ -161,7 +161,7 @@ namespace PassThru
                                 }
                                 else
                                 {
-                                    data.arpCache[arpp.ASenderIP] = arpp.ASenderMac.GetAddressBytes();
+                                    data.arpCache[arpp.ASenderIP] = arpp.ASenderMac;
                                     if (UpdatedArpCache != null)
                                         UpdatedArpCache();
                                     requestedIPs.Remove(ip);
@@ -174,7 +174,7 @@ namespace PassThru
                             {
                                 if (data.arpCache.ContainsKey(arpp.ASenderIP))
                                 {
-                                    if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac.GetAddressBytes()))
+                                    if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac))
                                     {
                                         PacketMainReturn pmra = new PacketMainReturn("Simple ARP Poisoning Protection");
                                         pmra.returnType = PacketMainReturnType.Edited;
@@ -200,8 +200,8 @@ namespace PassThru
                                                 break;
                                         }     
                                         arpp.ATargetIP = arpp.ASenderIP;
-                                        arpp.ATargetMac = new PhysicalAddress(data.arpCache[arpp.ATargetIP]);
-                                        arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress();
+                                        arpp.ATargetMac = data.arpCache[arpp.ATargetIP];
+                                        arpp.ASenderMac = adapter.InterfaceInformation.GetPhysicalAddress().GetAddressBytes();
                                         arpp.FromMac = arpp.ASenderMac;
                                         arpp.ToMac = arpp.ATargetMac;
                                         foreach (UnicastIPAddressInformation ipv4 in adapter.InterfaceInformation.GetIPProperties().UnicastAddresses)
@@ -250,7 +250,7 @@ namespace PassThru
                         {
                             if (data.arpCache.ContainsKey(arpp.ASenderIP))
                             {
-                                if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac.GetAddressBytes()))
+                                if (!Compare(data.arpCache[arpp.ASenderIP], arpp.ASenderMac))
                                 {
                                     PacketMainReturn pmr = new PacketMainReturn("Simple ARP Poisoning Protection");
                                     pmr.returnType = PacketMainReturnType.Drop;

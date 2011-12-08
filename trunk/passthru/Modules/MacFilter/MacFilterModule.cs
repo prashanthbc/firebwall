@@ -96,7 +96,7 @@ namespace PassThru.Modules.MacFilter
             {
                 if (pkt.Outbound && (direction & Direction.OUT) == Direction.OUT)
                 {
-                    if (mac == null || Compare(mac, ((EthPacket)pkt).ToMac.GetAddressBytes()))
+                    if (mac == null || Compare(mac, ((EthPacket)pkt).ToMac))
                     {
                         if (log)
                             message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();
@@ -105,7 +105,7 @@ namespace PassThru.Modules.MacFilter
                 }
                 else if (!pkt.Outbound && (direction & Direction.IN) == Direction.IN)
                 {
-                    if (mac == null || Compare(mac, ((EthPacket)pkt).FromMac.GetAddressBytes()))
+                    if (mac == null || Compare(mac, ((EthPacket)pkt).FromMac))
                     {
                         if (log)
                             message = "packet from " + ((EthPacket)pkt).FromMac.ToString() + " to " + ((EthPacket)pkt).ToMac.ToString();

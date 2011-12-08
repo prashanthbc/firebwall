@@ -180,37 +180,35 @@ namespace FM
             return (data->m_IBuffer[0x0c] == 0x86 && data->m_IBuffer[0x0d] == 0xdd);
         }
 
-        public PhysicalAddress FromMac
+        public byte[] FromMac
         {
             get
             {
                 byte[] mac = new byte[6];
                 for (int x = 0; x < 6; x++)
                     mac[x] = data->m_IBuffer[x + 6];
-                return new PhysicalAddress(mac);
+                return mac;
             }
             set
             {
-                byte[] mac = value.GetAddressBytes();
                 for (int x = 0; x < 6; x++)
-                    data->m_IBuffer[6 + x] = mac[x];
+                    data->m_IBuffer[6 + x] = value[x];
             }
         }
 
-        public PhysicalAddress ToMac
+        public byte[] ToMac
         {
             get
             {
                 byte[] mac = new byte[6];
                 for (int x = 0; x < 6; x++)
                     mac[x] = data->m_IBuffer[x];
-                return new PhysicalAddress(mac);
+                return mac;
             }
             set
             {
-                byte[] mac = value.GetAddressBytes();
                 for (int x = 0; x < 6; x++)
-                    data->m_IBuffer[x] = mac[x];
+                    data->m_IBuffer[x] = value[x];
             }
         }
     }
@@ -412,20 +410,19 @@ namespace FM
             }
         }
 
-        public PhysicalAddress ASenderMac
+        public byte[] ASenderMac
         {
             get
             {
                 byte[] ip = new byte[6];
                 for (int x = 0; x < 6; x++)
                     ip[x] = data->m_IBuffer[start + 0x8 + x];
-                return new PhysicalAddress(ip);
+                return ip;
             }
             set
             {
-                byte[] ip = value.GetAddressBytes();
                 for (int x = 0; x < 6; x++)
-                    data->m_IBuffer[start + 0x8 + x] = ip[x];
+                    data->m_IBuffer[start + 0x8 + x] = value[x];
             }
         }
 
@@ -446,20 +443,19 @@ namespace FM
             }
         }
 
-        public PhysicalAddress ATargetMac
+        public byte[] ATargetMac
         {
             get
             {
                 byte[] ip = new byte[6];
                 for (int x = 0; x < 6; x++)
                     ip[x] = data->m_IBuffer[start + 0x12 + x];
-                return new PhysicalAddress(ip);
+                return ip;
             }
             set
             {
-                byte[] ip = value.GetAddressBytes();
                 for (int x = 0; x < 6; x++)
-                    data->m_IBuffer[start + 0x12 + x] = ip[x];
+                    data->m_IBuffer[start + 0x12 + x] = value[x];
             }
         }
     }
