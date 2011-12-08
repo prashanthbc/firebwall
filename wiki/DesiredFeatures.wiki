@@ -10,9 +10,9 @@ Here is a list of features and changes we'd like to make before each version
 
 = 0.4 =
 
-  * Multilingual text
+  * Multilingual text(Partial)
   * Fix small issues with the installer(Done)
   * Improve ARP Poisoning Protection(Done)
-  * Improve Documentation
+  * Improve Documentation(Partial)
   * Implement iptables like rules, that priority can be changed
     * Rule sets, and import/export rules
