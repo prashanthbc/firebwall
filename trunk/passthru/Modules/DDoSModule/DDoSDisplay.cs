@@ -43,40 +43,40 @@ namespace PassThru
             switch (LanguageConfig.GetCurrentLanguage())
             {
                 case LanguageConfig.Language.ENGLISH:
-                    removeButton.Text = "Remove Button";
-                    addButton.Text = "Add Button";
+                    removeButton.Text = "Remove IP";
+                    addButton.Text = "Add IP";
                     blockipLabel.Text = "Blocked IPs";
                     dosBlockTable.Columns[0].HeaderText = "IP Address";
                     dosBlockTable.Columns[1].HeaderText = "Reason";
                     dosBlockTable.Columns[2].HeaderText = "Date Blocked";
                     break;
                 case LanguageConfig.Language.CHINESE:
-                    removeButton.Text = "刪除按鈕";
-                    addButton.Text = "添加按鈕";
+                    removeButton.Text = "删除IP";
+                    addButton.Text = "添加IP";
                     blockipLabel.Text = "封鎖的IP地址";
                     dosBlockTable.Columns[0].HeaderText = "IP地址";
                     dosBlockTable.Columns[1].HeaderText = "原因";
                     dosBlockTable.Columns[2].HeaderText = "日期已封鎖";
                     break;
                 case LanguageConfig.Language.GERMAN:
-                    removeButton.Text = "entfernen-Taste";
-                    addButton.Text = "hinzufügen Button";
+                    removeButton.Text = "entfernen IP";
+                    addButton.Text = "Add IP";
                     blockipLabel.Text = "Blockierte IPs";
                     dosBlockTable.Columns[0].HeaderText = "IP-Adresse";
                     dosBlockTable.Columns[1].HeaderText = "Grund";
                     dosBlockTable.Columns[2].HeaderText = "Datum Blocked";
                     break;
                 case LanguageConfig.Language.RUSSIAN:
-                    removeButton.Text = "Кнопка Удалить";
-                    addButton.Text = "Добавить кнопку";
+                    removeButton.Text = "Удалите IP";
+                    addButton.Text = "Добавить IP-";
                     blockipLabel.Text = "Заблокированные IP-адреса";
                     dosBlockTable.Columns[0].HeaderText = "IP-адрес";
                     dosBlockTable.Columns[1].HeaderText = "причина";
                     dosBlockTable.Columns[2].HeaderText = "Дата Заблокированные";
                     break;
                 case LanguageConfig.Language.SPANISH:
-                    removeButton.Text = "Eliminar Botón";
-                    addButton.Text = "Añadir botón";
+                    removeButton.Text = "quitar IP";
+                    addButton.Text = "Añadir IP";
                     blockipLabel.Text = "IPs bloqueadas";
                     dosBlockTable.Columns[0].HeaderText = "Dirección IP";
                     dosBlockTable.Columns[1].HeaderText = "Razón";

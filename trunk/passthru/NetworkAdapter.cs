@@ -153,6 +153,12 @@ namespace PassThru
                 afm.ModuleStart();
                 modules.AddModule(afm);
 
+
+                // ICMP filtering module
+                ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
+                icmpFilter.ModuleStart();
+                modules.AddModule(icmpFilter);
+
                 BasicFirewall tfm = new BasicFirewall(this);
                 tfm.ModuleStart();
                 modules.AddModule(tfm);
@@ -161,11 +167,6 @@ namespace PassThru
                 DDoSModule dos = new DDoSModule(this);
                 dos.ModuleStart();
                 modules.AddModule(dos);
-
-                // ICMP filtering module
-                ICMPFilterModule icmpFilter = new ICMPFilterModule(this);
-                icmpFilter.ModuleStart();
-                modules.AddModule(icmpFilter);
 
                 // IP monitor module
                 IPMonitorModule ipm = new IPMonitorModule(this);
