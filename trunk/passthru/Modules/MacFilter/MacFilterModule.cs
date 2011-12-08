@@ -195,15 +195,11 @@ namespace PassThru.Modules.MacFilter
                     }
                     else if (status == PacketStatus.ALLOWED)
                     {
-                        PacketMainReturn pmr = new PacketMainReturn(moduleName);
-                        pmr.returnType = PacketMainReturnType.Allow;
-                        return pmr;
+                        return null;
                     }
                 }
             }
-            PacketMainReturn pa = new PacketMainReturn(moduleName);
-            pa.returnType = PacketMainReturnType.Allow;
-            return pa;
+            return null;
         }
 
         public void InstanceGetRuleUpdates(List<MacRule> r)

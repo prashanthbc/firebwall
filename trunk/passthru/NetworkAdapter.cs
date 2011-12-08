@@ -215,6 +215,8 @@ namespace PassThru
                             {
                                 FirewallModule fm = modules.GetModule(x);
                                 PacketMainReturn pmr = fm.PacketMain(ref pkt);
+                                if (pmr == null)
+                                    continue;
                                 if ((pmr.returnType & PacketMainReturnType.Log) == PacketMainReturnType.Log && pmr.logMessage != null)
                                 {
                                     LogCenter.Instance.Push(pmr.Module, pmr.logMessage);

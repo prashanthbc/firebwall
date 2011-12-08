@@ -94,9 +94,7 @@ namespace PassThru
         /// <returns></returns>
         public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
-            PacketMainReturn pmr = new PacketMainReturn("IPMonitorModule");
-            pmr.returnType = PacketMainReturnType.Allow;
-            return pmr;
+            return null;
         }
 
         /// <summary>

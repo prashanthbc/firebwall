@@ -206,10 +206,8 @@ namespace PassThru
                     ICMPprevious_packet = packet;
                 }
             }
-      
-            pmr = new PacketMainReturn("DDoS Module");
-            pmr.returnType = PacketMainReturnType.Allow;
-            return pmr;
+
+            return null;
         }
 
         /// <summary>

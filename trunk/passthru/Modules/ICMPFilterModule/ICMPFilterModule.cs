@@ -69,9 +69,7 @@ namespace PassThru
                 if (isAllowed(((ICMPPacket)in_packet).getType(), ((ICMPPacket)in_packet).getCode()) && 
                     !denyAll)
                 {
-                    pmr = new PacketMainReturn("ICMPFilter Module");
-                    pmr.returnType = PacketMainReturnType.Allow;
-                    return pmr;
+                    return null;
                 }
                 // else, log and drop it
                 else
@@ -84,9 +82,7 @@ namespace PassThru
                 }
             }
 
-            pmr = new PacketMainReturn("ICMPFilter Module");
-            pmr.returnType = PacketMainReturnType.Allow;
-            return pmr;
+            return null;
         }
 
         /*

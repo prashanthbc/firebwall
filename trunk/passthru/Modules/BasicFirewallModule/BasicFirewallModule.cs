@@ -657,9 +657,7 @@ namespace PassThru
         {
             if (in_packet.ContainsLayer(Protocol.TCP) && !((TCPPacket)in_packet).SynSet)
             {
-                PacketMainReturn p = new PacketMainReturn("Basic Firewall");
-                p.returnType = PacketMainReturnType.Allow;
-                return p;
+                return null;
             }
             lock (padlock)
             {
@@ -691,9 +689,7 @@ namespace PassThru
                         {
                             tcpConnections.Add(MakeQuad(in_packet));
                         }
-                        PacketMainReturn pmr = new PacketMainReturn("Basic Firewall");
-                        pmr.returnType = PacketMainReturnType.Allow;
-                        return pmr;
+                        return null;
                     }
                 }
                 if (in_packet.ContainsLayer(Protocol.TCP) && ((TCPPacket)in_packet).SynSet && !((TCPPacket)in_packet).AckSet)
@@ -701,9 +697,7 @@ namespace PassThru
                     tcpConnections.Add(MakeQuad(in_packet));
                 }
             }
-            PacketMainReturn pa = new PacketMainReturn("Basic Firewall");
-            pa.returnType = PacketMainReturnType.Allow;
-            return pa;
+            return null;
         }
 
         public void InstanceGetRuleUpdates(List<Rule> r)

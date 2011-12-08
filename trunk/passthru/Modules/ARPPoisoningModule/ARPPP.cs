@@ -280,15 +280,11 @@ namespace PassThru
                             }
                         }
                     }
-                    return new PacketMainReturn("Simple ARP Poisoning Protection"){returnType = PacketMainReturnType.Allow};
+                    return null;
                 }
-                PacketMainReturn p = new PacketMainReturn("Simple ARP Poisoning Protection");
-                p.returnType = PacketMainReturnType.Allow;
-                return p;
+                return null;
             }
-            PacketMainReturn pm = new PacketMainReturn("Simple ARP Poisoning Protection");
-            pm.returnType = PacketMainReturnType.Allow;
-            return pm;
+            return null;
         }
 
         bool Compare(byte[] a, byte[] b)
