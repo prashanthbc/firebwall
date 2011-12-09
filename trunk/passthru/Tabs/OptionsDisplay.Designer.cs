@@ -31,6 +31,7 @@
             this.displayTrayLogs = new System.Windows.Forms.CheckBox();
             this.languageBox = new System.Windows.Forms.ComboBox();
             this.languageLabel = new System.Windows.Forms.Label();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // displayTrayLogs
@@ -72,10 +73,22 @@
             this.languageLabel.TabIndex = 2;
             this.languageLabel.Text = "Language:";
             // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(4, 72);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(225, 13);
+            this.linkLabel1.TabIndex = 3;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "http://code.google.com/p/firebwall/issues/list";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
             // OptionsDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.languageLabel);
             this.Controls.Add(this.languageBox);
             this.Controls.Add(this.displayTrayLogs);
@@ -92,6 +105,7 @@
         public System.Windows.Forms.CheckBox displayTrayLogs;
         private System.Windows.Forms.ComboBox languageBox;
         private System.Windows.Forms.Label languageLabel;
+        private System.Windows.Forms.LinkLabel linkLabel1;
 
 
 

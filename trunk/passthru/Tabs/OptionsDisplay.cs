@@ -43,22 +43,27 @@ namespace PassThru
                 case LanguageConfig.Language.ENGLISH:
                     displayTrayLogs.Text = "Display Icon Popups";
                     languageLabel.Text = "Language: ";
+                    linkLabel1.Text = "Report Issue";
                     break;
                 case LanguageConfig.Language.CHINESE:
                     displayTrayLogs.Text = "显示图标弹出窗口";
                     languageLabel.Text = "語言標籤:";
+                    linkLabel1.Text = "报告问题";
                     break;
                 case LanguageConfig.Language.GERMAN:
                     displayTrayLogs.Text = "Anzeige Icon Popups";
                     languageLabel.Text = "Sprachensiegel:";
+                    linkLabel1.Text = "Report Issue";
                     break;
                 case LanguageConfig.Language.RUSSIAN:
                     displayTrayLogs.Text = "Показать Иконка всплывающие окна";
                     languageLabel.Text = "Язык этикетки:";
+                    linkLabel1.Text = "Сообщить о проблеме";
                     break;
                 case LanguageConfig.Language.SPANISH:
                     displayTrayLogs.Text = "Mostrar ventanas emergentes Icono";
                     languageLabel.Text = "Lenguaje de etiquetas:";
+                    linkLabel1.Text = "informe del problema";
                     break;
             }
         }
@@ -91,6 +96,11 @@ namespace PassThru
                     LanguageConfig.SetLanguage(LanguageConfig.Language.RUSSIAN);
                     break;
             }
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://code.google.com/p/firebwall/issues/list");
         }
     }
 }

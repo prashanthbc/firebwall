@@ -91,7 +91,7 @@ namespace PassThru
                 packet.PacketTime = DateTime.UtcNow;
 
                 // if it's inbound and the SYN flag is set
-                if (!packet.Outbound && packet.SynSet)
+                if (!packet.Outbound && packet.SynSet && !packet.AckSet)
                 {
                     // first packet init
                     if (TCPprevious_packet == null)

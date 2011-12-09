@@ -33,7 +33,7 @@ namespace PassThru
 
         void WriteLoop()
         {
-            KeyValuePair<DateTime, byte[]> pkt = new KeyValuePair<DateTime,byte[]>();
+            Queue<KeyValuePair<DateTime, byte[]>> buffer = new Queue<KeyValuePair<DateTime, byte[]>>();
             while (true)
             {
                 bool toWrite = false;
@@ -41,17 +41,21 @@ namespace PassThru
                 {
                     if (packetQueue.Count != 0)
                     {
-                        pkt = packetQueue.Dequeue();
+                        buffer = packetQueue;
+                        packetQueue = new Queue<KeyValuePair<DateTime, byte[]>>();                        
                         toWrite = true;
                     }
                 }
                 if (toWrite)
                 {
-                    file.Write((uint)(pkt.Key - referenceTime).TotalSeconds);
-                    file.Write((uint)(pkt.Key.Millisecond));
-                    file.Write((uint)pkt.Value.Length);
-                    file.Write((uint)pkt.Value.Length);
-                    file.Write(pkt.Value);
+                    foreach (KeyValuePair<DateTime, byte[]> pkt in buffer)
+                    {
+                        file.Write((uint)(pkt.Key - referenceTime).TotalSeconds);
+                        file.Write((uint)(pkt.Key.Millisecond));
+                        file.Write((uint)pkt.Value.Length);
+                        file.Write((uint)pkt.Value.Length);
+                        file.Write(pkt.Value);
+                    }
                 }
                 Thread.Sleep(100);
             }
