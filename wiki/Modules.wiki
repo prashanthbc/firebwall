@@ -23,9 +23,13 @@
 
 == Packet Shaping ==
 
+== Packet Generation ==
+
+== Snort integration ==
+
 == DNS Functions ==
 === Caching ===
-=== Verify DNS from Multiple Servers ===
+=== DNS Verification/Cache poisoning protection ===
 === Set DNS values in cache ===
 
 == Routing ==
