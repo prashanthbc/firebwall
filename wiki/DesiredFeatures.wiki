@@ -7,6 +7,9 @@ Here is a list of features and changes we'd like to make before each version
   * Write a custom LSP for handling packets per application
   * Write own drivers so distribution isn't as complicated
   * Make the firewall a service
+  * Core framework enhancements
+  * Updated icon
+  * Security enhancements
 
 = 0.4 =
 
