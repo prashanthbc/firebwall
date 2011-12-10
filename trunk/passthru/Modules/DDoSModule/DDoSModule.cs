@@ -23,14 +23,6 @@ namespace PassThru
         private TCPPacket TCPprevious_packet;
         private ICMPPacket ICMPprevious_packet;
 
-        // cache of blocked IP addresses
-        private List<BlockedIP> blockcache = new List<BlockedIP>();
-        public List<BlockedIP> BlockCache
-        {
-            get { return blockcache; }
-            set { blockcache = new List<BlockedIP>(value); }
-        }
-
         // constructor 
         public DDoSModule(NetworkAdapter adapter)
             : base(adapter)
@@ -47,6 +39,12 @@ namespace PassThru
         // Action for ModuleStart
         public override ModuleError ModuleStart()
         {
+            LoadConfig();
+            if (PersistentData == null)
+                data = new DDoSData();
+            else
+                data = (DDoSData)PersistentData;
+
             ModuleError moduleError = new ModuleError();
             moduleError.errorType = ModuleErrorType.Success;
             return moduleError;
@@ -55,11 +53,27 @@ namespace PassThru
         // Action for ModuleError
         public override ModuleError ModuleStop()
         {
+            if (!data.Save)
+                data = new DDoSData();
+
+            PersistentData = data;
+            SaveConfig();
             ModuleError moduleError = new ModuleError();
             moduleError.errorType = ModuleErrorType.Success;
             return moduleError;
         }
-        
+
+        [Serializable]
+        public class DDoSData
+        {
+            private List<BlockedIP> blockcache = new List<BlockedIP>();
+            public List<BlockedIP> BlockCache { get { return blockcache; } set { blockcache = value; } }
+
+            public bool Save = true;
+        }
+
+        public DDoSData data;
+
         // main routine
         public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
@@ -117,7 +131,7 @@ namespace PassThru
                             pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
                             pmr.logMessage = "DoS attempt detected from IP " + packet.SourceIP + " (likely spoofed). "
                                         + " Packets from this IP will be dropped.  You can unblock this IP from the module interface.";
-                            blockcache.Add(new BlockedIP(packet.SourceIP, DateTime.UtcNow, "DoS Attempt"));
+                            data.BlockCache.Add(new BlockedIP(packet.SourceIP, DateTime.UtcNow, "DoS Attempt"));
                             return pmr;
                         }
 
@@ -158,7 +172,7 @@ namespace PassThru
                         pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
                         pmr.logMessage = "Potential fraggle attack from " + packet.SourceIP + " (likely spoofed). "
                             + " Packets from this IP will be dropped.  You can unblock this IP from the module interface.";
-                        blockcache.Add(new BlockedIP(packet.SourceIP, DateTime.UtcNow, "Fraggle Attempt"));
+                        data.BlockCache.Add(new BlockedIP(packet.SourceIP, DateTime.UtcNow, "Fraggle Attempt"));
                         return pmr;
                     }
                 }
@@ -200,7 +214,7 @@ namespace PassThru
                         pmr.returnType = PacketMainReturnType.Drop | PacketMainReturnType.Log;
                         pmr.logMessage = "Potential Smurf attack from " + packet.SourceIP + " (likely spoofed). "
                             + " Packets from this IP will be dropped.  You can unblock this IP from the module interface.";
-                        blockcache.Add(new BlockedIP(packet.SourceIP, DateTime.UtcNow, "Smurf Attempt"));
+                        data.BlockCache.Add(new BlockedIP(packet.SourceIP, DateTime.UtcNow, "Smurf Attempt"));
                         return pmr;
                     }
                     ICMPprevious_packet = packet;
@@ -218,7 +232,7 @@ namespace PassThru
         private bool isIPAllowed(IPAddress i)
         {
             bool isAllowed = true;
-            foreach ( BlockedIP l in BlockCache )
+            foreach ( BlockedIP l in data.BlockCache )
             {
                 if (l.Blockedip.Equals(i))
                 {
@@ -250,6 +264,7 @@ namespace PassThru
     }
 
     // object used for storing information regarding a blocked IP
+    [Serializable]
     public class BlockedIP
     {
         private IPAddress blockedip;

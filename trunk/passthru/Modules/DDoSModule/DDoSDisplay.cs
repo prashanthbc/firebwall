@@ -11,9 +11,9 @@ using FM;
 
 namespace PassThru
 {
-    /*
-     * class handles all the interfacing of the DDoS protection module
-     */
+    /// <summary>
+    /// DDoS display module
+    /// </summary>
     public partial class DDoSDisplay : UserControl
     {
         private DDoSModule dosmod;
@@ -29,7 +29,7 @@ namespace PassThru
         // update the modules' blocked IP cache
         private void UpdateBlockedCache()
         {
-            this.dosmod.BlockCache = blockcache;
+            this.dosmod.data.BlockCache = blockcache;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace PassThru
         /// <param name="e"></param>
         public void DDoSDisplay_Load(object sender, EventArgs e)
         {
-            blockcache = new List<BlockedIP>(this.dosmod.BlockCache);
+            blockcache = new List<BlockedIP>(this.dosmod.data.BlockCache);
             switch (LanguageConfig.GetCurrentLanguage())
             {
                 case LanguageConfig.Language.ENGLISH:
@@ -152,7 +152,7 @@ namespace PassThru
 
             // remove from the cache, update the module blockcache, and rebuild grid
             blockcache.Remove(remove);
-            this.dosmod.BlockCache = this.blockcache;
+            this.dosmod.data.BlockCache = this.blockcache;
             RebuildTable();
         }
 
