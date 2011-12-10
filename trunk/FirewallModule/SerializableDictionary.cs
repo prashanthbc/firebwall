@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
+using System.Runtime.Serialization;
 
 [Serializable]
 [XmlRoot("dictionary")]
@@ -13,6 +14,9 @@ public class SerializableDictionary<TKey, TValue>
     {
 
     }
+
+    // constructor required for deserialization
+    protected SerializableDictionary(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
     public SerializableDictionary(SerializableDictionary<TKey, TValue> copy)
     {

@@ -8,10 +8,9 @@ using FM;
 
 namespace PassThru
 {
-    /*
-     * Basic Firewall Module
-     * @summary
-     */
+    /// <summary>
+    /// Basic firewall module
+    /// </summary>
     public class BasicFirewall : FirewallModule
     {
         public BasicFirewall(NetworkAdapter adapter)

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FM
@@ -67,6 +66,7 @@ namespace FM
         {
             this.adapter = adapter;
         }
+        
         public INetworkAdapter adapter = null;
         public System.Windows.Forms.UserControl uiControl = null;
         public string moduleName = null;
@@ -116,7 +116,7 @@ namespace FM
                 PersistentData = bFormatter.Deserialize(stream);
                 stream.Close();
             }
-            catch
+            catch 
             {
                 PersistentData = null;
             }

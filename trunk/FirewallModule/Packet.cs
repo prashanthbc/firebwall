@@ -83,9 +83,9 @@ namespace FM
         }
     }
 
-    /*
-        Ethernet frame packet
-        */
+    /// <summary>
+    /// Ethernet packet
+    /// </summary>
     public unsafe class EthPacket : Packet
     {
         public EthPacket(INTERMEDIATE_BUFFER* in_packet)
@@ -99,11 +99,19 @@ namespace FM
             return (layer == Protocol.Ethernet);
         }
 
+        /// <summary>
+        /// Returns the data inside the ethernet frame
+        /// </summary>
+        /// <returns>byte pointer of frame data</returns>
         public override byte* Data()
         {
             return data->m_IBuffer;
         }
 
+        /// <summary>
+        /// Returns this, the highest layer in the ethernet frame
+        /// </summary>
+        /// <returns>Protocol ethernet</returns>
         public override Protocol GetHighestLayer()
         {
             return Protocol.Ethernet;
@@ -140,6 +148,9 @@ namespace FM
                 return this;
         }
 
+        /// <summary>
+        /// Returns whether the packet is outbound or not
+        /// </summary>
         public override bool Outbound
         {
             get
@@ -159,7 +170,6 @@ namespace FM
             }
         }
 
-        // check Type for 0x0806
         public bool isARP()
         {
             return (data->m_IBuffer[0x0c] == 0x08 && data->m_IBuffer[0x0d] == 0x06);
@@ -248,9 +258,9 @@ namespace FM
         }
     }
 
-    /*
-     ICMPPacket object
-     */
+    /// <summary>
+    /// ICMP packet obj
+    /// </summary>
     public unsafe class ICMPPacket : IPPacket
     {
         // accepts intermediate buff, checks if ICMP
@@ -317,9 +327,9 @@ namespace FM
         }
     }
 
-    /*
-        ARP object
-        */
+    /// <summary>
+    /// ARP packet obj
+    /// </summary>
     public unsafe class ARPPacket : EthPacket
     {
         public ARPPacket(EthPacket eth)
@@ -393,6 +403,11 @@ namespace FM
             }
         }
 
+        /// <summary>
+        /// Returns sender's IP
+        /// 
+        /// This IP will be all zeros if it's an ARP probe
+        /// </summary>
         public IPAddress ASenderIP
         {
             get
@@ -460,9 +475,9 @@ namespace FM
         }
     }
 
-    /*
-    IPv6 Packet object
-    */
+    /// <summary>
+    /// IPv6 packet obj
+    /// </summary>
     public unsafe class IPv6Packet : EthPacket
     {
         public IPv6Packet(EthPacket eth)
@@ -584,9 +599,9 @@ namespace FM
         }
     }
 
-    /*
-        IP Packet object
-        */
+    /// <summary>
+    /// IPPacket obj
+    /// </summary>
     public unsafe class IPPacket : EthPacket
     {
         public IPPacket(EthPacket eth)
@@ -708,9 +723,9 @@ namespace FM
         }
     }
 
-    /*
-        UDP Packet object
-     */
+    /// <summary>
+    /// UDP Packet obj
+    /// </summary>
     public unsafe class UDPPacket : IPPacket
     {
         public UDPPacket(INTERMEDIATE_BUFFER* in_packet)
@@ -793,9 +808,9 @@ namespace FM
         }
     }
 
-    /*
-        DNS Packet object
-     */
+    /// <summary>
+    /// DNS packet obj
+    /// </summary>
     public unsafe class DNSPacket : UDPPacket
     {
         uint start = 0;
@@ -881,9 +896,9 @@ namespace FM
         }
     }
 
-    /*
-        TCP Packet object
-     */
+    /// <summary>
+    /// TCP packet obj
+    /// </summary>
     public unsafe class TCPPacket : IPPacket
     {
         public TCPPacket(INTERMEDIATE_BUFFER* in_packet)

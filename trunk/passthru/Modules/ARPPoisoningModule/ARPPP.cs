@@ -4,6 +4,7 @@ using System.Text;
 using System.Net;
 using System.Net.NetworkInformation;
 using FM;
+using System.Runtime.InteropServices;
 
 namespace PassThru
 {
@@ -287,14 +288,25 @@ namespace PassThru
             return null;
         }
 
+        /// <summary>
+        /// Dear truck,
+        /// 
+        /// I wrote this for you because I know how much you love optimized byte arrays.
+        /// Because of that, I wanted to show you how dedicated I was to the byte array.
+        /// Please accept this method as a token of my respect.
+        /// 
+        /// Sincerely,
+        /// 
+        /// drone
+        /// (super fast byte array comparator)
+        /// </summary>
+        /// <returns>Everything</returns>
+        [DllImport("msvcrt.dll")]
+        static extern int memcmp(byte[] b1, byte[] b2, int count);
         bool Compare(byte[] a, byte[] b)
         {
-            for (int x = 0; x < 6; x++)
-            {
-                if (a[x] != b[x])
-                    return false;
-            }
-            return true;
+            // compare buffers
+            return a.Length == b.Length && memcmp(a, b, a.Length) == 0;
         }
     }
 }

@@ -42,6 +42,7 @@
             // 
             // comboBoxAction
             // 
+            this.comboBoxAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAction.FormattingEnabled = true;
             this.comboBoxAction.Items.AddRange(new object[] {
             "Block",
@@ -50,7 +51,6 @@
             this.comboBoxAction.Name = "comboBoxAction";
             this.comboBoxAction.Size = new System.Drawing.Size(451, 21);
             this.comboBoxAction.TabIndex = 24;
-            this.comboBoxAction.Text = "Block";
             // 
             // label4
             // 

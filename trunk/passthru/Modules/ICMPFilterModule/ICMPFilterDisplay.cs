@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace PassThru
 {
-    /*
-     * Main display class for ICMPFilter object
-     */
+    /// <summary>
+    /// ICMP filter display class
+    /// </summary>
     public partial class ICMPFilterDisplay : UserControl
     {
         // global filter obj
@@ -20,7 +20,7 @@ namespace PassThru
         // table of user rule mappings
         // key: type
         // value: list<string> of codes
-        private Dictionary<string, List<string>> ruletable;
+        private SerializableDictionary<string, List<string>> ruletable;
 
         // table of ICMP mappings
         // key: type
@@ -31,14 +31,16 @@ namespace PassThru
         public ICMPFilterDisplay(ICMPFilterModule filter)
         {
             this.filter = filter;
-            ruletable = new Dictionary<string, List<string>>(filter.RuleTable);
+            ruletable = new SerializableDictionary<string, List<string>>(filter.data.RuleTable);
             buildICMPList();
             InitializeComponent();
         }
 
-        /*
-         * Parse the input and add them to the textBox and list
-         */
+       /// <summary>
+       /// Parse input and add to the blocked box
+       /// </summary>
+       /// <param name="sender"></param>
+       /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
             List<string> temp = new List<String>();
@@ -140,13 +142,13 @@ namespace PassThru
         private void ICMPFilterDisplay_Load(object sender, EventArgs e)
         {
             // generate the ruletable
-            ruletable = new Dictionary<string, List<string>>(filter.RuleTable);
+            ruletable = new SerializableDictionary<string, List<string>>(filter.data.RuleTable);
 
             // rebuild the datagrid
             rebuildTable();
 
             // load up the deny all state
-            if (filter.DenyAll)
+            if (filter.data.DenyAll)
             {
                 allBox.CheckState = CheckState.Checked;
             }
@@ -155,7 +157,7 @@ namespace PassThru
         // pushes update to the ruletable object
         private void UpdateRuleTable()
         {
-            this.filter.RuleTable = ruletable;
+            this.filter.data.RuleTable = ruletable;
         }
 
         /*
@@ -171,7 +173,7 @@ namespace PassThru
             addButton.Enabled = !(allBox.Checked);
             deleteButton.Enabled = !(allBox.Checked);
             viewICMP.Enabled = !(allBox.Checked);
-            this.filter.DenyAll = allBox.Checked;
+            this.filter.data.DenyAll = allBox.Checked;
         }
 
         /*
@@ -216,9 +218,9 @@ namespace PassThru
             allBox.Enabled = !(allBox.Enabled);
         }
 
-        /*
-         * Method rebuilds the DataGridView table 
-         */
+        /// <summary>
+        /// Rebuilds the datagridview
+        /// </summary>
         private void rebuildTable()
         {
             ICollection keys = ruletable.Keys;

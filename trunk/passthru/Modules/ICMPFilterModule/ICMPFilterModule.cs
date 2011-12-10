@@ -5,32 +5,17 @@ using FM;
 
 namespace PassThru
 {
-    /*
-     * ICMP filtering module.  
-     * Allows filtering by both code and type.
-     */
+    /// <summary>
+    /// ICMP filter module
+    /// 
+    /// Allows filtering by type/code
+    /// </summary>
     public class ICMPFilterModule : FirewallModule
     {
-        // rule table var and accessor
-        private Dictionary<string, List<string>> ruletable = new Dictionary<string, List<string>>();
-        public Dictionary<string, List<string>> RuleTable
+        public ICMPFilterModule()
+            : base()
         {
-            get { return ruletable; }
-            set { ruletable = new Dictionary<string, List<string>>(value); }
-        }
-        
-        // deny all var and accessor
-        private bool denyAll;
-        public bool DenyAll
-        {
-            get { return denyAll; }
-            set { denyAll = value; }
-        }
-
-        // return local user control
-        public override System.Windows.Forms.UserControl GetControl()
-        {
-            return new ICMPFilterDisplay(this) { Dock = System.Windows.Forms.DockStyle.Fill };
+            this.moduleName = "ICMP Filter";
         }
 
         // constructor 
@@ -40,23 +25,58 @@ namespace PassThru
             moduleName = "ICMP Filter";
         }
 
+        // return local user control
+        public override System.Windows.Forms.UserControl GetControl()
+        {
+            return new ICMPFilterDisplay(this) { Dock = System.Windows.Forms.DockStyle.Fill };
+        }
+
         // Action for ModuleStart
         public override ModuleError ModuleStart()
         {
+            LoadConfig();
+            if (PersistentData == null)
+                data = new ICMPData();
+            else
+                data = (ICMPData)PersistentData;
+
             ModuleError moduleError = new ModuleError();
             moduleError.errorType = ModuleErrorType.Success;
-            denyAll = false;
             return moduleError;
         }
 
-        // Action for ModuleError
+        // Action for ModuleStop
         public override ModuleError ModuleStop()
         {
+            if (!data.Save)
+                data.RuleTable = new SerializableDictionary<string, List<string>>();
+
+            PersistentData = data;
+            SaveConfig();
             ModuleError moduleError = new ModuleError();
             moduleError.errorType = ModuleErrorType.Success;
             return moduleError;
         }
 
+        /// <summary>
+        /// Object used to serialize the data we need to persist
+        /// </summary>
+        [Serializable]
+        public class ICMPData
+        {
+            private SerializableDictionary<string, List<string>> ruleTable = new SerializableDictionary<string, List<string>>();
+            public SerializableDictionary<string, List<string>> RuleTable 
+                        { get { return ruleTable; } set { ruleTable = new SerializableDictionary<string,List<string>>(value); } }
+
+            private bool denyAll = false;
+            public bool DenyAll 
+                        { get { return denyAll; } set { denyAll = value; } }
+
+            public bool Save = true;
+        }
+
+        public ICMPData data;
+        
         // main routine
         public override PacketMainReturn interiorMain(ref Packet in_packet)
         {
@@ -67,7 +87,7 @@ namespace PassThru
             {
                 // check if the packet is allowed and deny all is false
                 if (isAllowed(((ICMPPacket)in_packet).getType(), ((ICMPPacket)in_packet).getCode()) && 
-                    !denyAll)
+                    !data.DenyAll)
                 {
                     return null;
                 }
@@ -98,10 +118,10 @@ namespace PassThru
 
             // if the table contains the type, check if it
             // also contains the code
-            if (ruletable.ContainsKey(type))
+            if (data.RuleTable.ContainsKey(type))
             {
                 List<string> temp;
-                ruletable.TryGetValue(type, out temp);
+                data.RuleTable.TryGetValue(type, out temp);
                 // invert logic; if found, disallow, if not, allow
                 isAllowed = !(temp.Contains(code));
             }

@@ -45,12 +45,12 @@
             // 
             // comboBox1
             // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(12, 29);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(451, 21);
             this.comboBox1.TabIndex = 0;
-            this.comboBox1.Text = "UDPALL";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label1
@@ -159,6 +159,7 @@
             // 
             // comboBoxAction
             // 
+            this.comboBoxAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAction.FormattingEnabled = true;
             this.comboBoxAction.Items.AddRange(new object[] {
             "Block",
@@ -167,7 +168,6 @@
             this.comboBoxAction.Name = "comboBoxAction";
             this.comboBoxAction.Size = new System.Drawing.Size(451, 21);
             this.comboBoxAction.TabIndex = 13;
-            this.comboBoxAction.Text = "Block";
             // 
             // AddEditRule
             // 
