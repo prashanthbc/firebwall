@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.NetworkInformation;
 using FM;
+using System.Runtime.InteropServices;
 
 namespace PassThru.Modules.MacFilter
 {
@@ -82,14 +83,12 @@ namespace PassThru.Modules.MacFilter
                 this.log = log;
             }
 
+            [DllImport("msvcrt.dll")]
+            static extern int memcmp(byte[] b1, byte[] b2, int count);
             bool Compare(byte[] a, byte[] b)
             {
-                for (int x = 0; x < 6; x++)
-                {
-                    if (a[x] != b[x])
-                        return false;
-                }
-                return true;
+                // compare buffers
+                return a.Length == b.Length && memcmp(a, b, a.Length) == 0;
             }
 
             public PacketStatus GetStatus(Packet pkt)
