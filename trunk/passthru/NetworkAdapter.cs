@@ -253,6 +253,21 @@ namespace PassThru
 			}
 		}
 
+        public unsafe void SendPacket(INTERMEDIATE_BUFFER* pkt)
+        {
+            ETH_REQUEST Request = new ETH_REQUEST();
+            Request.EthPacket.Buffer = (IntPtr)pkt;
+            Request.hAdapterHandle = hNdisapi;
+            if (pkt->m_dwDeviceFlags == 0x00000001)
+            {
+                Ndisapi.SendPacketToMstcp(hNdisapi, ref Request);
+            }
+            else
+            {
+                Ndisapi.SendPacketToAdapter(hNdisapi, ref Request);
+            }
+        }
+
 		void SetAdapterMode() 
         {
 			mode.dwFlags = Ndisapi.MSTCP_FLAG_SENT_TUNNEL | Ndisapi.MSTCP_FLAG_RECV_TUNNEL;
@@ -391,6 +406,6 @@ namespace PassThru
             }
 
             return tempList;
-        }
+        }        
     }
 }

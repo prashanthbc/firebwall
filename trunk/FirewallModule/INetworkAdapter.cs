@@ -16,5 +16,7 @@ namespace FM
         {
             get;
         }
+
+        unsafe void SendPacket(INTERMEDIATE_BUFFER* pkt);
     }
 }
