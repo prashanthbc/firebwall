@@ -7,7 +7,6 @@
   * New icon, thanks Broly
   * Error logging
   * Removed Maxmind
-  * 
 
 = 0.3.4.0 =
   * Added the ability to load user developed modules
