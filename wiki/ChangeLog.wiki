@@ -1,5 +1,14 @@
 #summary Shows the major changes between versions
 
+= 0.3.5.0 =
+  * Added multiple language support
+  * Optimizations and bug fixes
+  * Added more API ability, like create packets to send
+  * New icon, thanks Broly
+  * Error logging
+  * Removed Maxmind
+  * 
+
 = 0.3.4.0 =
   * Added the ability to load user developed modules
   * Added the Mac Filter module
