@@ -6,16 +6,8 @@ Here is a list of features and changes we'd like to make before each version
 
   * Write a custom LSP for handling packets per application
   * Write own drivers so distribution isn't as complicated
-  * Make the firewall a service
   * Core framework enhancements
-  * Updated icon
+  * Updated icon (done)
   * Security enhancements
-
-= 0.4 =
-
-  * Multilingual text(Partial)
-  * Fix small issues with the installer(Done)
-  * Improve ARP Poisoning Protection(Done)
-  * Improve Documentation(Partial)
   * Implement iptables like rules, that priority can be changed
     * Rule sets, and import/export rules
