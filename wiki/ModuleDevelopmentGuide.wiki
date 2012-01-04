@@ -34,7 +34,6 @@ The first thing we'll need to do is the constructor.  Our constructor should acc
  public ChiliSoup(INetworkAdapter adapter)
             : base(adapter)
         {
-            this.moduleName = "Chili Soup Module";
         }
 }}}
 
@@ -44,8 +43,21 @@ You'll also need a base constructor without any arguments:
 public ChiliSoup()
           : base ()
        {
-           this.moduleName = "Chili Soup Module";
        }
+}}}
+
+You should also set your module's metadata in the constructor.  This is where you define specifics such as the author (yourself!), the module's name, etcetera.  Creating a private method and calling it from both constructors would be advised.  This information is *required*, though it can be blank.  Your module's tab name is pulled from this information.
+
+{{{
+   private void Help()
+        {
+            MetaData.Name = "Chili Soup";
+            MetaData.Version = "1.0.0";
+            MetaData.HelpString = "";
+            MetaData.Description = "Prepares Chili Soup";
+            MetaData.Contact = "you@developer.com";
+            MetaData.Author = "Name(alias)";
+        }
 }}}
 
 The next method is ModuleStart().  This is called on when the network adapter is loading up modules; anything within is loaded up each time the module is modded into the adapter.  The return type is of type ModuleError, and can be used to return error messages to the main loading class.  As of .3.4 there are two types of module errors; Success and UnknownError.  Because we do not require any special loads upon start for our module, we create a ModuleError object, give it type Success, and return it.  
