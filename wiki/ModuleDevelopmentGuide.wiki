@@ -63,7 +63,7 @@ You should also set your module's metadata in the constructor.  This is where yo
 
 {{{
    //Before (and including) 0.3.5.0
-   private void Hel()
+   private void Help()
        {
            moduleName = "Chili Soup";
        }
