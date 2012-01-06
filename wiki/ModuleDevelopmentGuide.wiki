@@ -49,6 +49,7 @@ public ChiliSoup()
 You should also set your module's metadata in the constructor.  This is where you define specifics such as the author (yourself!), the module's name, etcetera.  Creating a private method and calling it from both constructors would be advised.  This information is *required*, though it can be blank.  Your module's tab name is pulled from this information.
 
 {{{
+   //Post 0.3.5.0
    private void Help()
         {
             MetaData.Name = "Chili Soup";
@@ -58,6 +59,14 @@ You should also set your module's metadata in the constructor.  This is where yo
             MetaData.Contact = "you@developer.com";
             MetaData.Author = "Name(alias)";
         }
+}}}
+
+{{{
+   //Before (and including) 0.3.5.0
+   private void Hel()
+       {
+           moduleName = "Chili Soup";
+       }
 }}}
 
 The next method is ModuleStart().  This is called on when the network adapter is loading up modules; anything within is loaded up each time the module is modded into the adapter.  The return type is of type ModuleError, and can be used to return error messages to the main loading class.  As of .3.4 there are two types of module errors; Success and UnknownError.  Because we do not require any special loads upon start for our module, we create a ModuleError object, give it type Success, and return it.  
