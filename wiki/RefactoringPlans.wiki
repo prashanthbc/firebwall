@@ -4,7 +4,7 @@
 
   * Make packet layer's store lengths and ends for relative positioning(Done)
   * Allow for packet value editing through properties(Partial)
-  * Allow for creating packets from scratch
+  * Allow for creating packets from scratch(Partial)
 
 = Module Configuration =
 
