@@ -1,4 +1,9 @@
 #summary Shows the major changes between versions
+= 0.3.6.0 =
+  * Added metadata to modules
+  * Added help section
+  * Added to the module interface
+  * Bug fixes
 
 = 0.3.5.0 =
   * Added multiple language support
