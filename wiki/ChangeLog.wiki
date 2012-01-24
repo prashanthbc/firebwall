@@ -1,4 +1,9 @@
 #summary Shows the major changes between versions
+= 0.3.6.1 =
+  * Added ability to configure update check options
+  * Added more getters/setters to protocols in Packets
+  * Added GenerateChecksum method for TCPPacket
+
 = 0.3.6.0 =
   * Added metadata to modules
   * Added help section
