@@ -1,26 +1,3 @@
 #summary Plans for refactoring.
 
-= Packet Structure =
-
-  * Make packet layer's store lengths and ends for relative positioning(Done)
-  * Allow for packet value editing through properties(Partial)
-  * Allow for creating packets from scratch(Partial)
-
-= Module Configuration =
-
-  * Standardized method of storing configurations between runnings(Done)
-  * Module processing ordering(Done)
-  * Enabling/Disabling of modules(Done)
-
-= Adapter Configuration = 
-
-  * Disable processing on an adapter(Done)
-  * Save module order and auto-enable preferences
-  * Recognize new adapters and ones removed instead of just grabbing all the current adapters(Done)
-  * Better transfer rate computation(Done)
-
-= General Configuration = 
-
-  * GUI configuration(partial)
-  * Log storage configuration(pcap and text)
-  * Tray configuration(partial)
+WE DID ALL THIS STUFF!  MOVE IT TO TRELLO!
