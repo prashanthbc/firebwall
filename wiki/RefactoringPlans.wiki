@@ -1,3 +1,0 @@
-#summary Plans for refactoring.
-
-WE DID ALL THIS STUFF!  MOVE IT TO TRELLO!
