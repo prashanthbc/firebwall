@@ -5,6 +5,10 @@ Firebwall modules are written on Microsoft's .NET 2.0 framework.  The developers
 
 This guide is an entry point into module development, and more advanced features are, for now, left for self study.  
 
+== Easiest Way to Start ==
+
+schizo decided  to start putting together Visual Studio Templates for developing fireBwall modules.  They allow you to easily debug, as the template even includes the version of fireBwall to test the module on.  The current one at the time of this edit is [http://firebwall.googlecode.com/files/fireBwall%200.3.10.0%20Module.zip fireBwall 0.3.10.0 Module.zip].  
+
 == Project Environment ==
 Begin by creating a new Class Library project.  Our module title for this example is Chili Soup, but something more pertinent to the modules intent is preferred.  The first thing you'll want to do is switch the target framework over to .NET 2.0.  This can be done in the project's Properties window. 
 

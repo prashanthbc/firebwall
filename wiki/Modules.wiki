@@ -34,4 +34,5 @@
 
 == Routing ==
 === Bridged Adapters ===
+	* Need to start implementing this into a module so using fireBwall on a gateway is safe enough.
 === NAT ===
