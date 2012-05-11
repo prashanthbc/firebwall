@@ -1,4 +1,23 @@
 #summary Shows the major changes between versions
+= 0.3.11.0 =
+  * Switched installers (WIX -> NSIS)
+  * Installer only installs the module you want
+  * All modules are now external
+  * Log display update; selectable, and automatically copies the log to    your clipboard on select.  Displays a maximum 1000 logs
+  * Addition of fireBwall custom themes and colors
+  * Extended the adapter display
+  * Added Start Minimized option
+  * Added max log file storage
+  * Added max pcap log storage
+  * Updated popup menu; allows the messages to be selected and display the appropriate window
+  * Changed the updater to check the new API
+  * ICMP module added options for logging and blocking ICMPv6
+  * BasicFirewall rules improved to allow port ranges, bulk ports, and bulk IPs
+  * Changed configuration location to AppData
+  * Optimization of bandwidth counter
+  * Added per-rule log notification for BasicFirewall and MACFilter modules
+  * Updated tray icon
+
 = 0.3.10.0 =
   * Module ordering and enabling/disabling is now preserved
   * Configurations now properly serialized
